@@ -1,17 +1,23 @@
 import React from 'react'
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
 import Login from '../Login';
+import Rooms from '../Rooms';
 
 export default function App() {
   return (
-    <Switch>
-      <Route path="login">
-        <Login />
-      </Route>
-      <Route path="*">
-        <Redirect to="/login" />
-      </Route>
-    </Switch>
+    <Router>
+      <Switch>
+        <Route exact path="/">
+          <Login />
+        </Route>
+        <Route path="/rooms">
+          <Rooms />
+        </Route>
+        <Route path="*">
+          <Redirect to="/" />
+        </Route>
+      </Switch>
+    </Router>
   )
 }
