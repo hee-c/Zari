@@ -7,7 +7,7 @@ export const getUserDataByToken = createAsyncThunk(
   async (history) => {
     const response = await getUserData();
 
-    history.push('/rooms');
+    history.push('/waitingarea');
 
     return response;
   },
@@ -18,7 +18,7 @@ export const userLogin = createAsyncThunk(
   async (history) => {
     const response = await googleLogin();
 
-    history.push('/rooms');
+    history.push('/waitingarea');
 
     return response;
   },

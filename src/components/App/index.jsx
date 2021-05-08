@@ -2,7 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
 import Home from '../Home';
-import Rooms from '../Rooms';
+import WaitingArea from '../WaitingArea';
 
 export default function App() {
   return (
@@ -11,8 +11,8 @@ export default function App() {
         <Route exact path="/">
           <Home />
         </Route>
-        <Route path="/rooms">
-          <Rooms />
+        <Route path="/waitingarea">
+          <WaitingArea />
         </Route>
         <Route path="*">
           <Redirect to="/" />
