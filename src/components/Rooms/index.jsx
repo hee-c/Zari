@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { getRooms } from '../../reducers/roomsSlice';
 
@@ -76,12 +77,21 @@ const RoomEnterButton = styled.button`
 
 export default function Rooms() {
   const dispatch = useDispatch();
+  const history = useHistory();
   const user = useSelector(state => state.user.data);
   const rooms = useSelector(state => state.rooms.publicRooms);
 
   useEffect(() => {
     dispatch(getRooms());
   }, [dispatch]);
+
+  function handleLinkCopyButton(e) {
+    navigator.clipboard.writeText(`${process.env.REACT_APP_SERVER_URL}/room/${e.target.id}`);
+  }
+
+  function handleEnterRoomButton(e) {
+    history.push(`/room/${e.target.id}`);
+  }
 
   return (
     <Container>
@@ -93,19 +103,19 @@ export default function Rooms() {
           <RoomListWrapper>
             {rooms?.map(room => {
               return (
-                <RoomItemWrapper key={room._id} id={room._id}>
+                <RoomItemWrapper key={room._id}>
                   <RoomItem width="60%">
                     <RoomTitle>
                       {room.title}
                     </RoomTitle>
                   </RoomItem>
                   <RoomItem width="20%">
-                    <RoomLinkCopy>
+                    <RoomLinkCopy id={room._id} onClick={handleLinkCopyButton}>
                       링크
                     </RoomLinkCopy>
                   </RoomItem>
                   <RoomItem width="20%">
-                    <RoomEnterButton>
+                    <RoomEnterButton id={room._id} onClick={handleEnterRoomButton}>
                       입장
                     </RoomEnterButton>
                   </RoomItem>
