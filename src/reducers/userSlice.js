@@ -45,7 +45,7 @@ export const userSlice = createSlice({
     },
     [userLogin.fulfilled]: (state, action) => {
       state.status = "active";
-      state.data = action.payload.data;
+      state.data = action.payload.user;
     },
     [userLogin.rejected]: (state, action) => {
       state.status = null;
@@ -55,7 +55,7 @@ export const userSlice = createSlice({
     },
     [getUserDataByToken.fulfilled]: (state, action) => {
       state.status = "active";
-      state.data = action.payload.currentUser;
+      state.data = action.payload.user;
     },
     [getUserDataByToken.rejected]: (state, action) => {
       state.status = null;

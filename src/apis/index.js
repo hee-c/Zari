@@ -25,6 +25,18 @@ async function getData() {
   return response;
 }
 
+async function getRooms() {
+  const url = `${process.env.REACT_APP_SERVER_URL}/room`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Authorization': localStorage.getItem('accessToken'),
+    },
+  });
+
+  return response;
+}
+
 export async function googleLogin() {
   try {
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -40,7 +52,7 @@ export async function googleLogin() {
 
       await firebase.auth().signOut();
 
-      return responseBody;
+      return responseBody.data;
     } else {
       throw new Error('login fail');
     }
@@ -53,7 +65,17 @@ export async function getUserData() {
   try {
     const response = await getData();
     const responseBody = await response.json();
-    console.log(responseBody)
+
+    return responseBody.data;
+  } catch (err) {
+    throw new Error('login fail');
+  }
+}
+
+export async function getRoomList() {
+  try {
+    const response = await getRooms();
+    const responseBody = await response.json();
 
     return responseBody.data;
   } catch (err) {
