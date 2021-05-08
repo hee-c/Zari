@@ -1,6 +1,6 @@
 import { auth, firebase } from './firebase';
 
-export async function login(data) {
+async function login(data) {
   const url = `${process.env.REACT_APP_SERVER_URL}/auth/login`;
   const response = await fetch(url, {
     method: 'POST',
@@ -8,6 +8,18 @@ export async function login(data) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
+  });
+
+  return response;
+}
+
+async function getData() {
+  const url = `${process.env.REACT_APP_SERVER_URL}/user`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Authorization': localStorage.getItem('accessToken'),
+    },
   });
 
   return response;
@@ -32,6 +44,18 @@ export async function googleLogin() {
     } else {
       throw new Error('login fail');
     }
+  } catch (err) {
+    throw new Error('login fail');
+  }
+}
+
+export async function getUserData() {
+  try {
+    const response = await getData();
+    const responseBody = await response.json();
+    console.log(responseBody)
+
+    return responseBody.data;
   } catch (err) {
     throw new Error('login fail');
   }

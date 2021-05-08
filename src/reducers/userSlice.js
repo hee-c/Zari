@@ -1,6 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { googleLogin } from '../apis';
+import { googleLogin, getUserData } from '../apis';
+
+export const getUserDataByToken = createAsyncThunk(
+  'user/getUserDataByToken',
+  async (history) => {
+    const response = await getUserData();
+
+    history.push('/rooms');
+
+    return response;
+  },
+);
 
 export const userLogin = createAsyncThunk(
   "user/login",
@@ -38,6 +49,17 @@ export const userSlice = createSlice({
     },
     [userLogin.rejected]: (state, action) => {
       state.status = null;
+    },
+    [getUserDataByToken.pending]: (state) => {
+      state.status = "pending";
+    },
+    [getUserDataByToken.fulfilled]: (state, action) => {
+      state.status = "active";
+      state.data = action.payload.currentUser;
+    },
+    [getUserDataByToken.rejected]: (state, action) => {
+      state.status = null;
+      localStorage.removeItem('accessToken');
     },
   },
 });

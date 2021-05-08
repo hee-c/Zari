@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
-import Login from '../Login';
+import Home from '../Home';
 import Rooms from '../Rooms';
 
 export default function App() {
@@ -9,7 +9,7 @@ export default function App() {
     <Router>
       <Switch>
         <Route exact path="/">
-          <Login />
+          <Home />
         </Route>
         <Route path="/rooms">
           <Rooms />

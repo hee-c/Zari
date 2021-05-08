@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { userLogin } from '../../reducers/userSlice';
+import { userLogin, getUserDataByToken } from '../../reducers/userSlice';
 
-export default function Login() {
+export default function Home() {
   const history = useHistory();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (localStorage.getItem('accessToken')) {
+      dispatch(getUserDataByToken(history));
+    }
+  }, [history, dispatch]);
 
   function handleLoginButtonClick() {
     dispatch(userLogin(history));
