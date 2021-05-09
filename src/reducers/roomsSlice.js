@@ -9,7 +9,7 @@ export const getRooms = createAsyncThunk(
 
     return response;
   }
-)
+);
 
 const initialState = {
   status: null,
@@ -23,10 +23,10 @@ export const roomsSlice = createSlice({
   },
   extraReducers: {
     [getRooms.pending]: (state) => {
-      state.status = "pending";
+      state.status = 'pending';
     },
     [getRooms.fulfilled]: (state, action) => {
-      state.status = "active";
+      state.status = 'active';
       state.publicRooms = action.payload.publicRooms;
     },
     [getRooms.rejected]: (state, action) => {

@@ -14,7 +14,7 @@ export const getUserDataByToken = createAsyncThunk(
 );
 
 export const userLogin = createAsyncThunk(
-  "user/login",
+  'user/login',
   async (history) => {
     const response = await googleLogin();
 
@@ -41,20 +41,20 @@ export const userSlice = createSlice({
   },
   extraReducers: {
     [userLogin.pending]: (state) => {
-      state.status = "pending";
+      state.status = 'pending';
     },
     [userLogin.fulfilled]: (state, action) => {
-      state.status = "active";
+      state.status = 'active';
       state.data = action.payload.user;
     },
     [userLogin.rejected]: (state, action) => {
       state.status = null;
     },
     [getUserDataByToken.pending]: (state) => {
-      state.status = "pending";
+      state.status = 'pending';
     },
     [getUserDataByToken.fulfilled]: (state, action) => {
-      state.status = "active";
+      state.status = 'active';
       state.data = action.payload.user;
     },
     [getUserDataByToken.rejected]: (state, action) => {
