@@ -42,6 +42,34 @@ export default function Room() {
     createPlayerSheet();
     createPlayer();
 
+    treasure = new Sprite(TextureCache['treasure.png']);
+    treasure.x = app.stage.width - treasure.width - 48;
+    treasure.y = app.stage.height / 2 - treasure.height / 2;
+    app.stage.addChild(treasure);
+
+    door = new Sprite(TextureCache['door.png']);
+    door.position.set(32, 0);
+    app.stage.addChild(door);
+
+    let numberOfBlobs = 6,
+      spacing = 48,
+      xOffset = 150;
+
+    blobs = [];
+
+    for (let i = 0; i < numberOfBlobs; i++) {
+      let blob = new Sprite(TextureCache['blob.png']);
+
+      let x = spacing * i + xOffset;
+      let y = _.random(0, app.stage.height - blob.height);
+      blob.x = x;
+      blob.y = y;
+
+      blobs.push(blob);
+
+      app.stage.addChild(blob);
+    }
+
     left.press = () => {
       player.play();
       player.textures = playerSheet.walkWest;
@@ -108,6 +136,23 @@ export default function Room() {
     player.play();
     player.x += player.vx;
     player.y += player.vy;
+
+    contain(player, { x: 16, y: 16, width: 800, height: 800 });
+
+    blobs.forEach(blob => {
+      if (collisionDetection(player, blob)) {
+        console.log('비켜')
+      }
+    });
+
+    if (hitTestRectangle(player, treasure)) {
+      treasure.x = player.x + 8;
+      treasure.y = player.y + 8;
+    }
+
+    if (hitTestRectangle(player, door)) {
+      window.alert('end game');
+    }
   }
 
   function createPlayer() {
@@ -158,6 +203,103 @@ export default function Room() {
     );
     return key;
   }
+
+  function contain(sprite, container) {
+
+    let collision = undefined;
+    if (sprite.x < container.x) {
+      sprite.x = container.x;
+      collision = "left";
+    }
+
+    if (sprite.y < container.y) {
+      sprite.y = container.y;
+      collision = "top";
+    }
+
+    if (sprite.x + sprite.width > container.width) {
+      sprite.x = container.width - sprite.width;
+      collision = "right";
+    }
+
+    if (sprite.y + sprite.height > container.height) {
+      sprite.y = container.height - sprite.height;
+      collision = "bottom";
+    }
+
+    return collision;
+  }
+
+  function collisionDetection(r1, r2) {
+    let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
+
+    r1.centerX = r1.x + r1.width / 2;
+    r1.centerY = r1.y + r1.height / 2;
+    r2.centerX = r2.x + r2.width / 2;
+    r2.centerY = r2.y + r2.height / 2;
+
+    r1.halfWidth = r1.width / 2;
+    r1.halfHeight = r1.height / 2;
+    r2.halfWidth = r2.width / 2;
+    r2.halfHeight = r2.height / 2;
+
+    vx = r1.centerX - r2.centerX;
+    vy = r1.centerY - r2.centerY;
+
+    combinedHalfWidths = r1.halfWidth + r2.halfWidth;
+    combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
+    if (Math.abs(vx) < combinedHalfWidths) {
+      if (Math.abs(vy) < combinedHalfHeights) {
+        if (down.isDown || up.isDown) {
+          r1.y -= r1.vy;
+        }
+        if (left.isDown || right.isDown) {
+          r1.x -= r1.vx;
+        }
+      } else {
+        hit = false;
+      }
+    } else {
+      hit = false;
+    }
+
+    return hit;
+  }
+
+  function hitTestRectangle(r1, r2) {
+    let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
+
+    hit = false;
+
+    r1.centerX = r1.x + r1.width / 2;
+    r1.centerY = r1.y + r1.height / 2;
+    r2.centerX = r2.x + r2.width / 2;
+    r2.centerY = r2.y + r2.height / 2;
+
+    r1.halfWidth = r1.width / 2;
+    r1.halfHeight = r1.height / 2;
+    r2.halfWidth = r2.width / 2;
+    r2.halfHeight = r2.height / 2;
+
+    vx = r1.centerX - r2.centerX;
+    vy = r1.centerY - r2.centerY;
+
+    combinedHalfWidths = r1.halfWidth + r2.halfWidth;
+    combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
+    if (Math.abs(vx) < combinedHalfWidths) {
+      if (Math.abs(vy) < combinedHalfHeights) {
+        hit = true;
+      } else {
+        hit = false;
+      }
+    } else {
+      hit = false;
+    }
+
+    return hit;
+  };
 
   function createPlayerSheet() {
     let sheet = new PIXI.BaseTexture.from(resources['player'].url);
