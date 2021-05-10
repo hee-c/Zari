@@ -41,6 +41,73 @@ export default function Room() {
 
     createPlayerSheet();
     createPlayer();
+
+    left.press = () => {
+      player.play();
+      player.textures = playerSheet.walkWest;
+      player.vx = -movementSpeed;
+      player.vy = 0;
+    };
+
+    left.release = () => {
+      if (!right.isDown && player.vy === 0) {
+        player.textures = playerSheet.standWest;
+        player.vx = 0;
+      }
+    };
+
+    up.press = () => {
+      player.play();
+      player.textures = playerSheet.walkNorth;
+      player.vy = -movementSpeed;
+      player.vx = 0;
+    };
+    up.release = () => {
+      if (!down.isDown && player.vx === 0) {
+        player.textures = playerSheet.standNorth;
+        player.vy = 0;
+      }
+    };
+
+    right.press = () => {
+      player.play();
+      player.textures = playerSheet.walkEast;
+      player.vx = movementSpeed;
+      player.vy = 0;
+    };
+    right.release = () => {
+      if (!left.isDown && player.vy === 0) {
+        player.textures = playerSheet.standEast;
+        player.vx = 0;
+      }
+    };
+
+    down.press = () => {
+      player.play();
+      player.textures = playerSheet.walkSouth;
+      player.vy = movementSpeed;
+      player.vx = 0;
+    };
+    down.release = () => {
+      if (!up.isDown && player.vx === 0) {
+        player.textures = playerSheet.standSouth;
+        player.vy = 0;
+      }
+    };
+
+    state = play;
+
+    app.ticker.add(delta => gameLoop(delta));
+  }
+
+  function gameLoop(delta) {
+    state(delta);
+  }
+
+  function play(delta) {
+    player.play();
+    player.x += player.vx;
+    player.y += player.vy;
   }
 
   function createPlayer() {
@@ -55,6 +122,41 @@ export default function Room() {
     player.vy = 0;
     app.stage.addChild(player);
     player.play();
+  }
+
+  function keyboard(keyCode) {
+    var key = {};
+    key.code = keyCode;
+    key.isDown = false;
+    key.isUp = true;
+    key.press = undefined;
+    key.release = undefined;
+
+    key.downHandler = event => {
+      if (event.keyCode === key.code) {
+        if (key.isUp && key.press) key.press();
+        key.isDown = true;
+        key.isUp = false;
+      }
+      event.preventDefault();
+    };
+
+    key.upHandler = event => {
+      if (event.keyCode === key.code) {
+        if (key.isDown && key.release) key.release();
+        key.isDown = false;
+        key.isUp = true;
+      }
+      event.preventDefault();
+    };
+
+    window.addEventListener(
+      "keydown", key.downHandler.bind(key), false
+    );
+    window.addEventListener(
+      "keyup", key.upHandler.bind(key), false
+    );
+    return key;
   }
 
   function createPlayerSheet() {
@@ -99,6 +201,7 @@ export default function Room() {
       new PIXI.Texture(sheet, new PIXI.Rectangle(3 * w, 3 * h, w, h))
     ];
   }
+
 
   return (
     <div>
