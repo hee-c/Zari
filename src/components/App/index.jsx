@@ -15,7 +15,7 @@ export default function App() {
         <Route path="/waitingarea">
           <WaitingArea />
         </Route>
-        <Route path="/room">
+        <Route path="/room/:roomId">
           <Room />
         </Route>
         <Route path="*">

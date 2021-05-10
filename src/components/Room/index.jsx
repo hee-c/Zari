@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux'
+import io from 'socket.io-client';
 import * as PIXI from 'pixi.js';
 import _ from 'lodash';
+
+const socket = io(process.env.REACT_APP_SERVER_URL, { transports: ['websocket'] });
 
 export default function Room() {
   let Application = PIXI.Application,
@@ -9,15 +14,17 @@ export default function Room() {
     resources = loader.resources,
     TextureCache = PIXI.utils.TextureCache,
     Sprite = PIXI.Sprite,
-    Rectangle = PIXI.Rectangle;
-
-  let state, treasure, blobs, background, door, player;
-  let left = keyboard(37),
+    Rectangle = PIXI.Rectangle,
+    left = keyboard(37),
     up = keyboard(38),
     right = keyboard(39),
     down = keyboard(40);
+  let state, treasure, blobs, background, door, player, otherPlayer;
   const movementSpeed = 2;
   const playerSheet = {};
+  const pixi = useRef();
+  const { roomId } = useParams();
+  const user = useSelector(state => state.user.data);
 
   let app = new Application({
     width: 800,
@@ -27,12 +34,33 @@ export default function Room() {
     resolution: 1,
   });
 
-  document.body.appendChild(app.view);
+  useEffect(() => {
+    pixi.current.appendChild(app.view);
+
+    socket.open();
+    socket.emit('joinRoom', {
+      name: user.name,
+      email: user.email,
+      roomId,
+      coordinates: {
+        x: 100,
+        y: 200,
+      }
+    });
+    socket.on('updateUsers', (users) => {
+      
+    });
+
+    return () => {
+      pixi.current = null;
+      socket.close();
+    }
+  }, []);
 
   loader
-    .add('treasureHunter', 'images/treasureHunter.json')
-    .add('background', 'images/background.png')
-    .add('player', 'images/player.png')
+    .add('treasureHunter', '../images/treasureHunter.json')
+    .add('background', '../images/background.png')
+    .add('player', '../images/player.png')
     .load(setup);
 
   function setup() {
@@ -136,6 +164,10 @@ export default function Room() {
     player.play();
     player.x += player.vx;
     player.y += player.vy;
+
+    if (player.vx !== 0 || player.vy !== 0) {
+      socket.emit('changeCoordinates', { x: player.x, y: player.y });
+    }
 
     contain(player, { x: 16, y: 16, width: 800, height: 800 });
 
@@ -346,7 +378,7 @@ export default function Room() {
 
 
   return (
-    <div>
+    <div ref={pixi}>
     </div>
   )
 }
