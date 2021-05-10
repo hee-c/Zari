@@ -9,17 +9,18 @@ const socket = io(process.env.REACT_APP_SERVER_URL, { transports: ['websocket'] 
 
 export default function Room() {
   let Application = PIXI.Application,
-    Container = PIXI.Container,
-    loader = PIXI.Loader.shared,
-    resources = loader.resources,
-    TextureCache = PIXI.utils.TextureCache,
-    Sprite = PIXI.Sprite,
-    Rectangle = PIXI.Rectangle,
-    left = keyboard(37),
-    up = keyboard(38),
-    right = keyboard(39),
-    down = keyboard(40);
-  let state, treasure, blobs, background, door, player, otherPlayer;
+      Container = PIXI.Container,
+      loader = PIXI.Loader.shared,
+      resources = loader.resources,
+      TextureCache = PIXI.utils.TextureCache,
+      Sprite = PIXI.Sprite,
+      Rectangle = PIXI.Rectangle,
+      left = keyboard(37),
+      up = keyboard(38),
+      right = keyboard(39),
+      down = keyboard(40);
+  let state, treasure, background, door, player, otherPlayer;
+  const otherPlayerSprite = new Map();
   const movementSpeed = 2;
   const playerSheet = {};
   const pixi = useRef();
@@ -44,12 +45,18 @@ export default function Room() {
       roomId,
       coordinates: {
         x: 100,
-        y: 200,
+        y: app.stage.height / 2,
       }
     });
-    socket.on('updateUsers', (users) => {
-      
+    socket.on('updateUsers', (players) => {
+      console.log('updateUsers')
+      console.log(players)
+      otherPlayer = players.filter(player => player.email !== user.email);
     });
+    socket.on('userLeave', (leftUser) => {
+      app.stage.removeChild(otherPlayerSprite.get(leftUser.email));
+      otherPlayerSprite.delete(leftUser.email);
+    })
 
     return () => {
       pixi.current = null;
@@ -78,25 +85,6 @@ export default function Room() {
     door = new Sprite(TextureCache['door.png']);
     door.position.set(32, 0);
     app.stage.addChild(door);
-
-    let numberOfBlobs = 6,
-      spacing = 48,
-      xOffset = 150;
-
-    blobs = [];
-
-    for (let i = 0; i < numberOfBlobs; i++) {
-      let blob = new Sprite(TextureCache['blob.png']);
-
-      let x = spacing * i + xOffset;
-      let y = _.random(0, app.stage.height - blob.height);
-      blob.x = x;
-      blob.y = y;
-
-      blobs.push(blob);
-
-      app.stage.addChild(blob);
-    }
 
     left.press = () => {
       player.play();
@@ -169,10 +157,29 @@ export default function Room() {
       socket.emit('changeCoordinates', { x: player.x, y: player.y });
     }
 
+    for (let i = 0; i < otherPlayer.length; i++) {
+      if (otherPlayerSprite.has(otherPlayer[i].email)) {
+        let currentOther = otherPlayerSprite.get(otherPlayer[i].email);
+        currentOther.x = otherPlayer[i].coordinates.x;
+        currentOther.y = otherPlayer[i].coordinates.y;
+      } else {
+        let other = new Sprite(TextureCache['explorer.png']);
+        let x = otherPlayer[i].coordinates.x;
+        let y = otherPlayer[i].coordinates.y;
+        other.anchor.set(0.5, 0.5);
+        other.x = x;
+        other.y = y;
+
+        otherPlayerSprite.set(otherPlayer[i].email, other);
+
+        app.stage.addChild(other);
+      }
+    }
+
     contain(player, { x: 16, y: 16, width: 800, height: 800 });
 
-    blobs.forEach(blob => {
-      if (collisionDetection(player, blob)) {
+    otherPlayerSprite.forEach(other => {
+      if (collisionDetection(player, other)) {
         console.log('비켜')
       }
     });
