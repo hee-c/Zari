@@ -6,6 +6,8 @@ import Peer from 'simple-peer';
 import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 
+import Player from '../../pixi/Player';
+
 export default function Room() {
   let Application = PIXI.Application,
       Container = PIXI.Container,
@@ -18,10 +20,9 @@ export default function Room() {
       up = keyboard(38),
       right = keyboard(39),
       down = keyboard(40);
-  let state, treasure, background, door, player, otherPlayer;
-  const otherPlayerSprite = new Map();
+  let state, treasure, background, door, player, otherPlayers;
+  const otherPlayersSprite = new Map();
   const movementSpeed = 2;
-  const playerSheet = {};
   const pixi = useRef();
   const socket = useRef();
   const { roomId } = useParams();
@@ -49,14 +50,12 @@ export default function Room() {
         y: app.stage.height / 2,
       }
     });
-    socket.current.on('updateUsers', (players) => {
-      console.log('updateUsers')
-      console.log(players)
-      otherPlayer = players.filter(player => player.email !== user.email);
+    socket.current.on('updateUsers', (users) => {
+      otherPlayers = users.filter(otherPlayer => otherPlayer.email !== user.email);
     });
     socket.current.on('userLeave', (leftUser) => {
-      app.stage.removeChild(otherPlayerSprite.get(leftUser.email));
-      otherPlayerSprite.delete(leftUser.email);
+      app.stage.removeChild(otherPlayersSprite.get(leftUser.email));
+      otherPlayersSprite.delete(leftUser.email);
     });
 
     return () => {
@@ -66,77 +65,72 @@ export default function Room() {
   }, []);
 
   loader
-    .add('treasureHunter', '../images/treasureHunter.json')
     .add('background', '../images/background.png')
-    .add('player', '../images/player.png')
+    .add('player', '../images/graduation.png')
+    .add('bald', '../images/bald.png')
+    .add('braided', '../images/braided.png')
+    .add('business', '../images/business.png')
+    .add('casual', '../images/casual.png')
+    .add('dress', '../images/dress.png')
+    .add('graduation', '../images/graduation.png')
+    .add('grandfather', '../images/grandfather.png')
+    .add('grandmother', '../images/grandmother.png')
+    .add('staff', '../images/staff.png')
+    .add('yangachi', '../images/yangachi.png')
     .load(setup);
 
   function setup() {
     background = new Sprite(TextureCache['background']);
     app.stage.addChild(background);
 
-    createPlayerSheet();
-    createPlayer();
-
-    treasure = new Sprite(TextureCache['treasure.png']);
-    treasure.x = app.stage.width - treasure.width - 48;
-    treasure.y = app.stage.height / 2 - treasure.height / 2;
-    app.stage.addChild(treasure);
-
-    door = new Sprite(TextureCache['door.png']);
-    door.position.set(32, 0);
-    app.stage.addChild(door);
+    player = new Player('dress', 200, 200);
+    app.stage.addChild(player.sprite);
 
     left.press = () => {
-      player.play();
-      player.textures = playerSheet.walkWest;
-      player.vx = -movementSpeed;
-      player.vy = 0;
+      player.sprite.textures = player.playerSheet.walkWest;
+      player.sprite.vx = -movementSpeed;
+      player.sprite.vy = 0;
     };
-
     left.release = () => {
-      if (!right.isDown && player.vy === 0) {
-        player.textures = playerSheet.standWest;
-        player.vx = 0;
+      if (!right.isDown && player.sprite.vy === 0) {
+        player.sprite.textures = player.playerSheet.standWest;
+        player.sprite.vx = 0;
       }
     };
 
     up.press = () => {
-      player.play();
-      player.textures = playerSheet.walkNorth;
-      player.vy = -movementSpeed;
-      player.vx = 0;
+      player.sprite.textures = player.playerSheet.walkNorth;
+      player.sprite.vy = -movementSpeed;
+      player.sprite.vx = 0;
     };
     up.release = () => {
-      if (!down.isDown && player.vx === 0) {
-        player.textures = playerSheet.standNorth;
-        player.vy = 0;
+      if (!down.isDown && player.sprite.vx === 0) {
+        player.sprite.textures = player.playerSheet.standNorth;
+        player.sprite.vy = 0;
       }
     };
 
     right.press = () => {
-      player.play();
-      player.textures = playerSheet.walkEast;
-      player.vx = movementSpeed;
-      player.vy = 0;
+      player.sprite.textures = player.playerSheet.walkEast;
+      player.sprite.vx = movementSpeed;
+      player.sprite.vy = 0;
     };
     right.release = () => {
-      if (!left.isDown && player.vy === 0) {
-        player.textures = playerSheet.standEast;
-        player.vx = 0;
+      if (!left.isDown && player.sprite.vy === 0) {
+        player.sprite.textures = player.playerSheet.standEast;
+        player.sprite.vx = 0;
       }
     };
 
     down.press = () => {
-      player.play();
-      player.textures = playerSheet.walkSouth;
-      player.vy = movementSpeed;
-      player.vx = 0;
+      player.sprite.textures = player.playerSheet.walkSouth;
+      player.sprite.vy = movementSpeed;
+      player.sprite.vx = 0;
     };
     down.release = () => {
-      if (!up.isDown && player.vx === 0) {
-        player.textures = playerSheet.standSouth;
-        player.vy = 0;
+      if (!up.isDown && player.sprite.vx === 0) {
+        player.sprite.textures = player.playerSheet.standSouth;
+        player.sprite.vy = 0;
       }
     };
 
@@ -150,28 +144,27 @@ export default function Room() {
   }
 
   function play(delta) {
-    player.play();
-    player.x += player.vx;
-    player.y += player.vy;
+    player.sprite.x += player.sprite.vx;
+    player.sprite.y += player.sprite.vy;
 
-    if (player.vx !== 0 || player.vy !== 0) {
-      socket.current.emit('changeCoordinates', { x: player.x, y: player.y });
+    if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
+      socket.current.emit('changeCoordinates', { x: player.sprite.x, y: player.sprite.y });
     }
 
-    for (let i = 0; i < otherPlayer.length; i++) {
-      if (otherPlayerSprite.has(otherPlayer[i].email)) {
-        let currentOther = otherPlayerSprite.get(otherPlayer[i].email);
-        currentOther.x = otherPlayer[i].coordinates.x;
-        currentOther.y = otherPlayer[i].coordinates.y;
+    for (let i = 0; i < otherPlayers.length; i++) {
+      if (otherPlayersSprite.has(otherPlayers[i].email)) {
+        let currentOther = otherPlayersSprite.get(otherPlayers[i].email);
+        currentOther.x = otherPlayers[i].coordinates.x;
+        currentOther.y = otherPlayers[i].coordinates.y;
       } else {
         let other = new Sprite(TextureCache['explorer.png']);
-        let x = otherPlayer[i].coordinates.x;
-        let y = otherPlayer[i].coordinates.y;
+        let x = otherPlayers[i].coordinates.x;
+        let y = otherPlayers[i].coordinates.y;
         other.anchor.set(0.5, 0.5);
         other.x = x;
         other.y = y;
 
-        otherPlayerSprite.set(otherPlayer[i].email, other);
+        otherPlayersSprite.set(otherPlayers[i].email, other);
 
         app.stage.addChild(other);
       }
@@ -179,34 +172,11 @@ export default function Room() {
 
     contain(player, { x: 16, y: 16, width: 800, height: 800 });
 
-    otherPlayerSprite.forEach(other => {
+    otherPlayersSprite.forEach(other => {
       if (collisionDetection(player, other)) {
         console.log('비켜')
       }
     });
-
-    if (hitTestRectangle(player, treasure)) {
-      treasure.x = player.x + 8;
-      treasure.y = player.y + 8;
-    }
-
-    if (hitTestRectangle(player, door)) {
-      window.alert('end game');
-    }
-  }
-
-  function createPlayer() {
-    player = new PIXI.AnimatedSprite(playerSheet.walkSouth);
-
-    player.animationSpeed = 0.2;
-    player.anchor.set(0.5, 0.5);
-    player.loop = false;
-    player.x = 100;
-    player.y = app.stage.height / 2 - player.height / 2;
-    player.vx = 0;
-    player.vy = 0;
-    app.stage.addChild(player);
-    player.play();
   }
 
   function keyboard(keyCode) {
@@ -218,6 +188,7 @@ export default function Room() {
     key.release = undefined;
 
     key.downHandler = event => {
+      player.sprite.play();
       if (event.keyCode === key.code) {
         if (key.isUp && key.press) key.press();
         key.isDown = true;
@@ -340,50 +311,6 @@ export default function Room() {
 
     return hit;
   };
-
-  function createPlayerSheet() {
-    let sheet = new PIXI.BaseTexture.from(resources['player'].url);
-    let w = 16;
-    let h = 16;
-
-    playerSheet['standSouth'] = [
-      new PIXI.Texture(sheet, new PIXI.Rectangle(0, 0 * h, w, h))
-    ];
-    playerSheet['standNorth'] = [
-      new PIXI.Texture(sheet, new PIXI.Rectangle(0, 1 * h, w, h))
-    ];
-    playerSheet['standEast'] = [
-      new PIXI.Texture(sheet, new PIXI.Rectangle(0, 2 * h, w, h))
-    ];
-    playerSheet['standWest'] = [
-      new PIXI.Texture(sheet, new PIXI.Rectangle(0, 3 * h, w, h))
-    ];
-    playerSheet['walkSouth'] = [
-      new PIXI.Texture(sheet, new PIXI.Rectangle(0 * w, 0 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(1 * w, 0 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(2 * w, 0 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(3 * w, 0 * h, w, h))
-    ];
-    playerSheet['walkNorth'] = [
-      new PIXI.Texture(sheet, new PIXI.Rectangle(0 * w, 1 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(1 * w, 1 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(2 * w, 1 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(3 * w, 1 * h, w, h))
-    ];
-    playerSheet['walkEast'] = [
-      new PIXI.Texture(sheet, new PIXI.Rectangle(0 * w, 2 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(1 * w, 2 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(2 * w, 2 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(3 * w, 2 * h, w, h))
-    ];
-    playerSheet['walkWest'] = [
-      new PIXI.Texture(sheet, new PIXI.Rectangle(0 * w, 3 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(1 * w, 3 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(2 * w, 3 * h, w, h)),
-      new PIXI.Texture(sheet, new PIXI.Rectangle(3 * w, 3 * h, w, h))
-    ];
-  }
-
 
   return (
     <div ref={pixi}>
