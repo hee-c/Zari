@@ -7,6 +7,7 @@ import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 
 import Player from '../../pixi/Player';
+import { imageLoader } from '../../pixi';
 
 export default function Room() {
   let Application = PIXI.Application,
@@ -20,9 +21,9 @@ export default function Room() {
       up = keyboard(38),
       right = keyboard(39),
       down = keyboard(40);
-  let state, treasure, background, door, player, otherPlayers;
+  let state, background, player, otherPlayers;
   const otherPlayersSprite = new Map();
-  const movementSpeed = 2;
+  const movementSpeed = 10;
   const pixi = useRef();
   const socket = useRef();
   const { roomId } = useParams();
@@ -64,20 +65,7 @@ export default function Room() {
     }
   }, []);
 
-  loader
-    .add('background', '../images/background.png')
-    .add('player', '../images/graduation.png')
-    .add('bald', '../images/bald.png')
-    .add('braided', '../images/braided.png')
-    .add('business', '../images/business.png')
-    .add('casual', '../images/casual.png')
-    .add('dress', '../images/dress.png')
-    .add('graduation', '../images/graduation.png')
-    .add('grandfather', '../images/grandfather.png')
-    .add('grandmother', '../images/grandmother.png')
-    .add('staff', '../images/staff.png')
-    .add('yangachi', '../images/yangachi.png')
-    .load(setup);
+  imageLoader(setup);
 
   function setup() {
     background = new Sprite(TextureCache['background']);
@@ -170,7 +158,7 @@ export default function Room() {
       }
     }
 
-    contain(player, { x: 16, y: 16, width: 800, height: 800 });
+    contain(player.sprite, { x: 16, y: 16, width: 800, height: 800 });
 
     otherPlayersSprite.forEach(other => {
       if (collisionDetection(player, other)) {
@@ -216,8 +204,8 @@ export default function Room() {
   }
 
   function contain(sprite, container) {
-
     let collision = undefined;
+
     if (sprite.x < container.x) {
       sprite.x = container.x;
       collision = "left";
@@ -277,40 +265,6 @@ export default function Room() {
 
     return hit;
   }
-
-  function hitTestRectangle(r1, r2) {
-    let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
-
-    hit = false;
-
-    r1.centerX = r1.x + r1.width / 2;
-    r1.centerY = r1.y + r1.height / 2;
-    r2.centerX = r2.x + r2.width / 2;
-    r2.centerY = r2.y + r2.height / 2;
-
-    r1.halfWidth = r1.width / 2;
-    r1.halfHeight = r1.height / 2;
-    r2.halfWidth = r2.width / 2;
-    r2.halfHeight = r2.height / 2;
-
-    vx = r1.centerX - r2.centerX;
-    vy = r1.centerY - r2.centerY;
-
-    combinedHalfWidths = r1.halfWidth + r2.halfWidth;
-    combinedHalfHeights = r1.halfHeight + r2.halfHeight;
-
-    if (Math.abs(vx) < combinedHalfWidths) {
-      if (Math.abs(vy) < combinedHalfHeights) {
-        hit = true;
-      } else {
-        hit = false;
-      }
-    } else {
-      hit = false;
-    }
-
-    return hit;
-  };
 
   return (
     <div ref={pixi}>
