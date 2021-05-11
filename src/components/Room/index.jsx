@@ -7,7 +7,7 @@ import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 
 import Player from '../../pixi/Player';
-import { imageLoader } from '../../pixi';
+import { imageLoader, contain } from '../../pixi';
 
 export default function Room() {
   let Application = PIXI.Application,
@@ -16,14 +16,9 @@ export default function Room() {
       resources = loader.resources,
       TextureCache = PIXI.utils.TextureCache,
       Sprite = PIXI.Sprite,
-      Rectangle = PIXI.Rectangle,
-      left = keyboard(37),
-      up = keyboard(38),
-      right = keyboard(39),
-      down = keyboard(40);
+      Rectangle = PIXI.Rectangle;
   let state, background, player, otherPlayers;
   const otherPlayersSprite = new Map();
-  const movementSpeed = 10;
   const pixi = useRef();
   const socket = useRef();
   const { roomId } = useParams();
@@ -71,56 +66,11 @@ export default function Room() {
     background = new Sprite(TextureCache['background']);
     app.stage.addChild(background);
 
-    player = new Player('dress', 200, 200);
+    player = new Player('dress', 200, 200, 2);
     app.stage.addChild(player.sprite);
 
-    left.press = () => {
-      player.sprite.textures = player.playerSheet.walkWest;
-      player.sprite.vx = -movementSpeed;
-      player.sprite.vy = 0;
-    };
-    left.release = () => {
-      if (!right.isDown && player.sprite.vy === 0) {
-        player.sprite.textures = player.playerSheet.standWest;
-        player.sprite.vx = 0;
-      }
-    };
-
-    up.press = () => {
-      player.sprite.textures = player.playerSheet.walkNorth;
-      player.sprite.vy = -movementSpeed;
-      player.sprite.vx = 0;
-    };
-    up.release = () => {
-      if (!down.isDown && player.sprite.vx === 0) {
-        player.sprite.textures = player.playerSheet.standNorth;
-        player.sprite.vy = 0;
-      }
-    };
-
-    right.press = () => {
-      player.sprite.textures = player.playerSheet.walkEast;
-      player.sprite.vx = movementSpeed;
-      player.sprite.vy = 0;
-    };
-    right.release = () => {
-      if (!left.isDown && player.sprite.vy === 0) {
-        player.sprite.textures = player.playerSheet.standEast;
-        player.sprite.vx = 0;
-      }
-    };
-
-    down.press = () => {
-      player.sprite.textures = player.playerSheet.walkSouth;
-      player.sprite.vy = movementSpeed;
-      player.sprite.vx = 0;
-    };
-    down.release = () => {
-      if (!up.isDown && player.sprite.vx === 0) {
-        player.sprite.textures = player.playerSheet.standSouth;
-        player.sprite.vy = 0;
-      }
-    };
+    window.addEventListener("keydown", player.keyDownController.bind(player));
+    window.addEventListener("keyup", player.keyUpController.bind(player));
 
     state = play;
 
@@ -132,6 +82,7 @@ export default function Room() {
   }
 
   function play(delta) {
+    player.sprite.play();
     player.sprite.x += player.sprite.vx;
     player.sprite.y += player.sprite.vy;
 
@@ -142,12 +93,14 @@ export default function Room() {
     for (let i = 0; i < otherPlayers.length; i++) {
       if (otherPlayersSprite.has(otherPlayers[i].email)) {
         let currentOther = otherPlayersSprite.get(otherPlayers[i].email);
+
         currentOther.x = otherPlayers[i].coordinates.x;
         currentOther.y = otherPlayers[i].coordinates.y;
       } else {
         let other = new Sprite(TextureCache['explorer.png']);
         let x = otherPlayers[i].coordinates.x;
         let y = otherPlayers[i].coordinates.y;
+
         other.anchor.set(0.5, 0.5);
         other.x = x;
         other.y = y;
@@ -161,100 +114,38 @@ export default function Room() {
     contain(player.sprite, { x: 16, y: 16, width: 800, height: 800 });
 
     otherPlayersSprite.forEach(other => {
-      if (collisionDetection(player, other)) {
+      if (collisionDetection(player.sprite, other)) {
         console.log('비켜')
       }
     });
   }
 
-  function keyboard(keyCode) {
-    var key = {};
-    key.code = keyCode;
-    key.isDown = false;
-    key.isUp = true;
-    key.press = undefined;
-    key.release = undefined;
-
-    key.downHandler = event => {
-      player.sprite.play();
-      if (event.keyCode === key.code) {
-        if (key.isUp && key.press) key.press();
-        key.isDown = true;
-        key.isUp = false;
-      }
-      event.preventDefault();
-    };
-
-    key.upHandler = event => {
-      if (event.keyCode === key.code) {
-        if (key.isDown && key.release) key.release();
-        key.isDown = false;
-        key.isUp = true;
-      }
-      event.preventDefault();
-    };
-
-    window.addEventListener(
-      "keydown", key.downHandler.bind(key), false
-    );
-    window.addEventListener(
-      "keyup", key.upHandler.bind(key), false
-    );
-    return key;
-  }
-
-  function contain(sprite, container) {
-    let collision = undefined;
-
-    if (sprite.x < container.x) {
-      sprite.x = container.x;
-      collision = "left";
-    }
-
-    if (sprite.y < container.y) {
-      sprite.y = container.y;
-      collision = "top";
-    }
-
-    if (sprite.x + sprite.width > container.width) {
-      sprite.x = container.width - sprite.width;
-      collision = "right";
-    }
-
-    if (sprite.y + sprite.height > container.height) {
-      sprite.y = container.height - sprite.height;
-      collision = "bottom";
-    }
-
-    return collision;
-  }
-
-  function collisionDetection(r1, r2) {
+  function collisionDetection(player, object) {
     let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
 
-    r1.centerX = r1.x + r1.width / 2;
-    r1.centerY = r1.y + r1.height / 2;
-    r2.centerX = r2.x + r2.width / 2;
-    r2.centerY = r2.y + r2.height / 2;
+    player.centerX = player.x + player.width / 2;
+    player.centerY = player.y + player.height / 2;
+    object.centerX = object.x + object.width / 2;
+    object.centerY = object.y + object.height / 2;
 
-    r1.halfWidth = r1.width / 2;
-    r1.halfHeight = r1.height / 2;
-    r2.halfWidth = r2.width / 2;
-    r2.halfHeight = r2.height / 2;
+    player.halfWidth = player.width / 2;
+    player.halfHeight = player.height / 2;
+    object.halfWidth = object.width / 2;
+    object.halfHeight = object.height / 2;
 
-    vx = r1.centerX - r2.centerX;
-    vy = r1.centerY - r2.centerY;
+    vx = player.centerX - object.centerX;
+    vy = player.centerY - object.centerY;
 
-    combinedHalfWidths = r1.halfWidth + r2.halfWidth;
-    combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+    combinedHalfWidths = player.halfWidth + object.halfWidth;
+    combinedHalfHeights = player.halfHeight + object.halfHeight;
 
     if (Math.abs(vx) < combinedHalfWidths) {
       if (Math.abs(vy) < combinedHalfHeights) {
-        if (down.isDown || up.isDown) {
-          r1.y -= r1.vy;
+        if (player.down.isDown || player.up.isDown) {
+          player.y -= player.vy;
         }
-        if (left.isDown || right.isDown) {
-          r1.x -= r1.vx;
+        if (player.left.isDown || player.right.isDown) {
+          player.x -= player.vx;
         }
       } else {
         hit = false;
