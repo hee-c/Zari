@@ -2,10 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 import io from 'socket.io-client';
+import Peer from 'simple-peer';
 import * as PIXI from 'pixi.js';
 import _ from 'lodash';
-
-const socket = io(process.env.REACT_APP_SERVER_URL, { transports: ['websocket'] });
 
 export default function Room() {
   let Application = PIXI.Application,
@@ -24,6 +23,7 @@ export default function Room() {
   const movementSpeed = 2;
   const playerSheet = {};
   const pixi = useRef();
+  const socket = useRef();
   const { roomId } = useParams();
   const user = useSelector(state => state.user.data);
 
@@ -37,9 +37,10 @@ export default function Room() {
 
   useEffect(() => {
     pixi.current.appendChild(app.view);
+    socket.current = io(process.env.REACT_APP_SERVER_URL, { transports: ['websocket'] });
 
-    socket.open();
-    socket.emit('joinRoom', {
+    socket.current.open();
+    socket.current.emit('joinRoom', {
       name: user.name,
       email: user.email,
       roomId,
@@ -48,19 +49,19 @@ export default function Room() {
         y: app.stage.height / 2,
       }
     });
-    socket.on('updateUsers', (players) => {
+    socket.current.on('updateUsers', (players) => {
       console.log('updateUsers')
       console.log(players)
       otherPlayer = players.filter(player => player.email !== user.email);
     });
-    socket.on('userLeave', (leftUser) => {
+    socket.current.on('userLeave', (leftUser) => {
       app.stage.removeChild(otherPlayerSprite.get(leftUser.email));
       otherPlayerSprite.delete(leftUser.email);
-    })
+    });
 
     return () => {
       pixi.current = null;
-      socket.close();
+      socket.current.close();
     }
   }, []);
 
@@ -154,7 +155,7 @@ export default function Room() {
     player.y += player.vy;
 
     if (player.vx !== 0 || player.vy !== 0) {
-      socket.emit('changeCoordinates', { x: player.x, y: player.y });
+      socket.current.emit('changeCoordinates', { x: player.x, y: player.y });
     }
 
     for (let i = 0; i < otherPlayer.length; i++) {
