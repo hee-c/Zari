@@ -7,7 +7,7 @@ import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 
 import Player from '../../pixi/Player';
-import { imageLoader, contain } from '../../pixi';
+import { imageLoader, contain, collisionDetection } from '../../pixi';
 
 export default function Room() {
   let Application = PIXI.Application,
@@ -17,7 +17,8 @@ export default function Room() {
       TextureCache = PIXI.utils.TextureCache,
       Sprite = PIXI.Sprite,
       Rectangle = PIXI.Rectangle;
-  let state, background, player, otherPlayers;
+  let background, player, otherPlayers;
+  let state = play;
   const otherPlayersSprite = new Map();
   const pixi = useRef();
   const socket = useRef();
@@ -64,15 +65,13 @@ export default function Room() {
 
   function setup() {
     background = new Sprite(TextureCache['background']);
-    app.stage.addChild(background);
+    player = new Player(user.character, 200, 200, 2);
 
-    player = new Player('dress', 200, 200, 2);
+    app.stage.addChild(background);
     app.stage.addChild(player.sprite);
 
     window.addEventListener("keydown", player.keyDownController.bind(player));
     window.addEventListener("keyup", player.keyUpController.bind(player));
-
-    state = play;
 
     app.ticker.add(delta => gameLoop(delta));
   }
@@ -97,7 +96,7 @@ export default function Room() {
         currentOther.x = otherPlayers[i].coordinates.x;
         currentOther.y = otherPlayers[i].coordinates.y;
       } else {
-        let other = new Sprite(TextureCache['explorer.png']);
+        let other = new Sprite(TextureCache['yangachi']);
         let x = otherPlayers[i].coordinates.x;
         let y = otherPlayers[i].coordinates.y;
 
@@ -114,47 +113,10 @@ export default function Room() {
     contain(player.sprite, { x: 16, y: 16, width: 800, height: 800 });
 
     otherPlayersSprite.forEach(other => {
-      if (collisionDetection(player.sprite, other)) {
+      if (collisionDetection(player, other)) {
         console.log('비켜')
       }
     });
-  }
-
-  function collisionDetection(player, object) {
-    let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
-
-    player.centerX = player.x + player.width / 2;
-    player.centerY = player.y + player.height / 2;
-    object.centerX = object.x + object.width / 2;
-    object.centerY = object.y + object.height / 2;
-
-    player.halfWidth = player.width / 2;
-    player.halfHeight = player.height / 2;
-    object.halfWidth = object.width / 2;
-    object.halfHeight = object.height / 2;
-
-    vx = player.centerX - object.centerX;
-    vy = player.centerY - object.centerY;
-
-    combinedHalfWidths = player.halfWidth + object.halfWidth;
-    combinedHalfHeights = player.halfHeight + object.halfHeight;
-
-    if (Math.abs(vx) < combinedHalfWidths) {
-      if (Math.abs(vy) < combinedHalfHeights) {
-        if (player.down.isDown || player.up.isDown) {
-          player.y -= player.vy;
-        }
-        if (player.left.isDown || player.right.isDown) {
-          player.x -= player.vx;
-        }
-      } else {
-        hit = false;
-      }
-    } else {
-      hit = false;
-    }
-
-    return hit;
   }
 
   return (
