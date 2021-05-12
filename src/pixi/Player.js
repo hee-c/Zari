@@ -70,7 +70,8 @@ export default class Player {
     this.height = h;
     this.movementSpeed = 2;
     this.sprite.direction = 'south';
-    this.sprite.isStand = true;
+    this.sprite.isStanding = true;
+    this.sprite.collision = false;
   }
 
   keyDownController(event) {

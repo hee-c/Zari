@@ -112,20 +112,20 @@ export default function Room() {
         let onlineUser = onlineUserSprites.get(onlineUsers[i].email);
         onlineUser.sprite.play();
 
-        if (onlineUsers[i].coordinates.vx > 0 && onlineUser.sprite.isStand) {
+        if (onlineUsers[i].coordinates.vx > 0 && onlineUser.sprite.isStanding) {
           onlineUser.sprite.textures = onlineUser.playerSheet.walkEast;
-          onlineUser.sprite.isStand = false;
-        } else if (onlineUsers[i].coordinates.vx < 0 && onlineUser.sprite.isStand) {
+          onlineUser.sprite.isStanding = false;
+        } else if (onlineUsers[i].coordinates.vx < 0 && onlineUser.sprite.isStanding) {
           onlineUser.sprite.textures = onlineUser.playerSheet.walkWest;
-          onlineUser.sprite.isStand = false;
-        } else if (onlineUsers[i].coordinates.vy > 0 && onlineUser.sprite.isStand) {
+          onlineUser.sprite.isStanding = false;
+        } else if (onlineUsers[i].coordinates.vy > 0 && onlineUser.sprite.isStanding) {
           onlineUser.sprite.textures = onlineUser.playerSheet.walkSouth;
-          onlineUser.sprite.isStand = false;
-        } else if (onlineUsers[i].coordinates.vy < 0 && onlineUser.sprite.isStand) {
+          onlineUser.sprite.isStanding = false;
+        } else if (onlineUsers[i].coordinates.vy < 0 && onlineUser.sprite.isStanding) {
           onlineUser.sprite.textures = onlineUser.playerSheet.walkNorth;
-          onlineUser.sprite.isStand = false;
+          onlineUser.sprite.isStanding = false;
         } else {
-          onlineUser.sprite.isStand = true;
+          onlineUser.sprite.isStanding = true;
 
           switch (onlineUser.sprite.direction) {
             case 'left': {
@@ -162,9 +162,7 @@ export default function Room() {
     contain(player.sprite, { x: 16, y: 16, width: 800, height: 800 });
 
     onlineUserSprites.forEach(onlineUser => {
-      if (collisionDetection(player, onlineUser)) {
-        console.log('비켜')
-      }
+      collisionDetection(player, onlineUser.sprite)
     });
   }
 
