@@ -2,13 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 import styled from 'styled-components';
-import io from 'socket.io-client';
 import * as PIXI from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
 import _ from 'lodash';
 
 import Player from '../../pixi/Player';
 import { contain, collisionDetection } from '../../pixi';
+import { socket, socketApi } from '../../utils/socket';
 
 const CanvasContainer = styled.div`
   display: flex;
@@ -23,18 +23,17 @@ const CanvasContainer = styled.div`
 
 export default function RoomCanvas() {
   const canvas = useRef();
-  const socket = useRef();
   const { roomId } = useParams();
   const user = useSelector(state => state.user.data);
-  const Application = PIXI.Application,
-        Container = PIXI.Container,
+  const Container = PIXI.Container,
         loader = PIXI.Loader.shared,
         resources = loader.resources,
         TextureCache = PIXI.utils.TextureCache,
         Sprite = PIXI.Sprite,
         Ticker = PIXI.Ticker.shared,
+        Graphics = PIXI.Graphics,
         Rectangle = PIXI.Rectangle;
-  let background, player, renderer, viewport;
+  let background, player, renderer, viewport, zari;
   let state = play;
   let onlineUsers = [];
   const initialRandomPositionX = _.random(50, 1000);
@@ -54,10 +53,8 @@ export default function RoomCanvas() {
   useEffect(() => {
     canvas.current.appendChild(renderer.view);
 
-    socket.current = io(process.env.REACT_APP_SERVER_URL, { transports: ['websocket'] });
-
-    socket.current.open();
-    socket.current.emit('joinRoom', {
+    socket.open();
+    socketApi.joinRoom({
       name: user.name,
       email: user.email,
       character: user.character,
@@ -69,12 +66,12 @@ export default function RoomCanvas() {
         vy: 0,
       },
     });
-    socket.current.on('updateUsers', (currentUsers) => {
+    socket.on('updateUsers', (currentUsers) => {
       onlineUsers = currentUsers.filter(currentUser => currentUser.email !== user.email);
       renderer.render(viewport);
       viewport.dirty = false;
     });
-    socket.current.on('userLeave', (leftUser) => {
+    socket.on('userLeave', (leftUser) => {
       viewport.removeChild(onlineUserSprites.get(leftUser.email).sprite);
       onlineUserSprites.delete(leftUser.email);
       renderer.render(viewport);
@@ -83,7 +80,7 @@ export default function RoomCanvas() {
 
     return () => {
       canvas.current = null;
-      socket.current.close();
+      socket.close();
     }
   }, []);
 
@@ -98,7 +95,15 @@ export default function RoomCanvas() {
       ticker: Ticker,
     });
 
+    background = new Sprite(TextureCache['background2']);
     player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
+    zari = new Graphics();
+    zari.lineStyle(4, 0xFF3300, 1);
+    zari.beginFill(0x66CCFF);
+    zari.drawRect(0, 0, 200, 200);
+    zari.endFill();
+    zari.x = 170;
+    zari.y = 700;
 
     viewport.follow(player.sprite, {
       speed: 0,
@@ -106,8 +111,8 @@ export default function RoomCanvas() {
       radius: null,
     });
 
-    background = new Sprite(TextureCache['background2']);
     viewport.addChild(background);
+    viewport.addChild(zari);
     viewport.addChild(player.sprite);
     viewport.fit();
     viewport.moveCenter(canvasWidth / 2, canvasHeight / 2);
@@ -145,14 +150,14 @@ export default function RoomCanvas() {
     });
 
     if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
-      socket.current.emit('changeCoordinates', {
+      socketApi.changeCoordinates({
         x: player.sprite.x,
         y: player.sprite.y,
         vx: player.sprite.vx,
         vy: player.sprite.vy,
       });
     } else if (player.left.isUp && player.up.isUp && player.right.isUp && player.down.isUp && player.sprite.prevAction === 'moving') {
-      socket.current.emit('changeCoordinates', {
+      socketApi.changeCoordinates({
         x: player.sprite.x,
         y: player.sprite.y,
         vx: player.sprite.vx,
@@ -164,7 +169,7 @@ export default function RoomCanvas() {
 
     for (let i = 0; i < onlineUsers.length; i++) {
       if (onlineUserSprites.has(onlineUsers[i].email)) {
-        let onlineUser = onlineUserSprites.get(onlineUsers[i].email);
+        const onlineUser = onlineUserSprites.get(onlineUsers[i].email);
         onlineUser.sprite.play();
 
         if (onlineUsers[i].coordinates.vx > 0 && onlineUser.sprite.isStanding) {
@@ -206,7 +211,7 @@ export default function RoomCanvas() {
         onlineUser.sprite.x = onlineUsers[i].coordinates.x + onlineUsers[i].coordinates.vx;
         onlineUser.sprite.y = onlineUsers[i].coordinates.y + onlineUsers[i].coordinates.vy;
       } else {
-        let onlineUser = new Player(onlineUsers[i].character, onlineUsers[i].coordinates.x, onlineUsers[i].coordinates.y);
+        const onlineUser = new Player(onlineUsers[i].character, onlineUsers[i].coordinates.x, onlineUsers[i].coordinates.y);
         onlineUser.sprite.loop = false;
         onlineUserSprites.set(onlineUsers[i].email, onlineUser);
 
