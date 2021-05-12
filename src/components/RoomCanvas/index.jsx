@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux'
+import styled from 'styled-components';
 import io from 'socket.io-client';
 import Peer from 'simple-peer';
 import * as PIXI from 'pixi.js';
@@ -9,35 +10,50 @@ import _ from 'lodash';
 import Player from '../../pixi/Player';
 import { imageLoader, contain, collisionDetection } from '../../pixi';
 
-export default function Room() {
-  let Application = PIXI.Application,
-      Container = PIXI.Container,
-      loader = PIXI.Loader.shared,
-      resources = loader.resources,
-      TextureCache = PIXI.utils.TextureCache,
-      Sprite = PIXI.Sprite,
-      Rectangle = PIXI.Rectangle;
-  let background, player;
-  let state = play;
-  let onlineUsers = [];
-  const initialRandomPositionX = _.random(50, 600);
-  const initialRandomPositionY = _.random(50, 600);
-  const onlineUserSprites = new Map();
-  const pixi = useRef();
+const CanvasContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+
+  & > canvas {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+export default function RoomCanvas() {
+  const canvas = useRef();
   const socket = useRef();
   const { roomId } = useParams();
   const user = useSelector(state => state.user.data);
-
+  const Application = PIXI.Application,
+        Container = PIXI.Container,
+        loader = PIXI.Loader.shared,
+        resources = loader.resources,
+        TextureCache = PIXI.utils.TextureCache,
+        Sprite = PIXI.Sprite,
+        Rectangle = PIXI.Rectangle;
+  let background, player;
+  let state = play;
+  let onlineUsers = [];
+  let viewport;
+  const initialRandomPositionX = _.random(50, 600);
+  const initialRandomPositionY = _.random(50, 600);
+  const canvasWidth = 1000;
+  const canvasHeight = 1000;
+  const onlineUserSprites = new Map();
   let app = new Application({
-    width: 800,
-    height: 800,
+    width: canvasWidth,
+    height: canvasHeight,
     antialias: true,
     transparent: false,
     resolution: 1,
   });
 
+
   useEffect(() => {
-    pixi.current.appendChild(app.view);
+    canvas.current.appendChild(app.view);
+    console.log(app.view.parentNode)
     socket.current = io(process.env.REACT_APP_SERVER_URL, { transports: ['websocket'] });
 
     socket.current.open();
@@ -62,12 +78,12 @@ export default function Room() {
     });
 
     return () => {
-      pixi.current = null;
+      canvas.current = null;
       socket.current.close();
     }
   }, []);
 
-  imageLoader(setup);
+  setup();
 
   function setup() {
     background = new Sprite(TextureCache['background']);
@@ -91,7 +107,7 @@ export default function Room() {
     player.sprite.x += player.sprite.vx;
     player.sprite.y += player.sprite.vy;
 
-    contain(player.sprite, { x: 16, y: 16, width: 800, height: 800 });
+    contain(player.sprite, { x: 16, y: 16, width: canvasWidth, height: canvasHeight });
 
     onlineUserSprites.forEach(onlineUser => {
       collisionDetection(player, onlineUser.sprite)
@@ -169,7 +185,7 @@ export default function Room() {
   }
 
   return (
-    <div ref={pixi}>
-    </div>
+    <CanvasContainer ref={canvas}>
+    </CanvasContainer>
   )
 }
