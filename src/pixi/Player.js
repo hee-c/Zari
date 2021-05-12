@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 let resources = PIXI.Loader.shared.resources;
 
 export default class Player {
-  constructor(characterType, x, y, movementSpeed) {
+  constructor(characterType, x, y) {
     this.playerSheet = {};
     this.left = {
       isDown: false,
@@ -68,7 +68,9 @@ export default class Player {
     this.sprite.vy = 0;
     this.width = w;
     this.height = h;
-    this.movementSpeed = movementSpeed;
+    this.movementSpeed = 2;
+    this.sprite.direction = 'south';
+    this.sprite.isStand = true;
   }
 
   keyDownController(event) {

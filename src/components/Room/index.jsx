@@ -17,9 +17,12 @@ export default function Room() {
       TextureCache = PIXI.utils.TextureCache,
       Sprite = PIXI.Sprite,
       Rectangle = PIXI.Rectangle;
-  let background, player, otherPlayers;
+  let background, player;
   let state = play;
-  const otherPlayersSprite = new Map();
+  let onlineUsers = [];
+  const initialRandomPositionX = _.random(50, 600);
+  const initialRandomPositionY = _.random(50, 600);
+  const onlineUserSprites = new Map();
   const pixi = useRef();
   const socket = useRef();
   const { roomId } = useParams();
@@ -41,18 +44,21 @@ export default function Room() {
     socket.current.emit('joinRoom', {
       name: user.name,
       email: user.email,
+      character: user.character,
       roomId,
       coordinates: {
-        x: 100,
-        y: app.stage.height / 2,
+        x: initialRandomPositionX,
+        y: initialRandomPositionY,
+        vx: 0,
+        vy: 0,
       }
     });
-    socket.current.on('updateUsers', (users) => {
-      otherPlayers = users.filter(otherPlayer => otherPlayer.email !== user.email);
+    socket.current.on('updateUsers', (currentUsers) => {
+      onlineUsers = currentUsers.filter(currentUser => currentUser.email !== user.email);
     });
     socket.current.on('userLeave', (leftUser) => {
-      app.stage.removeChild(otherPlayersSprite.get(leftUser.email));
-      otherPlayersSprite.delete(leftUser.email);
+      app.stage.removeChild(onlineUserSprites.get(leftUser.email).sprite);
+      onlineUserSprites.delete(leftUser.email);
     });
 
     return () => {
@@ -65,7 +71,7 @@ export default function Room() {
 
   function setup() {
     background = new Sprite(TextureCache['background']);
-    player = new Player(user.character, 200, 200, 2);
+    player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
 
     app.stage.addChild(background);
     app.stage.addChild(player.sprite);
@@ -86,34 +92,77 @@ export default function Room() {
     player.sprite.y += player.sprite.vy;
 
     if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
-      socket.current.emit('changeCoordinates', { x: player.sprite.x, y: player.sprite.y });
+      socket.current.emit('changeCoordinates', {
+        x: player.sprite.x,
+        y: player.sprite.y,
+        vx: player.sprite.vx,
+        vy: player.sprite.vy,
+      });
+    } else if (player.left.isUp && player.up.isUp && player.right.isUp && player.down.isUp) {
+      socket.current.emit('changeCoordinates', {
+        x: player.sprite.x,
+        y: player.sprite.y,
+        vx: player.sprite.vx,
+        vy: player.sprite.vy,
+      });
     }
 
-    for (let i = 0; i < otherPlayers.length; i++) {
-      if (otherPlayersSprite.has(otherPlayers[i].email)) {
-        let currentOther = otherPlayersSprite.get(otherPlayers[i].email);
+    for (let i = 0; i < onlineUsers.length; i++) {
+      if (onlineUserSprites.has(onlineUsers[i].email)) {
+        let onlineUser = onlineUserSprites.get(onlineUsers[i].email);
+        onlineUser.sprite.play();
 
-        currentOther.x = otherPlayers[i].coordinates.x;
-        currentOther.y = otherPlayers[i].coordinates.y;
+        if (onlineUsers[i].coordinates.vx > 0 && onlineUser.sprite.isStand) {
+          onlineUser.sprite.textures = onlineUser.playerSheet.walkEast;
+          onlineUser.sprite.isStand = false;
+        } else if (onlineUsers[i].coordinates.vx < 0 && onlineUser.sprite.isStand) {
+          onlineUser.sprite.textures = onlineUser.playerSheet.walkWest;
+          onlineUser.sprite.isStand = false;
+        } else if (onlineUsers[i].coordinates.vy > 0 && onlineUser.sprite.isStand) {
+          onlineUser.sprite.textures = onlineUser.playerSheet.walkSouth;
+          onlineUser.sprite.isStand = false;
+        } else if (onlineUsers[i].coordinates.vy < 0 && onlineUser.sprite.isStand) {
+          onlineUser.sprite.textures = onlineUser.playerSheet.walkNorth;
+          onlineUser.sprite.isStand = false;
+        } else {
+          onlineUser.sprite.isStand = true;
+
+          switch (onlineUser.sprite.direction) {
+            case 'left': {
+              onlineUser.sprite.textures = onlineUser.playerSheet.standWest;
+              break;
+            }
+            case 'up': {
+              onlineUser.sprite.textures = onlineUser.playerSheet.standNorth;
+              break;
+            }
+            case 'right': {
+              onlineUser.sprite.textures = onlineUser.playerSheet.standEast;
+              break;
+            }
+            case 'down': {
+              onlineUser.sprite.textures = onlineUser.playerSheet.standSouth;
+              break;
+            }
+            default: {}
+          }
+        }
+
+        onlineUser.sprite.x += onlineUsers[i].coordinates.vx;
+        onlineUser.sprite.y += onlineUsers[i].coordinates.vy;
       } else {
-        let other = new Sprite(TextureCache['yangachi']);
-        let x = otherPlayers[i].coordinates.x;
-        let y = otherPlayers[i].coordinates.y;
+        let onlineUser = new Player(onlineUsers[i].character, onlineUsers[i].coordinates.x, onlineUsers[i].coordinates.y);
+        onlineUser.sprite.loop = false;
+        onlineUserSprites.set(onlineUsers[i].email, onlineUser);
 
-        other.anchor.set(0.5, 0.5);
-        other.x = x;
-        other.y = y;
-
-        otherPlayersSprite.set(otherPlayers[i].email, other);
-
-        app.stage.addChild(other);
+        app.stage.addChild(onlineUser.sprite);
       }
     }
 
     contain(player.sprite, { x: 16, y: 16, width: 800, height: 800 });
 
-    otherPlayersSprite.forEach(other => {
-      if (collisionDetection(player, other)) {
+    onlineUserSprites.forEach(onlineUser => {
+      if (collisionDetection(player, onlineUser)) {
         console.log('비켜')
       }
     });
