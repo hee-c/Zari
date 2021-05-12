@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components';
 import * as PIXI from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
@@ -9,6 +9,7 @@ import _ from 'lodash';
 import Player from '../../pixi/Player';
 import { contain, collisionDetection } from '../../pixi';
 import { socket, socketApi } from '../../utils/socket';
+import { joinVideoChat, leaveVideoChat } from '../../reducers/videoChatSlice';
 
 const CanvasContainer = styled.div`
   display: flex;
@@ -24,6 +25,7 @@ const CanvasContainer = styled.div`
 export default function RoomCanvas() {
   const canvas = useRef();
   const { roomId } = useParams();
+  const dispatch = useDispatch();
   const user = useSelector(state => state.user.data);
   const Container = PIXI.Container,
         loader = PIXI.Loader.shared,
@@ -148,6 +150,16 @@ export default function RoomCanvas() {
     onlineUserSprites.forEach(onlineUser => {
       collisionDetection(player, onlineUser.sprite);
     });
+
+    if (!player.isVideoChatParticipant && collisionDetection(player, zari, true)) {
+      player.isVideoChatParticipant = true;
+      dispatch(joinVideoChat());
+    }
+
+    if (player.isVideoChatParticipant && !collisionDetection(player, zari, true)) {
+      player.isVideoChatParticipant = false;
+      dispatch(leaveVideoChat());
+    }
 
     if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
       socketApi.changeCoordinates({
