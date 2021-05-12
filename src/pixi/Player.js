@@ -4,6 +4,14 @@ let resources = PIXI.Loader.shared.resources;
 
 export default class Player {
   constructor(characterType, x, y) {
+    let sheet = new PIXI.BaseTexture.from(resources[characterType].url);
+    let w = 32;
+    let h = 32;
+
+    this.width = w;
+    this.height = h;
+    this.movementSpeed = 2;
+
     this.playerSheet = {};
     this.left = {
       isDown: false,
@@ -21,10 +29,6 @@ export default class Player {
       isDown: false,
       isUp: true,
     };
-
-    let sheet = new PIXI.BaseTexture.from(resources[characterType].url);
-    let w = 32;
-    let h = 32;
 
     this.playerSheet['standSouth'] = [
       new PIXI.Texture(sheet, new PIXI.Rectangle(0 * w, 0, w, h))
@@ -66,12 +70,10 @@ export default class Player {
     this.sprite.y = y;
     this.sprite.vx = 0;
     this.sprite.vy = 0;
-    this.width = w;
-    this.height = h;
-    this.movementSpeed = 2;
     this.sprite.direction = 'south';
     this.sprite.isStanding = true;
     this.sprite.collision = false;
+    this.sprite.prevAction = null;
   }
 
   keyDownController(event) {
@@ -83,6 +85,7 @@ export default class Player {
           this.sprite.textures = this.playerSheet.walkWest;
           this.sprite.vx = -this.movementSpeed;
           this.sprite.vy = 0;
+          this.sprite.prevAction = 'standing';
         }
         this.left.isDown = true;
         this.left.isUp = false;
@@ -93,6 +96,7 @@ export default class Player {
           this.sprite.textures = this.playerSheet.walkNorth;
           this.sprite.vy = -this.movementSpeed;
           this.sprite.vx = 0;
+          this.sprite.prevAction = 'standing';
         }
         this.up.isDown = true;
         this.up.isUp = false;
@@ -103,6 +107,7 @@ export default class Player {
           this.sprite.textures = this.playerSheet.walkEast;
           this.sprite.vx = this.movementSpeed;
           this.sprite.vy = 0;
+          this.sprite.prevAction = 'standing';
         }
         this.right.isDown = true;
         this.right.isUp = false;
@@ -113,6 +118,7 @@ export default class Player {
           this.sprite.textures = this.playerSheet.walkSouth;
           this.sprite.vy = this.movementSpeed;
           this.sprite.vx = 0;
+          this.sprite.prevAction = 'standing';
         }
         this.down.isDown = true;
         this.down.isUp = false;
@@ -167,6 +173,7 @@ export default class Player {
         break;
       }
     }
+    this.sprite.prevAction = 'moving';
     event.preventDefault();
   }
 }

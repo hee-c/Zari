@@ -91,6 +91,12 @@ export default function Room() {
     player.sprite.x += player.sprite.vx;
     player.sprite.y += player.sprite.vy;
 
+    contain(player.sprite, { x: 16, y: 16, width: 800, height: 800 });
+
+    onlineUserSprites.forEach(onlineUser => {
+      collisionDetection(player, onlineUser.sprite)
+    });
+
     if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
       socket.current.emit('changeCoordinates', {
         x: player.sprite.x,
@@ -98,7 +104,7 @@ export default function Room() {
         vx: player.sprite.vx,
         vy: player.sprite.vy,
       });
-    } else if (player.left.isUp && player.up.isUp && player.right.isUp && player.down.isUp) {
+    } else if (player.left.isUp && player.up.isUp && player.right.isUp && player.down.isUp && player.sprite.prevAction === 'moving') {
       socket.current.emit('changeCoordinates', {
         x: player.sprite.x,
         y: player.sprite.y,
@@ -106,6 +112,8 @@ export default function Room() {
         vy: player.sprite.vy,
       });
     }
+
+    player.sprite.prevAction = null;
 
     for (let i = 0; i < onlineUsers.length; i++) {
       if (onlineUserSprites.has(onlineUsers[i].email)) {
@@ -148,8 +156,8 @@ export default function Room() {
           }
         }
 
-        onlineUser.sprite.x += onlineUsers[i].coordinates.vx;
-        onlineUser.sprite.y += onlineUsers[i].coordinates.vy;
+        onlineUser.sprite.x = onlineUsers[i].coordinates.x + onlineUsers[i].coordinates.vx;
+        onlineUser.sprite.y = onlineUsers[i].coordinates.y + onlineUsers[i].coordinates.vy;
       } else {
         let onlineUser = new Player(onlineUsers[i].character, onlineUsers[i].coordinates.x, onlineUsers[i].coordinates.y);
         onlineUser.sprite.loop = false;
@@ -158,12 +166,6 @@ export default function Room() {
         app.stage.addChild(onlineUser.sprite);
       }
     }
-
-    contain(player.sprite, { x: 16, y: 16, width: 800, height: 800 });
-
-    onlineUserSprites.forEach(onlineUser => {
-      collisionDetection(player, onlineUser.sprite)
-    });
   }
 
   return (
