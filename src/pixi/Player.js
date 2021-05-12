@@ -10,7 +10,7 @@ export default class Player {
 
     this.width = w;
     this.height = h;
-    this.movementSpeed = 2;
+    this.movementSpeed = 10;
 
     this.playerSheet = {};
     this.left = {

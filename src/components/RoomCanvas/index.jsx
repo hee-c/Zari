@@ -3,12 +3,12 @@ import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 import styled from 'styled-components';
 import io from 'socket.io-client';
-import Peer from 'simple-peer';
 import * as PIXI from 'pixi.js';
+import { Viewport } from 'pixi-viewport';
 import _ from 'lodash';
 
 import Player from '../../pixi/Player';
-import { imageLoader, contain, collisionDetection } from '../../pixi';
+import { contain, collisionDetection } from '../../pixi';
 
 const CanvasContainer = styled.div`
   display: flex;
@@ -32,28 +32,28 @@ export default function RoomCanvas() {
         resources = loader.resources,
         TextureCache = PIXI.utils.TextureCache,
         Sprite = PIXI.Sprite,
+        Ticker = PIXI.Ticker.shared,
         Rectangle = PIXI.Rectangle;
-  let background, player;
+  let background, player, renderer, viewport;
   let state = play;
   let onlineUsers = [];
-  let viewport;
-  const initialRandomPositionX = _.random(50, 600);
-  const initialRandomPositionY = _.random(50, 600);
+  const initialRandomPositionX = _.random(50, 1000);
+  const initialRandomPositionY = _.random(600, 1500);
   const canvasWidth = 1000;
-  const canvasHeight = 1000;
+  const canvasHeight = 1500;
   const onlineUserSprites = new Map();
-  let app = new Application({
-    width: canvasWidth,
-    height: canvasHeight,
-    antialias: true,
-    transparent: false,
-    resolution: 1,
+
+  renderer = new PIXI.Renderer({
+      backgroundAlpha: 0,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      resolution: window.devicePixelRatio,
+      antialias: true,
   });
 
-
   useEffect(() => {
-    canvas.current.appendChild(app.view);
-    console.log(app.view.parentNode)
+    canvas.current.appendChild(renderer.view);
+
     socket.current = io(process.env.REACT_APP_SERVER_URL, { transports: ['websocket'] });
 
     socket.current.open();
@@ -67,14 +67,18 @@ export default function RoomCanvas() {
         y: initialRandomPositionY,
         vx: 0,
         vy: 0,
-      }
+      },
     });
     socket.current.on('updateUsers', (currentUsers) => {
       onlineUsers = currentUsers.filter(currentUser => currentUser.email !== user.email);
+      renderer.render(viewport);
+      viewport.dirty = false;
     });
     socket.current.on('userLeave', (leftUser) => {
-      app.stage.removeChild(onlineUserSprites.get(leftUser.email).sprite);
+      viewport.removeChild(onlineUserSprites.get(leftUser.email).sprite);
       onlineUserSprites.delete(leftUser.email);
+      renderer.render(viewport);
+      viewport.dirty = false;
     });
 
     return () => {
@@ -86,16 +90,38 @@ export default function RoomCanvas() {
   setup();
 
   function setup() {
-    background = new Sprite(TextureCache['background']);
+    viewport = new Viewport({
+      screenWidth: window.innerWidth,
+      screenHeight: window.innerHeight,
+      worldWidth: canvasWidth,
+      worldHeight: canvasHeight,
+      ticker: Ticker,
+    });
+
     player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
 
-    app.stage.addChild(background);
-    app.stage.addChild(player.sprite);
+    viewport.follow(player.sprite, {
+      speed: 0,
+      acceleration: null,
+      radius: null,
+    });
+
+    background = new Sprite(TextureCache['background2']);
+    viewport.addChild(background);
+    viewport.addChild(player.sprite);
+    viewport.fit();
+    viewport.moveCenter(canvasWidth / 2, canvasHeight / 2);
+    viewport.scaled = 2;
+
+    window.onresize = () => {
+        renderer.resize(window.innerWidth, window.innerHeight)
+        viewport.resize(window.innerWidth, window.innerHeight)
+    }
 
     window.addEventListener("keydown", player.keyDownController.bind(player));
     window.addEventListener("keyup", player.keyUpController.bind(player));
 
-    app.ticker.add(delta => gameLoop(delta));
+    Ticker.add(delta => gameLoop(delta));
   }
 
   function gameLoop(delta) {
@@ -107,10 +133,15 @@ export default function RoomCanvas() {
     player.sprite.x += player.sprite.vx;
     player.sprite.y += player.sprite.vy;
 
-    contain(player.sprite, { x: 16, y: 16, width: canvasWidth, height: canvasHeight });
+    if (viewport.dirty || player.sprite.vx !== 0 || player.sprite.vy !== 0) {
+      renderer.render(viewport);
+      viewport.dirty = false;
+    }
+
+    contain(player.sprite, { x: 50, y: 600, width: canvasWidth, height: canvasHeight });
 
     onlineUserSprites.forEach(onlineUser => {
-      collisionDetection(player, onlineUser.sprite)
+      collisionDetection(player, onlineUser.sprite);
     });
 
     if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
@@ -179,7 +210,9 @@ export default function RoomCanvas() {
         onlineUser.sprite.loop = false;
         onlineUserSprites.set(onlineUsers[i].email, onlineUser);
 
-        app.stage.addChild(onlineUser.sprite);
+        viewport.addChild(onlineUser.sprite);
+        renderer.render(viewport);
+        viewport.dirty = false;
       }
     }
   }
