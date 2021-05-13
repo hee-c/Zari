@@ -2,7 +2,6 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   isVideoConnected: false,
-  isLeaveVideoChat: false,
   videoChatId: '',
 };
 
@@ -14,23 +13,16 @@ export const videoChatSlice = createSlice({
       state.isVideoConnected = true;
       state.videoChatId = action.payload.videoChatId;
     },
-    joinVideoChatFinished: (state) => {
-      state.isVideoConnected = false;
-    },
     leaveVideoChat: (state) => {
-      state.isLeaveVideoChat = true;
-    },
-    leaveVideoChatFinished: (state) => {
-      state.isLeaveVideoChat = false;
+      state.isVideoConnected = false;
+      state.videoChatId = null;
     },
   },
 });
 
 export const {
   joinVideoChat,
-  joinVideoChatFinished,
   leaveVideoChat,
-  leaveVideoChatFinished,
 } = videoChatSlice.actions;
 
 export default videoChatSlice.reducer;
