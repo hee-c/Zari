@@ -43,73 +43,65 @@ const videoConstraints = {
 };
 
 export default function RoomVideos({ roomId }) {
-  console.log('roomVideos rendered')
   const [peers, setPeers] = useState([]);
   const userVideo = useRef();
   let peersRef = useRef([]);
-  console.log(peers.length)
+
   useEffect(() => {
-    console.log('useEffect')
     navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true }).then(stream => {
       userVideo.current.srcObject = stream;
-
       socketApi.joinVideoChat(roomId);
 
       socket.on("all users", users => {
-        console.log('최초접속 후 이미 접속해있던 유저 받음.')
-        console.log('받은 유저', users)
         const peers = [];
+
         users.forEach(userID => {
-          console.log(userID, '에 대해서 피어 생성함.')
           const peer = createPeer(userID, socket.id, stream);
+
           peersRef.current.push({
             peerID: userID,
             peer,
-          })
+          });
           peers.push({
             peerID: userID,
             peer,
           });
         });
-        console.log(peersRef.current)
-        console.log(peers.length)
+
         setPeers(peers);
       });
 
       socket.on("user joined", payload => {
-        console.log('누구 들어왔다~')
-        console.log(payload.callerID, '에 대해서 피어 생성함')
         const peer = addPeer(payload.signal, payload.callerID, stream);
+        const peerObj = {
+          peerID: payload.callerID,
+          peer,
+        };
+        const updatedPeers = [...peers, peerObj];
+
         peersRef.current.push({
           peerID: payload.callerID,
           peer,
         });
 
-        const peerObj = {
-          peerID: payload.callerID,
-          peer,
-        };
-
-        setPeers(users => [...users, peerObj]);
+        setPeers(updatedPeers);
       });
 
       socket.on("receiving returned signal", payload => {
         const item = peersRef.current.find(p => p.peerID === payload.id);
+      
         item.peer.signal(payload.signal);
       });
 
       socket.on('user left', id => {
-        console.log('누구 나갔다~')
         const peerObj = peersRef.current.find(p => p.peerID === id);
-        if (peerObj) {
-          peerObj.peer.destroy();
-          console.log('피어 날렸다~')
-        }
-
         const peers = peersRef.current.filter(p => p.peerID !== id);
         peersRef.current = peers;
-        console.log(peersRef.current)
-        console.log(peers.length)
+
+        if (peerObj) {
+          peerObj.peer.destroy();
+        }
+
         setPeers(peers);
       });
     });
@@ -125,7 +117,6 @@ export default function RoomVideos({ roomId }) {
   }, []);
 
   function createPeer(userToSignal, callerID, stream) {
-    console.log('createPeer')
     const peer = new Peer({
       initiator: true,
       trickle: false,
@@ -140,18 +131,16 @@ export default function RoomVideos({ roomId }) {
   }
 
   function addPeer(incomingSignal, callerID, stream) {
-    console.log('addPeer')
     const peer = new Peer({
       initiator: false,
       trickle: false,
       stream,
     });
 
+    peer.signal(incomingSignal);
     peer.on("signal", signal => {
       socketApi.returningSignal({ signal, callerID })
     });
-
-    peer.signal(incomingSignal);
 
     return peer;
   }

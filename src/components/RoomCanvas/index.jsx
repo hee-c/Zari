@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import styled from 'styled-components';
 import * as PIXI from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
@@ -29,7 +29,7 @@ export default function RoomCanvas() {
   const canvas = useRef();
   const { roomId } = useParams();
   const dispatch = useDispatch();
-  const user = useSelector(state => state.user.data);
+  const user = useSelector(state => state.user.data, shallowEqual);
   const Container = PIXI.Container,
         loader = PIXI.Loader.shared,
         resources = loader.resources,
@@ -41,8 +41,8 @@ export default function RoomCanvas() {
   let background, player, renderer, viewport, zari;
   let state = play;
   let onlineUsers = [];
-  const initialRandomPositionX = _.random(50, 1000);
-  const initialRandomPositionY = _.random(600, 1500);
+  const initialRandomPositionX = _.random(50, 400);
+  const initialRandomPositionY = _.random(600, 1000);
   const canvasWidth = 1000;
   const canvasHeight = 1500;
   const onlineUserSprites = new Map();
@@ -57,6 +57,8 @@ export default function RoomCanvas() {
 
   useEffect(() => {
     canvas.current.appendChild(renderer.view);
+
+    setup();
 
     socket.open();
     socketApi.joinRoom({
@@ -89,8 +91,6 @@ export default function RoomCanvas() {
     }
   }, []);
 
-  setup();
-
   function setup() {
     viewport = new Viewport({
       screenWidth: window.innerWidth,
@@ -101,7 +101,6 @@ export default function RoomCanvas() {
     });
 
     background = new Sprite(TextureCache['background2']);
-    player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
     zari = new Graphics();
     zari.lineStyle(4, 0xFF3300, 1);
     zari.beginFill(0x66CCFF);
@@ -109,7 +108,8 @@ export default function RoomCanvas() {
     zari.endFill();
     zari.x = 170;
     zari.y = 700;
-    zari.videoId = 'gogoHEECHAN'
+    zari.videoId = 'gogoHEECHAN';
+    player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
 
     viewport.follow(player.sprite, {
       speed: 0,
@@ -140,30 +140,15 @@ export default function RoomCanvas() {
   }
 
   function play(delta) {
-    player.sprite.play();
-    player.sprite.x += player.sprite.vx;
-    player.sprite.y += player.sprite.vy;
-
-    if (viewport.dirty || player.sprite.vx !== 0 || player.sprite.vy !== 0) {
-      renderer.render(viewport);
-      viewport.dirty = false;
-    }
-
     contain(player.sprite, { x: 50, y: 600, width: canvasWidth, height: canvasHeight });
 
     onlineUserSprites.forEach(onlineUser => {
       collisionDetection(player, onlineUser.sprite);
     });
 
-    if (!player.isVideoChatParticipant && collisionDetection(player, zari, true)) {
-      player.isVideoChatParticipant = true;
-      dispatch(joinVideoChat({ videoChatId: zari.videoId }));
-    }
-
-    if (player.isVideoChatParticipant && !collisionDetection(player, zari, true)) {
-      player.isVideoChatParticipant = false;
-      dispatch(leaveVideoChat());
-    }
+    player.sprite.play();
+    player.sprite.x += player.sprite.vx;
+    player.sprite.y += player.sprite.vy;
 
     if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
       socketApi.changeCoordinates({
@@ -235,6 +220,21 @@ export default function RoomCanvas() {
         renderer.render(viewport);
         viewport.dirty = false;
       }
+    }
+
+    if (!player.isVideoChatParticipant && collisionDetection(player, zari, true)) {
+      player.isVideoChatParticipant = true;
+      dispatch(joinVideoChat({ videoChatId: zari.videoId }));
+    }
+
+    if (player.isVideoChatParticipant && !collisionDetection(player, zari, true)) {
+      player.isVideoChatParticipant = false;
+      dispatch(leaveVideoChat());
+    }
+
+    if (viewport.dirty || player.sprite.vx !== 0 || player.sprite.vy !== 0) {
+      renderer.render(viewport);
+      viewport.dirty = false;
     }
   }
 

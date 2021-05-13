@@ -1,5 +1,4 @@
 import io from 'socket.io-client';
-import { leaveVideoChat } from '../reducers/videoChatSlice';
 
 export const socket = io.connect(process.env.REACT_APP_SERVER_URL);
 
@@ -21,5 +20,5 @@ export const socketApi = {
   },
   leaveVideoChat: () => {
     socket.emit('leave videoChat');
-  }
+  },
 };
