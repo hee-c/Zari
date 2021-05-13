@@ -9,7 +9,10 @@ import _ from 'lodash';
 import Player from '../../pixi/Player';
 import { contain, collisionDetection } from '../../pixi';
 import { socket, socketApi } from '../../utils/socket';
-import { joinVideoChat, leaveVideoChat } from '../../reducers/videoChatSlice';
+import {
+  joinVideoChat,
+  leaveVideoChat,
+} from '../../reducers/videoChatSlice';
 
 const CanvasContainer = styled.div`
   display: flex;
@@ -106,6 +109,7 @@ export default function RoomCanvas() {
     zari.endFill();
     zari.x = 170;
     zari.y = 700;
+    zari.videoId = 'gogoHEECHAN'
 
     viewport.follow(player.sprite, {
       speed: 0,
@@ -153,7 +157,7 @@ export default function RoomCanvas() {
 
     if (!player.isVideoChatParticipant && collisionDetection(player, zari, true)) {
       player.isVideoChatParticipant = true;
-      dispatch(joinVideoChat());
+      dispatch(joinVideoChat({ videoChatId: zari.videoId }));
     }
 
     if (player.isVideoChatParticipant && !collisionDetection(player, zari, true)) {

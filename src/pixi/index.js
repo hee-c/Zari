@@ -38,7 +38,7 @@ export function contain(sprite, container) {
   }
 }
 
-export function collisionDetection(player, object) {
+export function collisionDetection(player, object, isNonblocking) {
   let hit = true;
 
   let playerCenterX = player.sprite.x + player.sprite.width / 2;
@@ -60,10 +60,14 @@ export function collisionDetection(player, object) {
   if (Math.abs(vx) < combinedHalfWidths) {
     if (Math.abs(vy) < combinedHalfHeights) {
       if (player.down.isDown || player.up.isDown) {
-        player.sprite.y -= player.sprite.vy;
+        if (!isNonblocking) {
+          player.sprite.y -= player.sprite.vy;
+        }
       }
       if (player.left.isDown || player.right.isDown) {
-        player.sprite.x -= player.sprite.vx;
+        if (!isNonblocking) {
+          player.sprite.x -= player.sprite.vx;
+        }
       }
     } else {
       hit = false;
