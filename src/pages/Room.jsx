@@ -25,13 +25,13 @@ const RoomCanvasContainer = styled.div`
 `;
 
 export default function Room() {
-  const { isVideoConnected } = useSelector(state => state.videoChat);
+  const { isVideoConnected, videoChatId } = useSelector(state => state.videoChat);
 
   return (
     <Container>
       <SideBarContainer></SideBarContainer>
       <RoomCanvasContainer>
-        {isVideoConnected && <RoomVideos />}
+        {isVideoConnected && <RoomVideos roomId={videoChatId} />}
         <RoomCanvas />
       </RoomCanvasContainer>
     </Container>
