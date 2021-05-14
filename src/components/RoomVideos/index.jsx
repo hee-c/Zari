@@ -50,38 +50,36 @@ export default function RoomVideos({ roomId }) {
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true }).then(stream => {
       userVideo.current.srcObject = stream;
+
       socketApi.joinVideoChat(roomId);
 
       socket.on("all users", users => {
-        const peers = [];
+        const onlinePeers = [];
 
         users.forEach(userID => {
-          const peer = createPeer(userID, socket.id, stream);
+          const newPeer = createPeer(userID, socket.id, stream);
 
           peersRef.current.push({
             peerID: userID,
-            peer,
+            peer: newPeer,
           });
-          peers.push({
+          onlinePeers.push({
             peerID: userID,
-            peer,
+            peer: newPeer,
           });
         });
 
-        setPeers(peers);
+        setPeers(onlinePeers);
       });
 
       socket.on("user joined", payload => {
-        const peer = addPeer(payload.signal, payload.callerID, stream);
+        const newPeer = addPeer(payload.signal, payload.callerID, stream);
         const peerObj = {
           peerID: payload.callerID,
-          peer,
+          peer: newPeer,
         };
 
-        peersRef.current.push({
-          peerID: payload.callerID,
-          peer,
-        });
+        peersRef.current.push(peerObj);
 
         setPeers(peers => [...peers, peerObj]);
       });
@@ -95,22 +93,23 @@ export default function RoomVideos({ roomId }) {
       socket.on('user left', id => {
         const peerObj = peersRef.current.find(p => p.peerID === id);
         const peers = peersRef.current.filter(p => p.peerID !== id);
+
         peersRef.current = peers;
 
         if (peerObj) {
           peerObj.peer.destroy();
         }
 
-        setPeers(peers);
+        setPeers(peers => peers.filter(peer => peer.peerID !== id));
       });
     });
 
     return () => {
+      peersRef.current = [];
       socket.removeAllListeners("all users");
       socket.removeAllListeners("user joined");
       socket.removeAllListeners("receiving returned signal");
       socket.removeAllListeners("user left");
-      peersRef.current = [];
       socketApi.leaveVideoChat();
     }
   }, []);
