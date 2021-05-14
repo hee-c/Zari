@@ -5,6 +5,20 @@ import { useSelector } from 'react-redux'
 import RoomCanvas from '../components/RoomCanvas';
 import RoomVideos from '../components/RoomVideos';
 
+export default function Room() {
+  const { isVideoConnected, videoChatId } = useSelector(state => state.videoChat);
+
+  return (
+    <Container>
+      <SideBarContainer></SideBarContainer>
+      <RoomCanvasContainer>
+        {isVideoConnected && <RoomVideos roomId={videoChatId} />}
+        <RoomCanvas />
+      </RoomCanvasContainer>
+    </Container>
+  );
+}
+
 const Container = styled.div`
   display: flex;
   width: 100vw;
@@ -23,17 +37,3 @@ const RoomCanvasContainer = styled.div`
   width: 80%;
   height: 100%;
 `;
-
-export default function Room() {
-  const { isVideoConnected, videoChatId } = useSelector(state => state.videoChat);
-
-  return (
-    <Container>
-      <SideBarContainer></SideBarContainer>
-      <RoomCanvasContainer>
-        {isVideoConnected && <RoomVideos roomId={videoChatId} />}
-        <RoomCanvas />
-      </RoomCanvasContainer>
-    </Container>
-  );
-}

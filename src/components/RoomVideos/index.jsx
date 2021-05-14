@@ -4,39 +4,6 @@ import Peer from "simple-peer";
 
 import { socket, socketApi } from '../../utils/socket';
 
-const Container = styled.div`
-  position: fixed;
-  margin: 50px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: auto;
-  gap: 10px;
-`;
-
-const StyledVideo = styled.video`
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-`;
-
-const Video = (props) => {
-  const ref = useRef();
-
-  useEffect(() => {
-    props.peer.on("stream", stream => {
-      ref.current.srcObject = stream;
-    });
-
-    return () => {
-      ref.current = null;
-    }
-  }, []);
-
-  return (
-    <StyledVideo autoPlay playsInline ref={ref} />
-  );
-};
-
 const videoConstraints = {
   height: window.innerHeight / 2,
   width: window.innerWidth / 2
@@ -154,3 +121,37 @@ export default function RoomVideos({ roomId }) {
     </Container>
   );
 }
+
+
+const Container = styled.div`
+  position: fixed;
+  margin: 50px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: auto;
+  gap: 10px;
+`;
+
+const StyledVideo = styled.video`
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+`;
+
+const Video = (props) => {
+  const ref = useRef();
+
+  useEffect(() => {
+    props.peer.on("stream", stream => {
+      ref.current.srcObject = stream;
+    });
+
+    return () => {
+      ref.current = null;
+    }
+  }, []);
+
+  return (
+    <StyledVideo autoPlay playsInline ref={ref} />
+  );
+};

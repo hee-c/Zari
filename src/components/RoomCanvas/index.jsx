@@ -14,17 +14,6 @@ import {
   leaveVideoChat,
 } from '../../reducers/videoChatSlice';
 
-const CanvasContainer = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100%;
-
-  & > canvas {
-    width: 100%;
-    height: 100%;
-  }
-`;
-
 export default function RoomCanvas() {
   const canvas = useRef();
   const { roomId } = useParams();
@@ -243,3 +232,15 @@ export default function RoomCanvas() {
     </CanvasContainer>
   )
 }
+
+
+const CanvasContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+
+  & > canvas {
+    width: 100%;
+    height: 100%;
+  }
+`;
