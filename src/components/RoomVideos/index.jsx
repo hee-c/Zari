@@ -17,6 +17,7 @@ const Container = styled.div`
 const StyledVideo = styled.video`
   height: 100%;
   width: 100%;
+  object-fit: cover;
 `;
 
 const Video = (props) => {
@@ -89,7 +90,7 @@ export default function RoomVideos({ roomId }) {
 
       socket.on("receiving returned signal", payload => {
         const item = peersRef.current.find(p => p.peerID === payload.id);
-      
+
         item.peer.signal(payload.signal);
       });
 
