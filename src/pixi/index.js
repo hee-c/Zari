@@ -16,7 +16,6 @@ export function imageLoader(callback) {
     .add('grandmother', '../images/grandmother.png')
     .add('staff', '../images/staff.png')
     .add('yangachi', '../images/yangachi.png')
-    .add('background2', '../images/untitled2.png')
     .load(callback);
 }
 
