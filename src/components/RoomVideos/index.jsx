@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Peer from "simple-peer";
-import { v4 as uuidv4 } from 'uuid';
 
 import { socket, socketApi } from '../../utils/socket';
 
@@ -78,14 +77,13 @@ export default function RoomVideos({ roomId }) {
           peerID: payload.callerID,
           peer,
         };
-        const updatedPeers = [...peers, peerObj];
 
         peersRef.current.push({
           peerID: payload.callerID,
           peer,
         });
 
-        setPeers(updatedPeers);
+        setPeers(peers => [...peers, peerObj]);
       });
 
       socket.on("receiving returned signal", payload => {
@@ -151,7 +149,7 @@ export default function RoomVideos({ roomId }) {
       <StyledVideo muted ref={userVideo} autoPlay playsInline />
       {peers.map((peer) => {
         return (
-          <Video key={uuidv4()} peer={peer.peer} />
+          <Video key={peer.peerID} peer={peer.peer} />
         );
       })}
     </Container>
