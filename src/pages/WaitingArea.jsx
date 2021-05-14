@@ -5,11 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRooms } from '../reducers/roomsSlice';
 import PlaceListItem from '../components/PlaceListItem';
 import PlaceList from '../components/PlaceList';
+import Modal from '../components/shared/Modal';
 
 export default function WaitingArea() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.data);
   const rooms = useSelector(state => state.rooms.publicRooms);
+  const { isDisplay } = useSelector(state => state.modal);
 
   useEffect(() => {
     dispatch(getRooms());
@@ -31,6 +33,10 @@ export default function WaitingArea() {
           </PlaceList>
         </PlaceListContainer>
       </RightPannel>
+      {isDisplay && (
+        <Modal>
+        </Modal>
+      )}
     </Container>
   );
 }

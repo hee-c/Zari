@@ -2,12 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
-export default function Modal({ children, handleClose, title }) {
+export default function Modal({ children, title }) {
   return ReactDOM.createPortal(
     <>
-      <ModalBackground onClick={handleClose} />
+      <ModalBackground/>
       <ModalContainer>
-        <ModalClose onClick={handleClose} />
         <ModalContent>
           <Title>{title}</Title>
           {children}
@@ -60,16 +59,4 @@ const Title = styled.div`
   justify-content: center;
   font-size: 2rem;
   font-weight: bold;
-`;
-
-const ModalClose = styled.button`
-  box-sizing: content-box;
-  width: 1em;
-  height: 1em;
-  background: transparent url("https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-close-512.png") center/2em auto no-repeat;
-  border: 0;
-  border-radius: 0.25rem;
-  padding: 0.25em 0.25em;
-  cursor: pointer;
-  opacity: 0.5;
 `;
