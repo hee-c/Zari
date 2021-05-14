@@ -100,7 +100,7 @@ export default function RoomCanvas() {
       ticker: Ticker,
     });
 
-    background = new Sprite(TextureCache['background2']);
+    background = new Sprite(TextureCache['background']);
     zari = new Graphics();
     zari.lineStyle(4, 0xFF3300, 1);
     zari.beginFill(0x66CCFF);
