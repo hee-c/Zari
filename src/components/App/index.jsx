@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
-import Home from '../Home';
 import Room from '../../pages/Room';
 import WaitingArea from '../../pages/WaitingArea';
+import Home from '../../pages/Home';
 import { imageLoader } from '../../pixi';
 
 export default function App() {
