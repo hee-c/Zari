@@ -79,3 +79,47 @@ export function collisionDetection(player, object, isNonblocking) {
 
   return hit;
 }
+
+export function updateOnlineUserCoordinates(targetUser, coordinates) {
+  targetUser.sprite.play();
+
+  if (coordinates.vx > 0 && targetUser.sprite.isStanding) {
+    targetUser.sprite.textures = targetUser.playerSheet.walkEast;
+    targetUser.sprite.isStanding = false;
+    targetUser.sprite.direction = 'east';
+  } else if (coordinates.vx < 0 && targetUser.sprite.isStanding) {
+    targetUser.sprite.textures = targetUser.playerSheet.walkWest;
+    targetUser.sprite.isStanding = false;
+    targetUser.sprite.direction = 'west';
+  } else if (coordinates.vy > 0 && targetUser.sprite.isStanding) {
+    targetUser.sprite.textures = targetUser.playerSheet.walkSouth;
+    targetUser.sprite.isStanding = false;
+    targetUser.sprite.direction = 'south';
+  } else if (coordinates.vy < 0 && targetUser.sprite.isStanding) {
+    targetUser.sprite.textures = targetUser.playerSheet.walkNorth;
+    targetUser.sprite.isStanding = false;
+    targetUser.sprite.direction = 'north';
+  } else if (coordinates.vy === 0 && coordinates.vx === 0){
+    targetUser.sprite.isStanding = true;
+
+    switch (targetUser.sprite.direction) {
+      case 'west': {
+        targetUser.sprite.textures = targetUser.playerSheet.standWest;
+        break;
+      }
+      case 'north': {
+        targetUser.sprite.textures = targetUser.playerSheet.standNorth;
+        break;
+      }
+      case 'east': {
+        targetUser.sprite.textures = targetUser.playerSheet.standEast;
+        break;
+      }
+      case 'south': {
+        targetUser.sprite.textures = targetUser.playerSheet.standSouth;
+        break;
+      }
+      default: {}
+    }
+  }
+}
