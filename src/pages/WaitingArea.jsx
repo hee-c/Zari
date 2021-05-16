@@ -7,10 +7,10 @@ import PlaceListItem from '../components/PlaceListItem';
 import PlaceList from '../components/PlaceList';
 import Modal from '../components/shared/Modal';
 import CharacterSelection from '../components/CharacterSelection';
+import SideBar from '../components/shared/SideBar';
 
 export default function WaitingArea() {
   const dispatch = useDispatch();
-  const user = useSelector(state => state.user.data);
   const rooms = useSelector(state => state.rooms.publicRooms);
   const { isDisplay } = useSelector(state => state.modal);
 
@@ -21,7 +21,7 @@ export default function WaitingArea() {
   return (
     <Container>
       <LeftPannel>
-        {user?.name}
+        <SideBar />
       </LeftPannel>
       <RightPannel>
         <PlaceListContainer>
