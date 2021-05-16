@@ -12,8 +12,8 @@ export default class Player {
     this.height = h;
     this.movementSpeed = 2;
     this.isVideoChatParticipant = false;
-
     this.playerSheet = {};
+
     this.left = {
       isDown: false,
       isUp: true,
@@ -64,7 +64,7 @@ export default class Player {
       new PIXI.Texture(sheet, new PIXI.Rectangle(9 * w, 0, w, h))
     ];
 
-    this.sprite = new PIXI.AnimatedSprite(this.playerSheet.standEast);
+    this.sprite = new PIXI.AnimatedSprite(this.playerSheet.standSouth);
     this.sprite.animationSpeed = 0.2;
     this.sprite.anchor.set(0.5, 0.5);
     this.sprite.x = x;

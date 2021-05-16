@@ -7,7 +7,7 @@ import { Viewport } from 'pixi-viewport';
 import _ from 'lodash';
 
 import Player from '../../pixi/Player';
-import { contain, collisionDetection } from '../../pixi';
+import { contain, collisionDetection, updateOnlineUserCoordinates } from '../../pixi';
 import { socket, socketApi } from '../../utils/socket';
 import {
   joinVideoChat,
@@ -23,14 +23,13 @@ export default function RoomCanvas() {
     Sprite = PIXI.Sprite,
     Ticker = PIXI.Ticker.shared,
     Graphics = PIXI.Graphics;
-  let background, player, renderer, viewport, zari;
+  let background, player, renderer, viewport, zari, targetUser;
   let state = play;
-  let onlineUsers = [];
+  const onlineUsers = new Map();
   const initialRandomPositionX = _.random(50, 400);
   const initialRandomPositionY = _.random(600, 1000);
   const canvasWidth = 1000;
   const canvasHeight = 1500;
-  const onlineUserSprites = new Map();
 
   renderer = new PIXI.Renderer({
     backgroundAlpha: 0,
@@ -49,7 +48,7 @@ export default function RoomCanvas() {
     socketApi.joinRoom({
       name: user.name,
       email: user.email,
-      character: user.character,
+      characterType: user.character,
       roomId,
       coordinates: {
         x: initialRandomPositionX,
@@ -58,16 +57,35 @@ export default function RoomCanvas() {
         vy: 0,
       },
     });
-    socket.on('updateUsers', (currentUsers) => {
-      onlineUsers = currentUsers.filter(currentUser => currentUser.email !== user.email);
+    socket.on('receiveOnlineUsers', (receivedOnlineUsers) => {
+      receivedOnlineUsers.forEach(onlineUser => {
+        onlineUser.character = new Player(onlineUser.characterType, onlineUser.coordinates.x, onlineUser.coordinates.y);
+        onlineUsers.set(onlineUser.email, onlineUser);
+        viewport.addChild(onlineUser.character.sprite);
+      });
+
       renderer.render(viewport);
-      viewport.dirty = false;
+    });
+    socket.on('newUserJoin', (newUser) => {
+      newUser.character = new Player(newUser.characterType, newUser.coordinates.x, newUser.coordinates.y);
+      onlineUsers.set(newUser.email, newUser);
+      viewport.addChild(newUser.character.sprite);
+
+      renderer.render(viewport);
+    });
+    socket.on('updateUserCoordinates', (changedUser) => {
+      targetUser = onlineUsers.get(changedUser.email);
+      targetUser.coordinates = changedUser.coordinates;
+      updateOnlineUserCoordinates(targetUser.character, targetUser.coordinates);
+
+      renderer.render(viewport);
     });
     socket.on('userLeave', (leftUser) => {
-      viewport.removeChild(onlineUserSprites.get(leftUser.email).sprite);
-      onlineUserSprites.delete(leftUser.email);
+      targetUser = onlineUsers.get(leftUser.email);
+      viewport.removeChild(targetUser.character.sprite);
+      onlineUsers.delete(leftUser.email);
+
       renderer.render(viewport);
-      viewport.dirty = false;
     });
 
     return () => {
@@ -127,8 +145,8 @@ export default function RoomCanvas() {
   function play(delta) {
     contain(player.sprite, { x: 50, y: 600, width: canvasWidth, height: canvasHeight });
 
-    onlineUserSprites.forEach(onlineUser => {
-      collisionDetection(player, onlineUser.sprite);
+    onlineUsers.forEach(onlineUser => {
+      collisionDetection(player, onlineUser.character.sprite);
     });
 
     if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
@@ -152,62 +170,11 @@ export default function RoomCanvas() {
     player.sprite.y += player.sprite.vy;
     player.sprite.prevAction = null;
 
-    for (let i = 0; i < onlineUsers.length; i++) {
-      if (onlineUserSprites.has(onlineUsers[i].email)) {
-        const onlineUser = onlineUserSprites.get(onlineUsers[i].email);
-
-        if (onlineUsers[i].coordinates.vx > 0 && onlineUser.sprite.isStanding) {
-          onlineUser.sprite.textures = onlineUser.playerSheet.walkEast;
-          onlineUser.sprite.isStanding = false;
-          onlineUser.sprite.direction = 'east';
-        } else if (onlineUsers[i].coordinates.vx < 0 && onlineUser.sprite.isStanding) {
-          onlineUser.sprite.textures = onlineUser.playerSheet.walkWest;
-          onlineUser.sprite.isStanding = false;
-          onlineUser.sprite.direction = 'west';
-        } else if (onlineUsers[i].coordinates.vy > 0 && onlineUser.sprite.isStanding) {
-          onlineUser.sprite.textures = onlineUser.playerSheet.walkSouth;
-          onlineUser.sprite.isStanding = false;
-          onlineUser.sprite.direction = 'south';
-        } else if (onlineUsers[i].coordinates.vy < 0 && onlineUser.sprite.isStanding) {
-          onlineUser.sprite.textures = onlineUser.playerSheet.walkNorth;
-          onlineUser.sprite.isStanding = false;
-          onlineUser.sprite.direction = 'north';
-        } else {
-          onlineUser.sprite.isStanding = true;
-
-          switch (onlineUser.sprite.direction) {
-            case 'west': {
-              onlineUser.sprite.textures = onlineUser.playerSheet.standWest;
-              break;
-            }
-            case 'north': {
-              onlineUser.sprite.textures = onlineUser.playerSheet.standNorth;
-              break;
-            }
-            case 'east': {
-              onlineUser.sprite.textures = onlineUser.playerSheet.standEast;
-              break;
-            }
-            case 'south': {
-              onlineUser.sprite.textures = onlineUser.playerSheet.standSouth;
-              break;
-            }
-            default: { }
-          }
-        }
-
-        onlineUser.sprite.play();
-        onlineUser.sprite.x = onlineUsers[i].coordinates.x + onlineUsers[i].coordinates.vx;
-        onlineUser.sprite.y = onlineUsers[i].coordinates.y + onlineUsers[i].coordinates.vy;
-      } else {
-        const onlineUser = new Player(onlineUsers[i].character, onlineUsers[i].coordinates.x, onlineUsers[i].coordinates.y);
-        onlineUserSprites.set(onlineUsers[i].email, onlineUser);
-
-        viewport.addChild(onlineUser.sprite);
-        renderer.render(viewport);
-        viewport.dirty = false;
-      }
-    }
+    onlineUsers.forEach(onlineUser => {
+      onlineUser.character.sprite.play();
+      onlineUser.character.sprite.x = onlineUser.coordinates.x + onlineUser.coordinates.vx;
+      onlineUser.character.sprite.y = onlineUser.coordinates.y + onlineUser.coordinates.vy;
+    });
 
     if (!player.isVideoChatParticipant && collisionDetection(player, zari, true)) {
       player.isVideoChatParticipant = true;
