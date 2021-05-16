@@ -16,6 +16,8 @@ export function imageLoader(callback) {
     .add('grandmother', '../images/grandmother.png')
     .add('staff', '../images/staff.png')
     .add('yangachi', '../images/yangachi.png')
+    .add('leftButton', '../images/leftButton.svg')
+    .add('rightButton', '../images/rightButton.svg')
     .load(callback);
 }
 

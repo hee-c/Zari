@@ -20,13 +20,13 @@ export default function RoomCanvas() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.data, shallowEqual);
   const Container = PIXI.Container,
-        loader = PIXI.Loader.shared,
-        resources = loader.resources,
-        TextureCache = PIXI.utils.TextureCache,
-        Sprite = PIXI.Sprite,
-        Ticker = PIXI.Ticker.shared,
-        Graphics = PIXI.Graphics,
-        Rectangle = PIXI.Rectangle;
+    loader = PIXI.Loader.shared,
+    resources = loader.resources,
+    TextureCache = PIXI.utils.TextureCache,
+    Sprite = PIXI.Sprite,
+    Ticker = PIXI.Ticker.shared,
+    Graphics = PIXI.Graphics,
+    Rectangle = PIXI.Rectangle;
   let background, player, renderer, viewport, zari;
   let state = play;
   let onlineUsers = [];
@@ -37,11 +37,11 @@ export default function RoomCanvas() {
   const onlineUserSprites = new Map();
 
   renderer = new PIXI.Renderer({
-      backgroundAlpha: 0,
-      width: window.innerWidth,
-      height: window.innerHeight,
-      resolution: window.devicePixelRatio,
-      antialias: true,
+    backgroundAlpha: 0,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    resolution: window.devicePixelRatio,
+    antialias: true,
   });
 
   useEffect(() => {
@@ -114,8 +114,8 @@ export default function RoomCanvas() {
     viewport.scaled = 2;
 
     window.onresize = () => {
-        renderer.resize(window.innerWidth, window.innerHeight)
-        viewport.resize(window.innerWidth, window.innerHeight)
+      renderer.resize(window.innerWidth, window.innerHeight);
+      viewport.resize(window.innerWidth, window.innerHeight);
     }
 
     window.addEventListener("keydown", player.keyDownController.bind(player));
@@ -194,7 +194,7 @@ export default function RoomCanvas() {
               onlineUser.sprite.textures = onlineUser.playerSheet.standSouth;
               break;
             }
-            default: {}
+            default: { }
           }
         }
 
