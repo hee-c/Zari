@@ -10,7 +10,7 @@ export default class Player {
 
     this.width = w;
     this.height = h;
-    this.movementSpeed = 5;
+    this.movementSpeed = 2;
     this.isVideoChatParticipant = false;
 
     this.playerSheet = {};

@@ -19,14 +19,10 @@ export default function RoomCanvas() {
   const { roomId } = useParams();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.data, shallowEqual);
-  const Container = PIXI.Container,
-    loader = PIXI.Loader.shared,
-    resources = loader.resources,
-    TextureCache = PIXI.utils.TextureCache,
+  const TextureCache = PIXI.utils.TextureCache,
     Sprite = PIXI.Sprite,
     Ticker = PIXI.Ticker.shared,
-    Graphics = PIXI.Graphics,
-    Rectangle = PIXI.Rectangle;
+    Graphics = PIXI.Graphics;
   let background, player, renderer, viewport, zari;
   let state = play;
   let onlineUsers = [];
@@ -135,10 +131,6 @@ export default function RoomCanvas() {
       collisionDetection(player, onlineUser.sprite);
     });
 
-    player.sprite.play();
-    player.sprite.x += player.sprite.vx;
-    player.sprite.y += player.sprite.vy;
-
     if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
       socketApi.changeCoordinates({
         x: player.sprite.x,
@@ -155,42 +147,48 @@ export default function RoomCanvas() {
       });
     }
 
+    player.sprite.play();
+    player.sprite.x += player.sprite.vx;
+    player.sprite.y += player.sprite.vy;
     player.sprite.prevAction = null;
 
     for (let i = 0; i < onlineUsers.length; i++) {
       if (onlineUserSprites.has(onlineUsers[i].email)) {
         const onlineUser = onlineUserSprites.get(onlineUsers[i].email);
-        onlineUser.sprite.play();
 
         if (onlineUsers[i].coordinates.vx > 0 && onlineUser.sprite.isStanding) {
           onlineUser.sprite.textures = onlineUser.playerSheet.walkEast;
           onlineUser.sprite.isStanding = false;
+          onlineUser.sprite.direction = 'east';
         } else if (onlineUsers[i].coordinates.vx < 0 && onlineUser.sprite.isStanding) {
           onlineUser.sprite.textures = onlineUser.playerSheet.walkWest;
           onlineUser.sprite.isStanding = false;
+          onlineUser.sprite.direction = 'west';
         } else if (onlineUsers[i].coordinates.vy > 0 && onlineUser.sprite.isStanding) {
           onlineUser.sprite.textures = onlineUser.playerSheet.walkSouth;
           onlineUser.sprite.isStanding = false;
+          onlineUser.sprite.direction = 'south';
         } else if (onlineUsers[i].coordinates.vy < 0 && onlineUser.sprite.isStanding) {
           onlineUser.sprite.textures = onlineUser.playerSheet.walkNorth;
           onlineUser.sprite.isStanding = false;
+          onlineUser.sprite.direction = 'north';
         } else {
           onlineUser.sprite.isStanding = true;
 
           switch (onlineUser.sprite.direction) {
-            case 'left': {
+            case 'west': {
               onlineUser.sprite.textures = onlineUser.playerSheet.standWest;
               break;
             }
-            case 'up': {
+            case 'north': {
               onlineUser.sprite.textures = onlineUser.playerSheet.standNorth;
               break;
             }
-            case 'right': {
+            case 'east': {
               onlineUser.sprite.textures = onlineUser.playerSheet.standEast;
               break;
             }
-            case 'down': {
+            case 'south': {
               onlineUser.sprite.textures = onlineUser.playerSheet.standSouth;
               break;
             }
@@ -198,11 +196,11 @@ export default function RoomCanvas() {
           }
         }
 
+        onlineUser.sprite.play();
         onlineUser.sprite.x = onlineUsers[i].coordinates.x + onlineUsers[i].coordinates.vx;
         onlineUser.sprite.y = onlineUsers[i].coordinates.y + onlineUsers[i].coordinates.vy;
       } else {
         const onlineUser = new Player(onlineUsers[i].character, onlineUsers[i].coordinates.x, onlineUsers[i].coordinates.y);
-        onlineUser.sprite.loop = false;
         onlineUserSprites.set(onlineUsers[i].email, onlineUser);
 
         viewport.addChild(onlineUser.sprite);
