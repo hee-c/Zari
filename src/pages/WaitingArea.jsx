@@ -6,6 +6,7 @@ import { getRooms } from '../reducers/roomsSlice';
 import PlaceListItem from '../components/PlaceListItem';
 import PlaceList from '../components/PlaceList';
 import Modal from '../components/shared/Modal';
+import CharacterSelection from '../components/CharacterSelection';
 
 export default function WaitingArea() {
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ export default function WaitingArea() {
       </RightPannel>
       {isDisplay && (
         <Modal>
+          <CharacterSelection />
         </Modal>
       )}
     </Container>
