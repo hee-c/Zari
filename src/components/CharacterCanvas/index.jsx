@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as PIXI from 'pixi.js';
 
-export default function CharacterCanvas() {
+export default function CharacterCanvas({ selectedCharacter }) {
   const TextureCache = PIXI.utils.TextureCache;
   const Sprite = PIXI.Sprite;
   const Rectangle = PIXI.Rectangle;
@@ -73,11 +72,13 @@ export default function CharacterCanvas() {
     leftButton.on('click', () => {
       app.stage.removeChild(characters[characterIndex].sprite);
       characterIndex = characterIndex - 1 < 0 ? 9 : characterIndex - 1;
+      selectedCharacter.current = characters[characterIndex].type;
       app.stage.addChild(characters[characterIndex].sprite);
     });
     rightButton.on('click', () => {
       app.stage.removeChild(characters[characterIndex].sprite);
       characterIndex = characterIndex + 1 > 9 ? 0 : characterIndex + 1;
+      selectedCharacter.current = characters[characterIndex].type;
       app.stage.addChild(characters[characterIndex].sprite);
     });
   }

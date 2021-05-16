@@ -14,12 +14,16 @@ export const getRooms = createAsyncThunk(
 const initialState = {
   status: null,
   publicRooms: null,
+  currentRoom: '',
 };
 
 export const roomsSlice = createSlice({
   name: 'rooms',
   initialState,
   reducers: {
+    setCurrentRoom: (state, action) => {
+      state.currentRoom = action.payload.selectedRoom;
+    },
   },
   extraReducers: {
     [getRooms.pending]: (state) => {
@@ -35,5 +39,7 @@ export const roomsSlice = createSlice({
     },
   },
 });
+
+export const { setCurrentRoom } = roomsSlice.actions;
 
 export default roomsSlice.reducer;

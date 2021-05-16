@@ -37,6 +37,20 @@ async function getRooms() {
   return response;
 }
 
+async function patchCharacter(data) {
+  const url = `${process.env.REACT_APP_SERVER_URL}/user/character`;
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': localStorage.getItem('accessToken'),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  return response;
+}
+
 export async function googleLogin() {
   try {
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -80,5 +94,16 @@ export async function getRoomList() {
     return responseBody.data;
   } catch (err) {
     throw new Error('login fail');
+  }
+}
+
+export async function patchUserCharacter(selectedCharacter) {
+  try {
+    const response = await patchCharacter({ selectedCharacter });
+    const responseBody = await response.json();
+
+    return responseBody.data;
+  } catch (err) {
+    throw new Error('update character fail');
   }
 }

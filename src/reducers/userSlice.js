@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { googleLogin, getUserData } from '../apis';
+import { googleLogin, getUserData, patchUserCharacter } from '../apis';
 
 export const getUserDataByToken = createAsyncThunk(
   'user/getUserDataByToken',
@@ -19,6 +19,15 @@ export const userLogin = createAsyncThunk(
     const response = await googleLogin();
 
     history.push('/waitingarea');
+
+    return response;
+  },
+);
+
+export const setUserCharacter = createAsyncThunk(
+  'user/setUserCharacter',
+  async (selectedCharacter) => {
+    const response = await patchUserCharacter(selectedCharacter);
 
     return response;
   },
@@ -47,7 +56,7 @@ export const userSlice = createSlice({
       state.status = 'active';
       state.data = action.payload.user;
     },
-    [userLogin.rejected]: (state, action) => {
+    [userLogin.rejected]: (state) => {
       state.status = null;
     },
     [getUserDataByToken.pending]: (state) => {
@@ -57,9 +66,19 @@ export const userSlice = createSlice({
       state.status = 'active';
       state.data = action.payload.user;
     },
-    [getUserDataByToken.rejected]: (state, action) => {
+    [getUserDataByToken.rejected]: (state) => {
       state.status = null;
       localStorage.removeItem('accessToken');
+    },
+    [setUserCharacter.pending]: (state) => {
+      state.status = 'pending';
+    },
+    [setUserCharacter.fulfilled]: (state, action) => {
+      state.status = 'active';
+      state.data.character = action.payload.character;
+    },
+    [setUserCharacter.rejected]: (state) => {
+      state.status = null;
     },
   },
 });

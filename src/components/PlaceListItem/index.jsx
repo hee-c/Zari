@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { showModal } from '../../reducers/modalSlice';
+import { setCurrentRoom } from '../../reducers/roomsSlice';
 
 export default function RoomList({ room }) {
   const { character } = useSelector(state => state.user.data);
@@ -18,6 +19,7 @@ export default function RoomList({ room }) {
     if (character) {
       history.push(`/room/${e.target.id}`);
     } else {
+      dispatch(setCurrentRoom({ selectedRoom: e.target.id }));
       dispatch(showModal());
     }
   }
