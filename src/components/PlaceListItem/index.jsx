@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { LogIn, Link } from 'react-feather';
 
 import { showModal } from '../../reducers/modalSlice';
 import { setCurrentRoom } from '../../reducers/roomsSlice';
@@ -26,19 +27,19 @@ export default function RoomList({ room }) {
 
   return (
     <RoomItemWrapper>
-      <RoomItem width="60%">
+      <RoomItem width="80%">
         <RoomTitle>
           {room.title}
         </RoomTitle>
       </RoomItem>
-      <RoomItem width="20%">
-        <RoomLinkCopy id={room._id} onClick={handleLinkCopyButton}>
-          링크
+      <RoomItem width="10%">
+        <RoomLinkCopy>
+          <RoomLink id={room._id} onClick={handleLinkCopyButton} />
         </RoomLinkCopy>
       </RoomItem>
-      <RoomItem width="20%">
-        <RoomEnterButton id={room._id} onClick={handleEnterRoomButton}>
-          입장
+      <RoomItem width="10%">
+        <RoomEnterButton>
+          <RoomEnter id={room._id} onClick={handleEnterRoomButton} />
         </RoomEnterButton>
       </RoomItem>
     </RoomItemWrapper>
@@ -66,14 +67,22 @@ const RoomTitle = styled.span`
   margin: auto;
 `;
 
-const RoomLinkCopy = styled.button`
+const RoomLinkCopy = styled.div`
   width: 100%;
   height: 50%;
   margin: auto 5px;
 `;
 
-const RoomEnterButton = styled.button`
+const RoomLink = styled(Link)`
+  cursor: pointer;
+`;
+
+const RoomEnterButton = styled.div`
   width: 100%;
   height: 50%;
   margin: auto 5px;
+`;
+
+const RoomEnter = styled(LogIn)`
+  cursor: pointer;
 `;
