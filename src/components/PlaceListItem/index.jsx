@@ -12,41 +12,41 @@ export default function RoomList({ room }) {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  function handleLinkCopyButton(e) {
-    navigator.clipboard.writeText(`${process.env.REACT_APP_SERVER_URL}/room/${e.target.id}`);
+  function handleLinkCopyButton(e, id) {
+    navigator.clipboard.writeText(`${process.env.REACT_APP_SERVER_URL}/room/${id}`);
   }
 
-  function handleEnterRoomButton(e) {
+  function handleEnterRoomButton(e, id) {
     if (character) {
-      history.push(`/room/${e.target.id}`);
+      history.push(`/room/${id}`);
     } else {
-      dispatch(setCurrentRoom({ selectedRoom: e.target.id }));
+      dispatch(setCurrentRoom({ selectedRoom: id }));
       dispatch(showModal());
     }
   }
 
   return (
-    <RoomItemWrapper>
+    <Container>
       <RoomItem width="80%">
         <RoomTitle>
           {room.title}
         </RoomTitle>
       </RoomItem>
       <RoomItem width="10%">
-        <RoomLinkCopy>
-          <RoomLink id={room._id} onClick={handleLinkCopyButton} />
-        </RoomLinkCopy>
+        <ButtonWrapper>
+          <RoomLink onClick={(e) => handleLinkCopyButton(e, room._id)}/>
+        </ButtonWrapper>
       </RoomItem>
       <RoomItem width="10%">
-        <RoomEnterButton>
-          <RoomEnter id={room._id} onClick={handleEnterRoomButton} />
-        </RoomEnterButton>
+        <ButtonWrapper>
+          <RoomEnter onClick={(e) => handleEnterRoomButton(e, room._id)}/>
+        </ButtonWrapper>
       </RoomItem>
-    </RoomItemWrapper>
+    </Container>
   )
 }
 
-const RoomItemWrapper = styled.div`
+const Container = styled.div`
   display: flex;
   justify-content: space-evenly;
   width: 100%;
@@ -67,20 +67,13 @@ const RoomTitle = styled.span`
   margin: auto;
 `;
 
-const RoomLinkCopy = styled.div`
-  width: 100%;
+const ButtonWrapper = styled.div`
   height: 50%;
   margin: auto 5px;
 `;
 
 const RoomLink = styled(Link)`
   cursor: pointer;
-`;
-
-const RoomEnterButton = styled.div`
-  width: 100%;
-  height: 50%;
-  margin: auto 5px;
 `;
 
 const RoomEnter = styled(LogIn)`
