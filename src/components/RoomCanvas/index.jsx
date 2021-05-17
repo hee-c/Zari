@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import styled from 'styled-components';
 import * as PIXI from 'pixi.js';
-import { Viewport } from 'pixi-viewport';
 import _ from 'lodash';
 
 import Player from '../../pixi/Player';
+import { createViewport, addViewportChildren } from '../../pixi/viewport';
 import { contain, collisionDetection, updateOnlineUserCoordinates } from '../../pixi';
 import { socket, socketApi } from '../../utils/socket';
 import {
@@ -45,18 +45,8 @@ export default function RoomCanvas() {
     setup();
 
     socket.open();
-    socketApi.joinRoom({
-      name: user.name,
-      email: user.email,
-      characterType: user.character,
-      roomId,
-      coordinates: {
-        x: initialRandomPositionX,
-        y: initialRandomPositionY,
-        vx: 0,
-        vy: 0,
-      },
-    });
+    socketApi.joinRoom(user, initialRandomPositionX, initialRandomPositionY, roomId);
+
     socket.on('receiveOnlineUsers', (receivedOnlineUsers) => {
       receivedOnlineUsers.forEach(onlineUser => {
         onlineUser.character = new Player(onlineUser.characterType, onlineUser.coordinates.x, onlineUser.coordinates.y);
@@ -95,14 +85,6 @@ export default function RoomCanvas() {
   }, []);
 
   function setup() {
-    viewport = new Viewport({
-      screenWidth: window.innerWidth,
-      screenHeight: window.innerHeight,
-      worldWidth: canvasWidth,
-      worldHeight: canvasHeight,
-      ticker: Ticker,
-    });
-
     background = new Sprite(TextureCache['background']);
     zari = new Graphics();
     zari.lineStyle(4, 0xFF3300, 1);
@@ -114,31 +96,23 @@ export default function RoomCanvas() {
     zari.videoId = 'gogoHEECHAN';
     player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
 
-    viewport.follow(player.sprite, {
-      speed: 0,
-      acceleration: null,
-      radius: null,
+    viewport = createViewport({
+      screenWidth: window.innerWidth,
+      screenHeight: window.innerHeight,
+      worldWidth: canvasWidth,
+      worldHeight: canvasHeight,
+      followingSprite: player.sprite,
     });
 
-    viewport.clamp({
-      direction: 'all',
-      underflow: 'center',
-    });
-
-    viewport.addChild(background);
-    viewport.addChild(zari);
-    viewport.addChild(player.sprite);
-    viewport.fit();
-    viewport.moveCenter(canvasWidth / 2, canvasHeight / 2);
-    viewport.scaled = 2;
+    addViewportChildren([background, zari, player.sprite]);
 
     window.onresize = () => {
       renderer.resize(window.innerWidth, window.innerHeight);
       viewport.resize(window.innerWidth, window.innerHeight);
     }
 
-    window.addEventListener("keydown", player.keyDownController.bind(player));
-    window.addEventListener("keyup", player.keyUpController.bind(player));
+    window.addEventListener("keydown", player.keyDownController);
+    window.addEventListener("keyup", player.keyUpController);
 
     Ticker.add(delta => gameLoop(delta));
   }
@@ -155,19 +129,9 @@ export default function RoomCanvas() {
     });
 
     if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
-      socketApi.changeCoordinates({
-        x: player.sprite.x,
-        y: player.sprite.y,
-        vx: player.sprite.vx,
-        vy: player.sprite.vy,
-      });
+      socketApi.changeCoordinates(player);
     } else if (player.left.isUp && player.up.isUp && player.right.isUp && player.down.isUp && player.sprite.prevAction === 'moving') {
-      socketApi.changeCoordinates({
-        x: player.sprite.x,
-        y: player.sprite.y,
-        vx: player.sprite.vx,
-        vy: player.sprite.vy,
-      });
+      socketApi.changeCoordinates(player);
     }
 
     player.sprite.play();
