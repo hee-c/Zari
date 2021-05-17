@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getRooms } from '../reducers/roomsSlice';
+import { showModal } from '../reducers/modalSlice';
 import PlaceListItem from '../components/PlaceListItem';
 import PlaceList from '../components/PlaceList';
 import Modal from '../components/shared/Modal';
@@ -13,6 +14,7 @@ export default function WaitingArea() {
   const dispatch = useDispatch();
   const rooms = useSelector(state => state.rooms.publicRooms);
   const { isDisplay } = useSelector(state => state.modal);
+  const [isFirstSelect, setIsFirstSelect] = useState(true);
 
   useEffect(() => {
     dispatch(getRooms());
@@ -21,7 +23,12 @@ export default function WaitingArea() {
   return (
     <Container>
       <LeftPannel>
-        <SideBar />
+        <SideBar>
+          <h1 onClick={() => {
+            setIsFirstSelect(false);
+            dispatch(showModal());
+          }}>캐릭터 변경하기</h1>
+        </SideBar>
       </LeftPannel>
       <RightPannel>
         <PlaceListContainer>
@@ -36,7 +43,7 @@ export default function WaitingArea() {
       </RightPannel>
       {isDisplay && (
         <Modal>
-          <CharacterSelection />
+          <CharacterSelection isFirstSelect={isFirstSelect}/>
         </Modal>
       )}
     </Container>

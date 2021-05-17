@@ -5,8 +5,9 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import CharacterCanvas from '../CharacterCanvas';
 import { setUserCharacter } from '../../reducers/userSlice';
+import { hideModal } from '../../reducers/modalSlice';
 
-export default function CharacterSelection() {
+export default function CharacterSelection({ isFirstSelect }) {
   const selectedCharacter = useRef('bald');
   const dispatch = useDispatch();
   const history = useHistory();
@@ -15,7 +16,11 @@ export default function CharacterSelection() {
   async function handleEnterButton() {
     await dispatch(setUserCharacter(selectedCharacter.current));
 
-    history.push(`/room/${currentRoom}`);
+    if (isFirstSelect) {
+      history.push(`/room/${currentRoom}`);
+    } else {
+      dispatch(hideModal());
+    }
   }
 
   return (
@@ -28,7 +33,7 @@ export default function CharacterSelection() {
       </CanvasWrapper>
       <ButtonWrapper>
         <Button onClick={handleEnterButton}>
-          입장
+          {isFirstSelect === true ? '입장하기' : '선택하기'}
         </Button>
       </ButtonWrapper>
     </Container>
