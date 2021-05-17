@@ -3,8 +3,8 @@ import * as PIXI from 'pixi.js';
 const resources = PIXI.Loader.shared.resources;
 
 export default class Player {
-  constructor(characterType, x, y) {
-    const sheet = new PIXI.BaseTexture.from(resources[characterType].url);
+  constructor(type, x, y) {
+    const sheet = new PIXI.BaseTexture.from(resources[type].url);
     const w = 32;
     const h = 32;
 
