@@ -3,11 +3,27 @@ import io from 'socket.io-client';
 export const socket = io.connect(process.env.REACT_APP_SERVER_URL);
 
 export const socketApi = {
-  joinRoom: (payload) => {
-    socket.emit('joinRoom', payload);
+  joinRoom: (user, x, y, roomId) => {
+    socket.emit('joinRoom', {
+      name: user.name,
+      email: user.email,
+      characterType: user.character,
+      roomId,
+      coordinates: {
+        x,
+        y,
+        vx: 0,
+        vy: 0,
+      },
+    });
   },
-  changeCoordinates: (payload) => {
-    socket.emit('changeCoordinates', payload);
+  changeCoordinates: (player) => {
+    socket.emit('changeCoordinates', {
+      x: player.sprite.x,
+      y: player.sprite.y,
+      vx: player.sprite.vx,
+      vy: player.sprite.vy,
+    });
   },
   joinVideoChat: (videoChatId) => {
     socket.emit('join videoChat', videoChatId);

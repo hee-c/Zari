@@ -1,12 +1,12 @@
 import * as PIXI from 'pixi.js';
 
-let resources = PIXI.Loader.shared.resources;
+const resources = PIXI.Loader.shared.resources;
 
 export default class Player {
   constructor(characterType, x, y) {
-    let sheet = new PIXI.BaseTexture.from(resources[characterType].url);
-    let w = 32;
-    let h = 32;
+    const sheet = new PIXI.BaseTexture.from(resources[characterType].url);
+    const w = 32;
+    const h = 32;
 
     this.width = w;
     this.height = h;
@@ -77,7 +77,7 @@ export default class Player {
     this.sprite.prevAction = null;
   }
 
-  keyDownController(event) {
+  keyDownController = (event) => {
     this.sprite.play();
 
     switch (event.keyCode) {
@@ -132,7 +132,7 @@ export default class Player {
     event.preventDefault();
   }
 
-  keyUpController(event) {
+  keyUpController = (event) => {
     switch (event.keyCode) {
       case 37: {
         if (this.left.isDown) {
