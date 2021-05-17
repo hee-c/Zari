@@ -120,6 +120,11 @@ export default function RoomCanvas() {
       radius: null,
     });
 
+    viewport.clamp({
+      direction: 'all',
+      underflow: 'center',
+    });
+
     viewport.addChild(background);
     viewport.addChild(zari);
     viewport.addChild(player.sprite);
