@@ -50,6 +50,7 @@ const Container = styled.div`
   align-content: center;
   overflow: hidden;
   background: url('./images/background/11.gif') no-repeat center center fixed;
+  filter: brightness(115%);
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -63,6 +64,7 @@ const LoginContainer = styled.div`
   height: 30%;
   margin: auto;
   background-color: white;
+  box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
 `;
 

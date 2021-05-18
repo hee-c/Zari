@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { LogIn, Link } from 'react-feather';
 
 import { showModal } from '../../reducers/modalSlice';
 import { setCurrentRoom } from '../../reducers/roomsSlice';
@@ -11,10 +10,6 @@ export default function RoomList({ room }) {
   const { character } = useSelector(state => state.user.data);
   const dispatch = useDispatch();
   const history = useHistory();
-
-  function handleLinkCopyButton(e, id) {
-    navigator.clipboard.writeText(`${process.env.REACT_APP_SERVER_URL}/room/${id}`);
-  }
 
   function handleEnterRoomButton(e, id) {
     if (character) {
@@ -26,56 +21,59 @@ export default function RoomList({ room }) {
   }
 
   return (
-    <Container>
-      <RoomItem width="80%">
-        <RoomTitle>
-          {room.title}
-        </RoomTitle>
-      </RoomItem>
-      <RoomItem width="10%">
-        <ButtonWrapper>
-          <RoomLink onClick={(e) => handleLinkCopyButton(e, room._id)}/>
-        </ButtonWrapper>
-      </RoomItem>
-      <RoomItem width="10%">
-        <ButtonWrapper>
-          <RoomEnter onClick={(e) => handleEnterRoomButton(e, room._id)}/>
-        </ButtonWrapper>
-      </RoomItem>
+    <Container onClick={(e) => handleEnterRoomButton(e, room._id)}>
+      <BackGroundImage src={`./images/thumbnails/${room.map}.png`} />
+      <ContentWrapper>
+        <RoomItem>
+          <RoomTitle>
+            {room.title}
+          </RoomTitle>
+        </RoomItem>
+      </ContentWrapper>
     </Container>
   )
 }
 
 const Container = styled.div`
+  position: relative;
   display: flex;
-  justify-content: space-evenly;
   width: 100%;
-  height: 50px;
+  height: 200px;
+  margin-bottom: 30px;
+  overflow: hidden;
+  cursor: pointer;
 
-  &:hover {
-    background-color: lightgray;
+  &:hover img {
+    transform: scale(1.2);
+    transition: all .5s;
   }
+`;
+
+const ContentWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+`;
+
+const BackGroundImage = styled.img`
+  background-size: cover;
+  filter: blur(2px) grayscale(20%);
+  width: 100%;
+  height: 100%;
 `;
 
 const RoomItem = styled.div`
   display: flex;
-  width: ${props => props.width};
-  height: 100%;
-`;
-
-const RoomTitle = styled.span`
+  width: fit-content;
+  height: fit-content;
   margin: auto;
 `;
 
-const ButtonWrapper = styled.div`
-  height: 50%;
-  margin: auto 5px;
-`;
-
-const RoomLink = styled(Link)`
-  cursor: pointer;
-`;
-
-const RoomEnter = styled(LogIn)`
-  cursor: pointer;
+const RoomTitle = styled.span`
+  color: white;
+  font-size: 40px;
 `;

@@ -12,7 +12,8 @@ export default function PlaceList({ children }) {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  max-width: 900px;
   width: 100%;
-  height: 100%;
-  border: 1px solid black;
+  height: fit-content;
+  margin: 0 auto;
 `;

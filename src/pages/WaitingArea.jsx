@@ -8,6 +8,7 @@ import PlaceList from '../components/PlaceList';
 import Modal from '../components/shared/Modal';
 import CharacterSelection from '../components/CharacterSelection';
 import Header from '../components/shared/Header';
+import WelcomeImage from '../components/WelcomeImage';
 
 export default function WaitingArea() {
   const dispatch = useDispatch();
@@ -22,6 +23,9 @@ export default function WaitingArea() {
   return (
     <Container>
       <Header setIsFirstSelect={setIsFirstSelect}/>
+      <WelcomeImageContainer>
+        <WelcomeImage />
+      </WelcomeImageContainer>
       <PlaceListContainer>
         <PlaceList>
           {rooms?.map(room => {
@@ -47,9 +51,15 @@ const Container = styled.div`
   height: 100vh;
 `;
 
+const WelcomeImageContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 60%;
+`;
+
 const PlaceListContainer = styled.div`
   display: flex;
-  margin: auto;
+  margin: 50px 0;
   width: 100%;
-  height: 100%;
+  height: fit-content;
 `;
