@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 import Room from '../../pages/Room';
 import WaitingArea from '../../pages/WaitingArea';
 import Home from '../../pages/Home';
+import PrivateRoute from '../../helpers/PrivateRoute';
 import { imageLoader } from '../../pixi';
 
 export default function App() {
@@ -17,12 +18,12 @@ export default function App() {
         <Route exact path="/">
           <Home />
         </Route>
-        <Route path="/waitingarea">
+        <PrivateRoute path="/waitingarea">
           <WaitingArea />
-        </Route>
-        <Route path="/room/:roomId">
+        </PrivateRoute>
+        <PrivateRoute path="/room/:roomId">
           <Room />
-        </Route>
+        </PrivateRoute>
         <Route path="*">
           <Redirect to="/" />
         </Route>
