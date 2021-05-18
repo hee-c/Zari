@@ -2,12 +2,21 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import UserProfile from '../../UserProfile';
 import { showModal } from '../../../reducers/modalSlice';
+import { logout } from '../../../reducers/userSlice';
 
 export default function Nav({ setIsFirstSelect }) {
   const user = useSelector(state => state.user);
   const dispatch = useDispatch();
+
+  function handleLogoutClick() {
+    dispatch(logout());
+  }
+
+  function handleChangeCharacter() {
+    setIsFirstSelect(false);
+    dispatch(showModal());
+  }
 
   return (
     <Container>
@@ -19,21 +28,20 @@ export default function Nav({ setIsFirstSelect }) {
         </NavLeft>
         <NavRight>
           <NavItem>
-            <Text
-              onClick={() => {
-                setIsFirstSelect(false);
-                dispatch(showModal());
-              }}
-            >
+            <Text onClick={handleChangeCharacter}>
               캐릭터 변경
             </Text>
           </NavItem>
           <NavItem>
-            <UserProfile />
+            <Text>
+              {user.data?.name}
+            </Text>
           </NavItem>
           {user?.status && (
             <NavItem>
-              <Text>로그아웃</Text>
+              <Text onClick={handleLogoutClick}>
+                로그아웃
+              </Text>
             </NavItem>
           )}
         </NavRight>
@@ -45,9 +53,11 @@ export default function Nav({ setIsFirstSelect }) {
 const Container = styled.div`
   position: sticky;
   display: flex;
+  background-color: white;
   top: 0;
   width: 100%;
   height: 70px;
+  z-index: 7;
 `;
 
 const NavContainer = styled.div`

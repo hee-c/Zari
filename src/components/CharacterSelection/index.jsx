@@ -23,17 +23,28 @@ export default function CharacterSelection({ isFirstSelect }) {
     }
   }
 
+  function handleCancelButton() {
+    dispatch(hideModal());
+  }
+
   return (
     <Container>
       <TitleWrapper>
-        <h2>Select your character!</h2>
+        <h1>캐릭터를 선택하세요</h1>
       </TitleWrapper>
       <CanvasWrapper>
         <CharacterCanvas selectedCharacter={selectedCharacter}/>
       </CanvasWrapper>
       <ButtonWrapper>
+        <Button onClick={handleCancelButton}>
+          <span>
+            취소
+          </span>
+        </Button>
         <Button onClick={handleEnterButton}>
-          {isFirstSelect === true ? '입장하기' : '선택하기'}
+          <span>
+            {isFirstSelect === true ? '입장' : '선택'}
+          </span>
         </Button>
       </ButtonWrapper>
     </Container>
@@ -51,22 +62,37 @@ const Container = styled.div`
 const TitleWrapper = styled.div`
   display: flex;
   width: 100%;
-  height: 10%;
+  height: 20%;
   justify-content: center;
 `;
 
 const CanvasWrapper = styled.div`
   display: flex;
   width: 100%;
-  height: 80%;
-
+  height: 60%;
 `;
 
 const ButtonWrapper = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   width: 100%;
   height: 10%;
 `;
 
-const Button = styled.button``;
+const Button = styled.button`
+  margin: 10px 20px;
+  padding: 10px 20px;
+  background-color: #74b9ff;
+  border-radius: 5px;
+  border: 1px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0984e3;
+  }
+
+  & span {
+    font-size: 15px;
+    font-weight: 600;
+  }
+`;

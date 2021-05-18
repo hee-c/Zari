@@ -42,10 +42,10 @@ const Container = styled.div`
   margin-bottom: 30px;
   overflow: hidden;
   cursor: pointer;
+  border-radius: 10px;
 
   &:hover img {
     transform: scale(1.2);
-    transition: all .5s;
   }
 `;
 
@@ -61,9 +61,10 @@ const ContentWrapper = styled.div`
 
 const BackGroundImage = styled.img`
   background-size: cover;
-  filter: blur(2px) grayscale(20%);
+  filter: blur(2px);
   width: 100%;
   height: 100%;
+  transition: all .5s;
 `;
 
 const RoomItem = styled.div`
@@ -75,5 +76,6 @@ const RoomItem = styled.div`
 
 const RoomTitle = styled.span`
   color: white;
-  font-size: 40px;
+  font-size: 60px;
+  font-weight: 800;
 `;

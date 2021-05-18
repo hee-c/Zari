@@ -9,7 +9,7 @@ export default function CharacterCanvas({ selectedCharacter }) {
 
   let app = new PIXI.Application({
     width: 200,
-    height: 200,
+    height: 120,
     antialias: true,
     transparent: true,
   });
@@ -47,7 +47,7 @@ export default function CharacterCanvas({ selectedCharacter }) {
 
       character.sprite = new Sprite(texture);
       character.sprite.x = 52;
-      character.sprite.y = 52;
+      character.sprite.y = 10;
       character.sprite.scale.set(3, 3);
     });
 
@@ -55,15 +55,17 @@ export default function CharacterCanvas({ selectedCharacter }) {
     leftButtonTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
     let leftButton = new Sprite(leftButtonTexture);
     leftButton.x = 30;
-    leftButton.y = 90;
+    leftButton.y = 45;
     leftButton.interactive = true;
+    leftButton.buttonMode = true;
 
     let rightButtonTexture = TextureCache['rightButton'];
     rightButtonTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
     let rightButton = new Sprite(rightButtonTexture);
     rightButton.x = 155;
-    rightButton.y = 90;
+    rightButton.y = 45;
     rightButton.interactive = true;
+    rightButton.buttonMode = true;
 
     app.stage.addChild(characters[characterIndex].sprite);
     app.stage.addChild(leftButton);

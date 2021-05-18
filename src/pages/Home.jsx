@@ -84,16 +84,17 @@ const LoginButton = styled.div`
   font-family: system-ui, sans-serif;
   font-weight: 500;
   font-size: 16px;
-  width: 200px;
+  width: fit-content;
+  padding: 10px;
   margin: auto;
   line-height: 40px;
   border-radius: 20px;
   cursor: pointer;
   box-sizing: border-box;
-  border: 1px solid #d6d9dc;
+  border: 1px solid #989ca1;
   text-align: center;
   background: #FFF;
-  color: #535a60
+  color: black;
 `;
 
 const GoogleIcon = styled.svg`
