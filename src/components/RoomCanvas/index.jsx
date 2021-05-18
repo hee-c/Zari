@@ -23,7 +23,7 @@ export default function RoomCanvas() {
   const TextureCache = PIXI.utils.TextureCache,
     Sprite = PIXI.Sprite,
     Ticker = PIXI.Ticker.shared;
-  let background, player, renderer, viewport, targetUser;
+  let background, player, renderer, viewport, targetUser, joinedChatSpace;
   let state = play;
   const videoChatSpaces = [];
   const onlineUsers = new Map();
@@ -87,7 +87,8 @@ export default function RoomCanvas() {
 
   function setup() {
     background = new Sprite(TextureCache['beach']);
-    let table = new VideoChatSpace('table', 120, 300, 'gogoHEECHAN');
+    let beachUmbrella = new VideoChatSpace('beachUmbrella', 200, 400, 'beachUmbrella');
+    let sunbeds = new VideoChatSpace('sunbeds', 400, 400, 'sunbeds');
     player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
 
     viewport = createViewport({
@@ -98,8 +99,11 @@ export default function RoomCanvas() {
       followingSprite: player.sprite,
     });
 
-    videoChatSpaces.push(table);
-    addViewportChildren([background, videoChatSpaces[0].sprite, player.sprite]);
+    videoChatSpaces.push(beachUmbrella, sunbeds);
+
+    viewport.addChild(background)
+    addViewportChildren(videoChatSpaces.map(space => space.sprite));
+    viewport.addChild(player.sprite)
 
     window.onresize = () => {
       renderer.resize(window.innerWidth, window.innerHeight);
@@ -140,16 +144,18 @@ export default function RoomCanvas() {
       onlineUser.character.sprite.y = onlineUser.coordinates.y + onlineUser.coordinates.vy;
     });
 
-    if (!player.isVideoChatParticipant && collisionDetection(player, videoChatSpaces[0].sprite, true)) {
-      player.isVideoChatParticipant = true;
-      dispatch(joinVideoChat({ videoChatId: videoChatSpaces[0].spaceId }));
-      // TODO 얘는 collisionDetection을 배열에서 돌아야함.
-    }
+    videoChatSpaces.forEach(space => {
+      if (!player.isVideoChatParticipant && collisionDetection(player, space.sprite, true)) {
+        player.isVideoChatParticipant = true;
+        joinedChatSpace = space.sprite;
+        dispatch(joinVideoChat({ videoChatId: space.spaceId }));
+      }
+    });
 
-    if (player.isVideoChatParticipant && !collisionDetection(player, videoChatSpaces[0].sprite, true)) {
+    if (joinedChatSpace && player.isVideoChatParticipant && !collisionDetection(player, joinedChatSpace, true)) {
       player.isVideoChatParticipant = false;
+      joinedChatSpace = null;
       dispatch(leaveVideoChat());
-      // TODO 얘는 참가한 비디오 스페이스를 저장해둔 다음에 그거랑만 collisionDetection 하면될듯. zari 대신에 selectedSpace 뭐 ㅇ런걸로
     }
 
     if (viewport.dirty || player.sprite.vx !== 0 || player.sprite.vy !== 0) {

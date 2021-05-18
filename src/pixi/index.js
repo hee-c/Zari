@@ -6,7 +6,8 @@ export function imageLoader(callback) {
   loader
     .add('park', '../images/maps/park.png')
     .add('beach', '../images/maps/beach.png')
-    .add('table', '../images/videoChatSpaces/table.png')
+    .add('beachUmbrella', '../images/videoChatSpaces/beachUmbrella.png')
+    .add('sunbeds', '../images/videoChatSpaces/sunbeds.png')
     .add('bald', '../images/characters/bald.png')
     .add('braided', '../images/characters/braided.png')
     .add('business', '../images/characters/business.png')
