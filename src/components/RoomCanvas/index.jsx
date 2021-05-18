@@ -7,6 +7,7 @@ import _ from 'lodash';
 
 import Player from '../../pixi/Player';
 import { createViewport, addViewportChildren } from '../../pixi/viewport';
+import VideoChatSpace from '../../pixi/VideoChatSpace';
 import { contain, collisionDetection, updateOnlineUserCoordinates } from '../../pixi';
 import { socket, socketApi } from '../../utils/socket';
 import {
@@ -21,15 +22,15 @@ export default function RoomCanvas() {
   const user = useSelector(state => state.user.data, shallowEqual);
   const TextureCache = PIXI.utils.TextureCache,
     Sprite = PIXI.Sprite,
-    Ticker = PIXI.Ticker.shared,
-    Graphics = PIXI.Graphics;
-  let background, player, renderer, viewport, zari, targetUser;
+    Ticker = PIXI.Ticker.shared;
+  let background, player, renderer, viewport, targetUser;
   let state = play;
+  const videoChatSpaces = [];
   const onlineUsers = new Map();
   const initialRandomPositionX = _.random(50, 400);
-  const initialRandomPositionY = _.random(600, 1000);
+  const initialRandomPositionY = _.random(350, 500);
   const canvasWidth = 1000;
-  const canvasHeight = 1500;
+  const canvasHeight = 1000;
 
   renderer = new PIXI.Renderer({
     backgroundAlpha: 0,
@@ -86,14 +87,7 @@ export default function RoomCanvas() {
 
   function setup() {
     background = new Sprite(TextureCache['beach']);
-    zari = new Graphics();
-    zari.lineStyle(4, 0xFF3300, 1);
-    zari.beginFill(0x66CCFF);
-    zari.drawRect(0, 0, 200, 200);
-    zari.endFill();
-    zari.x = 170;
-    zari.y = 700;
-    zari.videoId = 'gogoHEECHAN';
+    let table = new VideoChatSpace('table', 120, 300, 'gogoHEECHAN');
     player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
 
     viewport = createViewport({
@@ -104,7 +98,8 @@ export default function RoomCanvas() {
       followingSprite: player.sprite,
     });
 
-    addViewportChildren([background, zari, player.sprite]);
+    videoChatSpaces.push(table);
+    addViewportChildren([background, videoChatSpaces[0].sprite, player.sprite]);
 
     window.onresize = () => {
       renderer.resize(window.innerWidth, window.innerHeight);
@@ -122,7 +117,7 @@ export default function RoomCanvas() {
   }
 
   function play(delta) {
-    contain(player.sprite, { x: 50, y: 600, width: canvasWidth, height: canvasHeight });
+    contain(player.sprite, { x: 50, y: 300, width: canvasWidth, height: canvasHeight });
 
     onlineUsers.forEach(onlineUser => {
       collisionDetection(player, onlineUser.character.sprite);
@@ -145,14 +140,16 @@ export default function RoomCanvas() {
       onlineUser.character.sprite.y = onlineUser.coordinates.y + onlineUser.coordinates.vy;
     });
 
-    if (!player.isVideoChatParticipant && collisionDetection(player, zari, true)) {
+    if (!player.isVideoChatParticipant && collisionDetection(player, videoChatSpaces[0].sprite, true)) {
       player.isVideoChatParticipant = true;
-      dispatch(joinVideoChat({ videoChatId: zari.videoId }));
+      dispatch(joinVideoChat({ videoChatId: videoChatSpaces[0].spaceId }));
+      // TODO 얘는 collisionDetection을 배열에서 돌아야함.
     }
 
-    if (player.isVideoChatParticipant && !collisionDetection(player, zari, true)) {
+    if (player.isVideoChatParticipant && !collisionDetection(player, videoChatSpaces[0].sprite, true)) {
       player.isVideoChatParticipant = false;
       dispatch(leaveVideoChat());
+      // TODO 얘는 참가한 비디오 스페이스를 저장해둔 다음에 그거랑만 collisionDetection 하면될듯. zari 대신에 selectedSpace 뭐 ㅇ런걸로
     }
 
     if (viewport.dirty || player.sprite.vx !== 0 || player.sprite.vy !== 0) {
