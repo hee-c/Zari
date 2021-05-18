@@ -7,12 +7,12 @@ import { showModal } from '../../reducers/modalSlice';
 import { setCurrentRoom } from '../../reducers/roomsSlice';
 
 export default function RoomList({ room }) {
-  const { character } = useSelector(state => state.user.data);
+  const user = useSelector(state => state.user.data);
   const dispatch = useDispatch();
   const history = useHistory();
 
   function handleEnterRoomButton(e, id) {
-    if (character) {
+    if (user?.character) {
       history.push(`/room/${id}`);
     } else {
       dispatch(setCurrentRoom({ selectedRoom: id }));

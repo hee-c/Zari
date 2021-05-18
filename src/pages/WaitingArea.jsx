@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getRooms } from '../reducers/roomsSlice';
+import { getUserDataByToken } from '../reducers/userSlice';
 import PlaceListItem from '../components/PlaceListItem';
 import PlaceList from '../components/PlaceList';
 import Modal from '../components/shared/Modal';
@@ -17,6 +18,10 @@ export default function WaitingArea() {
   const [isFirstSelect, setIsFirstSelect] = useState(true);
 
   useEffect(() => {
+    if (localStorage.getItem('accessToken')) {
+      dispatch(getUserDataByToken());
+    }
+
     dispatch(getRooms());
   }, [dispatch]);
 

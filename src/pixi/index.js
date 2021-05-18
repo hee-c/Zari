@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 
 let loader = PIXI.Loader.shared;
 
-export function imageLoader(callback) {
+export function imageLoader() {
   loader
     .add('park', '../images/maps/park.png')
     .add('beach', '../images/maps/beach.png')
@@ -20,7 +20,7 @@ export function imageLoader(callback) {
     .add('yangachi', '../images/characters/yangachi.png')
     .add('leftButton', '../images/leftButton.svg')
     .add('rightButton', '../images/rightButton.svg')
-    .load(callback);
+    .load();
 }
 
 export function contain(sprite, container) {

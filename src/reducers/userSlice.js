@@ -7,7 +7,9 @@ export const getUserDataByToken = createAsyncThunk(
   async (history) => {
     const response = await getUserData();
 
-    history.push('/waitingarea');
+    if (history) {
+      history.push('/waitingarea');
+    }
 
     return response;
   },
