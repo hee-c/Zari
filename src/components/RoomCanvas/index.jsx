@@ -6,6 +6,7 @@ import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 
 import Player from '../../pixi/Player';
+import Controller from '../../pixi/Controller';
 import { createViewport, addViewportChildren } from '../../pixi/viewport';
 import VideoChatSpace from '../../pixi/VideoChatSpace';
 import { contain, collisionDetection, updateOnlineUserCoordinates } from '../../pixi';
@@ -23,7 +24,7 @@ export default function RoomCanvas() {
   const TextureCache = PIXI.utils.TextureCache,
     Sprite = PIXI.Sprite,
     Ticker = PIXI.Ticker.shared;
-  let background, player, renderer, viewport, targetUser, joinedChatSpace;
+  let background, player, renderer, viewport, targetUser, joinedChatSpace, controller;
   let state = play;
   const videoChatSpaces = [];
   const onlineUsers = new Map();
@@ -110,8 +111,10 @@ export default function RoomCanvas() {
       viewport.resize(window.innerWidth, window.innerHeight);
     }
 
-    window.addEventListener("keydown", player.keyDownController);
-    window.addEventListener("keyup", player.keyUpController);
+    controller = new Controller(player);
+
+    window.addEventListener("keydown", controller.keyDownController);
+    window.addEventListener("keyup", controller.keyUpController);
 
     Ticker.add(delta => gameLoop(delta));
   }
@@ -169,7 +172,6 @@ export default function RoomCanvas() {
     </CanvasContainer>
   )
 }
-
 
 const CanvasContainer = styled.div`
   display: flex;
