@@ -3,12 +3,11 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getRooms } from '../reducers/roomsSlice';
-import { showModal } from '../reducers/modalSlice';
 import PlaceListItem from '../components/PlaceListItem';
 import PlaceList from '../components/PlaceList';
 import Modal from '../components/shared/Modal';
 import CharacterSelection from '../components/CharacterSelection';
-import SideBar from '../components/shared/SideBar';
+import Header from '../components/shared/Header';
 
 export default function WaitingArea() {
   const dispatch = useDispatch();
@@ -22,25 +21,16 @@ export default function WaitingArea() {
 
   return (
     <Container>
-      <LeftPannel>
-        <SideBar>
-          <h1 onClick={() => {
-            setIsFirstSelect(false);
-            dispatch(showModal());
-          }}>캐릭터 변경하기</h1>
-        </SideBar>
-      </LeftPannel>
-      <RightPannel>
-        <PlaceListContainer>
-          <PlaceList>
-            {rooms?.map(room => {
-              return (
-                <PlaceListItem room={room} key={room._id} />
-              );
-            })}
-          </PlaceList>
-        </PlaceListContainer>
-      </RightPannel>
+      <Header setIsFirstSelect={setIsFirstSelect}/>
+      <PlaceListContainer>
+        <PlaceList>
+          {rooms?.map(room => {
+            return (
+              <PlaceListItem room={room} key={room._id} />
+            );
+          })}
+        </PlaceList>
+      </PlaceListContainer>
       {isDisplay && (
         <Modal>
           <CharacterSelection isFirstSelect={isFirstSelect}/>
@@ -52,27 +42,14 @@ export default function WaitingArea() {
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100vw;
   height: 100vh;
-`;
-
-const LeftPannel = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 20%;
-  height: 100%;
-  border: 1px solid black;
-`;
-
-const RightPannel = styled.div`
-  display: flex;
-  width: 80%;
-  height: 100%;
 `;
 
 const PlaceListContainer = styled.div`
   display: flex;
   margin: auto;
-  width: 70%;
-  height: 70%;
+  width: 100%;
+  height: 100%;
 `;
