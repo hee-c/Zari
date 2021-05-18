@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux'
 
@@ -7,6 +7,10 @@ import RoomVideos from '../components/RoomVideos';
 
 export default function Room() {
   const { isVideoConnected, videoChatId } = useSelector(state => state.videoChat);
+
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  }, []);
 
   return (
     <Container>
