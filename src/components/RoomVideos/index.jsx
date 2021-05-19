@@ -122,7 +122,6 @@ export default function RoomVideos({ roomId }) {
   );
 }
 
-
 const Container = styled.div`
   position: fixed;
   margin: 30px;

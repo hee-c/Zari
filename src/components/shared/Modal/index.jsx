@@ -25,6 +25,7 @@ const ModalContainer = styled.div`
   transition: all .3s ease-in-out .3s;
   overflow: hidden;
   outline: 0;
+  z-index: 5;
 `;
 
 const ModalBackground = styled.div`
@@ -35,6 +36,7 @@ const ModalBackground = styled.div`
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.4);
   cursor: pointer;
+  z-index: 2;
 `;
 
 const ModalContent = styled.div`

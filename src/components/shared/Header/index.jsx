@@ -60,7 +60,7 @@ const Container = styled.div`
   top: 0;
   width: 100%;
   height: 70px;
-  z-index: 7;
+  z-index: 1;
 `;
 
 const NavContainer = styled.div`

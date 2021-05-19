@@ -78,4 +78,5 @@ const RoomTitle = styled.span`
   color: white;
   font-size: 60px;
   font-weight: 800;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 `;
