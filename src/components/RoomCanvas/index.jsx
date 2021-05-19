@@ -5,10 +5,13 @@ import styled from 'styled-components';
 import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 
+import { mapData } from '../../constants/mapData';
+import { socket, socketApi } from '../../utils/socket';
+import { joinVideoChat, leaveVideoChat } from '../../reducers/videoChatSlice';
 import Player from '../../pixi/Player';
 import Controller from '../../pixi/Controller';
-import { createViewport, addViewportChildren } from '../../pixi/viewport';
 import VideoChatSpace from '../../pixi/VideoChatSpace';
+import { createViewport, addViewportChildren } from '../../pixi/viewport';
 import {
   contain,
   collisionDetection,
@@ -16,28 +19,23 @@ import {
   isUserInVideoChatSpace,
   isUserLeaveVideoChatSpace,
 } from '../../pixi';
-import { socket, socketApi } from '../../utils/socket';
-import {
-  joinVideoChat,
-  leaveVideoChat,
-} from '../../reducers/videoChatSlice';
 
 export default function RoomCanvas() {
   const canvas = useRef();
   const { roomId } = useParams();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.data, shallowEqual);
-  const TextureCache = PIXI.utils.TextureCache,
-    Sprite = PIXI.Sprite,
-    Ticker = PIXI.Ticker.shared;
-  let background, player, renderer, viewport, targetUser, joinedChatSpace, controller;
-  let state = play;
+
+  const TextureCache = PIXI.utils.TextureCache;
+  const Sprite = PIXI.Sprite;
+  const Ticker = PIXI.Ticker.shared;
+
   const videoChatSpaces = [];
   const onlineUsers = new Map();
   const initialRandomPositionX = _.random(50, 400);
   const initialRandomPositionY = _.random(350, 500);
-  const canvasWidth = 1000;
-  const canvasHeight = 1000;
+  let background, player, renderer, viewport, targetUser, joinedChatSpace, controller, mapWidth, mapHeight;
+  let state = play;
 
   renderer = new PIXI.Renderer({
     backgroundAlpha: 0,
@@ -88,6 +86,8 @@ export default function RoomCanvas() {
 
     return () => {
       canvas.current = null;
+
+      socket.emit('userLeaveRoom');
       socket.close();
     }
   }, []);
@@ -95,14 +95,16 @@ export default function RoomCanvas() {
   function setup() {
     let beachUmbrella = new VideoChatSpace('beachUmbrella', 200, 400, 'beachUmbrella');
     let sunbeds = new VideoChatSpace('sunbeds', 400, 400, 'sunbeds');
-    background = new Sprite(TextureCache['beach']);
     player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
+    background = new Sprite(TextureCache['miami']);
+    mapWidth = background.width;
+    mapHeight = background.height;
 
     viewport = createViewport({
       screenWidth: window.innerWidth,
       screenHeight: window.innerHeight,
-      worldWidth: canvasWidth,
-      worldHeight: canvasHeight,
+      worldWidth: mapWidth,
+      worldHeight: mapHeight,
       followingSprite: player.sprite,
     });
 
@@ -130,7 +132,7 @@ export default function RoomCanvas() {
   }
 
   function play(delta) {
-    contain(player.sprite, { x: 50, y: 300, width: canvasWidth, height: canvasHeight });
+    contain(player.sprite, mapData.miami.contain);
 
     onlineUsers.forEach(onlineUser => {
       collisionDetection(player, onlineUser.character.sprite);
