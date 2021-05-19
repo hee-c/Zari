@@ -9,7 +9,13 @@ import Player from '../../pixi/Player';
 import Controller from '../../pixi/Controller';
 import { createViewport, addViewportChildren } from '../../pixi/viewport';
 import VideoChatSpace from '../../pixi/VideoChatSpace';
-import { contain, collisionDetection, updateOnlineUserCoordinates } from '../../pixi';
+import {
+  contain,
+  collisionDetection,
+  updateOnlineUserCoordinates,
+  isUserInVideoChatSpace,
+  isUserLeaveVideoChatSpace,
+} from '../../pixi';
 import { socket, socketApi } from '../../utils/socket';
 import {
   joinVideoChat,
@@ -148,14 +154,14 @@ export default function RoomCanvas() {
     });
 
     videoChatSpaces.forEach(space => {
-      if (!player.isVideoChatParticipant && collisionDetection(player, space.sprite, true)) {
+      if (isUserInVideoChatSpace(player, space)) {
         player.isVideoChatParticipant = true;
         joinedChatSpace = space.sprite;
         dispatch(joinVideoChat({ videoChatId: space.spaceId }));
       }
     });
 
-    if (joinedChatSpace && player.isVideoChatParticipant && !collisionDetection(player, joinedChatSpace, true)) {
+    if (isUserLeaveVideoChatSpace(joinedChatSpace, player)) {
       player.isVideoChatParticipant = false;
       joinedChatSpace = null;
       dispatch(leaveVideoChat());

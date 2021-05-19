@@ -125,3 +125,11 @@ export function updateOnlineUserCoordinates(targetUser, coordinates) {
     }
   }
 }
+
+export function isUserInVideoChatSpace(player, space) {
+  return !player.isVideoChatParticipant && collisionDetection(player, space.sprite, true);
+}
+
+export function isUserLeaveVideoChatSpace(joinedChatSpace, player) {
+  return joinedChatSpace && player.isVideoChatParticipant && !collisionDetection(player, joinedChatSpace, true);
+}
