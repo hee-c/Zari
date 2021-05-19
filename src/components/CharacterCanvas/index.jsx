@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import * as PIXI from 'pixi.js';
 
+import Button from '../../pixi/Button';
+
 export default function CharacterCanvas({ selectedCharacter }) {
   const TextureCache = PIXI.utils.TextureCache;
   const Sprite = PIXI.Sprite;
@@ -51,33 +53,20 @@ export default function CharacterCanvas({ selectedCharacter }) {
       character.sprite.scale.set(3, 3);
     });
 
-    let leftButtonTexture = TextureCache['leftButton'];
-    leftButtonTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
-    let leftButton = new Sprite(leftButtonTexture);
-    leftButton.x = 30;
-    leftButton.y = 45;
-    leftButton.interactive = true;
-    leftButton.buttonMode = true;
-
-    let rightButtonTexture = TextureCache['rightButton'];
-    rightButtonTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
-    let rightButton = new Sprite(rightButtonTexture);
-    rightButton.x = 155;
-    rightButton.y = 45;
-    rightButton.interactive = true;
-    rightButton.buttonMode = true;
+    let leftButton = new Button('leftButton', 30, 45);
+    let rightButton = new Button('rightButton', 155, 45);
 
     app.stage.addChild(characters[characterIndex].sprite);
-    app.stage.addChild(leftButton);
-    app.stage.addChild(rightButton);
+    app.stage.addChild(leftButton.sprite);
+    app.stage.addChild(rightButton.sprite);
 
-    leftButton.on('click', () => {
+    leftButton.sprite.on('click', () => {
       app.stage.removeChild(characters[characterIndex].sprite);
       characterIndex = characterIndex - 1 < 0 ? 9 : characterIndex - 1;
       selectedCharacter.current = characters[characterIndex].type;
       app.stage.addChild(characters[characterIndex].sprite);
     });
-    rightButton.on('click', () => {
+    rightButton.sprite.on('click', () => {
       app.stage.removeChild(characters[characterIndex].sprite);
       characterIndex = characterIndex + 1 > 9 ? 0 : characterIndex + 1;
       selectedCharacter.current = characters[characterIndex].type;
