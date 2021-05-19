@@ -93,9 +93,9 @@ export default function RoomCanvas() {
   }, []);
 
   function setup() {
-    background = new Sprite(TextureCache['beach']);
     let beachUmbrella = new VideoChatSpace('beachUmbrella', 200, 400, 'beachUmbrella');
     let sunbeds = new VideoChatSpace('sunbeds', 400, 400, 'sunbeds');
+    background = new Sprite(TextureCache['beach']);
     player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
 
     viewport = createViewport({

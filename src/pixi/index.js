@@ -44,15 +44,15 @@ export function contain(sprite, container) {
 export function collisionDetection(player, object, isNonblocking) {
   let hit = true;
 
-  let playerCenterX = player.sprite.x + player.sprite.width / 2;
-  let playerCenterY = player.sprite.y + player.sprite.height / 2;
-  let objectCenterX = object.x + object.width / 2;
-  let objectCenterY = object.y + object.height / 2;
-
   let playerHalfWidth = player.sprite.width / 2;
   let playerHalfHeight = player.sprite.height / 2;
   let objectHalfWidth = object.width / 2;
   let objectHalfHeight = object.height / 2;
+
+  let playerCenterX = player.sprite.x + playerHalfWidth;
+  let playerCenterY = player.sprite.y + playerHalfHeight;
+  let objectCenterX = object.x + objectHalfWidth;
+  let objectCenterY = object.y + objectHalfHeight;
 
   let vx = playerCenterX - objectCenterX;
   let vy = playerCenterY - objectCenterY;
@@ -65,11 +65,13 @@ export function collisionDetection(player, object, isNonblocking) {
       if (player.down.isDown || player.up.isDown) {
         if (!isNonblocking) {
           player.sprite.y -= player.sprite.vy;
+          player.sprite.vy = 0
         }
       }
       if (player.left.isDown || player.right.isDown) {
         if (!isNonblocking) {
           player.sprite.x -= player.sprite.vx;
+          player.sprite.vx = 0
         }
       }
     } else {

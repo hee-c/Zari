@@ -8,8 +8,6 @@ export default class Player {
     const w = 32;
     const h = 32;
 
-    this.width = w;
-    this.height = h;
     this.movementSpeed = 2;
     this.isVideoChatParticipant = false;
     this.playerSheet = {};
@@ -67,6 +65,8 @@ export default class Player {
     this.sprite = new PIXI.AnimatedSprite(this.playerSheet.standSouth);
     this.sprite.animationSpeed = 0.2;
     this.sprite.anchor.set(0.5, 0.5);
+    this.sprite.width = w;
+    this.sprite.height = h;
     this.sprite.x = x;
     this.sprite.y = y;
     this.sprite.vx = 0;

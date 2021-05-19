@@ -125,11 +125,11 @@ export default function RoomVideos({ roomId }) {
 
 const Container = styled.div`
   position: fixed;
-  margin: 50px;
+  margin: 30px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: auto;
-  gap: 10px;
+  gap: 30px;
 `;
 
 const StyledVideo = styled.video`
