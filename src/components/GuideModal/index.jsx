@@ -15,26 +15,26 @@ export default function GuideModal() {
         <GuideContentWrapper>
           <Title>조작법</Title>
         </GuideContentWrapper>
-        <DivideLine/>
+        <DivideLine />
         <GuideContentWrapper>
           <Text>캐릭터 이동</Text>
           <KeyBoxContainer>
-            <KeyBox color="#eccc68">
-              {extendStyledComponent(ArrowUp)}
+            <KeyBox color="#fed330">
+              <ArrowUpKey color="white" />
             </KeyBox>
-            <KeyBox color="#eccc68">
-              {extendStyledComponent(ArrowDown)}
+            <KeyBox color="#fed330">
+              <ArrowDownKey color="white" />
             </KeyBox>
-            <KeyBox color="#eccc68">
-              {extendStyledComponent(ArrowLeft)}
+            <KeyBox color="#fed330">
+              <ArrowLeftKey color="white" />
             </KeyBox>
-            <KeyBox color="#eccc68">
-              {extendStyledComponent(ArrowRight)}
+            <KeyBox color="#fed330">
+              <ArrowRightKey color="white" />
             </KeyBox>
           </KeyBoxContainer>
         </GuideContentWrapper>
         <GuideContentWrapper>
-          <Text>채팅공간 개설</Text>
+          <Text>채팅공간 선택</Text>
           <KeyBoxContainer>
             <KeyBox color="#78e08f">
               <KeyText>1</KeyText>
@@ -50,13 +50,29 @@ export default function GuideModal() {
             </KeyBox>
           </KeyBoxContainer>
         </GuideContentWrapper>
+        <GuideContentWrapper>
+          <Text>선택 취소</Text>
+          <KeyBoxContainer>
+            <KeyBox color="#fc5c65">
+              <KeyText>Esc</KeyText>
+            </KeyBox>
+          </KeyBoxContainer>
+        </GuideContentWrapper>
+        <GuideContentWrapper>
+          <Text>채팅공간 개설</Text>
+          <KeyBoxContainer>
+            <KeyBox color="#4b7bec">
+              <KeyText>Space</KeyText>
+            </KeyBox>
+          </KeyBoxContainer>
+        </GuideContentWrapper>
       </GuideContent>
-    <ButtonContainer>
-      <HelpButton
-        size={48}
-        onClick={handleClickHelpCircle}
-      />
-    </ButtonContainer>
+      <ButtonContainer>
+        <HelpButton
+          size={48}
+          onClick={handleClickHelpCircle}
+        />
+      </ButtonContainer>
     </>
   );
 }
@@ -84,6 +100,7 @@ const GuideContent = styled.div`
   flex-direction: column;
   align-content: center;
   width: auto;
+  min-width: 220px;
   height: auto;
   margin-left: 30px;
   padding: 10px;
@@ -112,7 +129,7 @@ const Text = styled.span`
 
 const KeyBoxContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 40px);
+  grid-template-columns: repeat(4, auto);
   grid-auto-rows: 40px;
   gap: 5px;
 `;
@@ -132,10 +149,18 @@ const KeyText = styled.span`
   font-size: 20px;
 `;
 
-function extendStyledComponent(component) {
-  const NewComponent = styled(component)`
-    margin: auto;
-  `;
+const ArrowUpKey = styled(ArrowUp)`
+  margin: auto;
+`;
 
-  return <NewComponent color="white"/>;
-}
+const ArrowDownKey = styled(ArrowDown)`
+  margin: auto;
+`;
+
+const ArrowLeftKey = styled(ArrowLeft)`
+  margin: auto;
+`;
+
+const ArrowRightKey = styled(ArrowRight)`
+  margin: auto;
+`;
