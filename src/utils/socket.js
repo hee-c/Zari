@@ -25,6 +25,9 @@ export const socketApi = {
       vy: player.sprite.vy,
     });
   },
+  setVideoChatSpace: (space) => {
+    socket.emit('setVideoChatSpace', space);
+  },
   joinVideoChat: (videoChatId) => {
     socket.emit('join videoChat', videoChatId);
   },

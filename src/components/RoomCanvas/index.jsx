@@ -11,7 +11,7 @@ import { joinVideoChat, leaveVideoChat } from '../../reducers/videoChatSlice';
 import Player from '../../pixi/Player';
 import Controller from '../../pixi/Controller';
 import VideoChatSpace from '../../pixi/VideoChatSpace';
-import { createViewport, addViewportChildren } from '../../pixi/viewport';
+import { createViewport } from '../../pixi/viewport';
 import {
   contain,
   collisionDetection,
@@ -32,7 +32,6 @@ export default function RoomCanvas() {
   const Ticker = PIXI.Ticker.shared;
   const Container = PIXI.Container;
 
-  const videoChatSpaces = [];
   const onlineUsers = new Map();
   const initialRandomPositionX = _.random(50, 400);
   const initialRandomPositionY = _.random(350, 500);
@@ -53,12 +52,19 @@ export default function RoomCanvas() {
     socket.open();
     socketApi.joinRoom(user, initialRandomPositionX, initialRandomPositionY, roomId);
 
-    socket.on('receiveOnlineUsers', (receivedOnlineUsers) => {
+    socket.on('receiveOnlineUsers', (receivedOnlineUsers, videChatSpaces) => {
       receivedOnlineUsers.forEach(onlineUser => {
         onlineUser.character = new Player(onlineUser.characterType, onlineUser.coordinates.x, onlineUser.coordinates.y);
         onlineUsers.set(onlineUser.email, onlineUser);
         viewport.addChild(onlineUser.character.sprite);
       });
+
+      if (videChatSpaces) {
+        videChatSpaces.forEach(space => {
+          const newVideoChanSpace = new VideoChatSpace(space.type, space.x, space.y, space.spaceId);
+          videoChatContainer.addChild(newVideoChanSpace.sprite);
+        })
+      }
 
       renderer.render(viewport);
     });
@@ -80,6 +86,12 @@ export default function RoomCanvas() {
       targetUser = onlineUsers.get(leftUser.email);
       viewport.removeChild(targetUser.character.sprite);
       onlineUsers.delete(leftUser.email);
+
+      renderer.render(viewport);
+    });
+    socket.on('newVideoChatSpace', (space) => {
+      const newVideoChanSpace = new VideoChatSpace(space.type, space.x, space.y, space.spaceId);
+      videoChatContainer.addChild(newVideoChanSpace.sprite);
 
       renderer.render(viewport);
     });
