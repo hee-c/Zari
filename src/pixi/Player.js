@@ -75,5 +75,33 @@ export default class Player {
     this.sprite.isStanding = true;
     this.sprite.collision = false;
     this.sprite.prevAction = null;
+    this.newVideoChatSpaceLocationX = 0;
+    this.newVideoChatSpaceLocationY = 0;
+  }
+
+  updateNewVideoChatSpaceLocation = () => {
+    switch (this.sprite.direction) {
+      case 'west': {
+        this.newVideoChatSpaceLocationX = this.sprite.x - 90;
+        this.newVideoChatSpaceLocationY = this.sprite.y - 10;
+        break;
+      }
+      case 'north': {
+        this.newVideoChatSpaceLocationX = this.sprite.x - 30;
+        this.newVideoChatSpaceLocationY = this.sprite.y - 90;
+        break;
+      }
+      case 'east': {
+        this.newVideoChatSpaceLocationX = this.sprite.x + 50;
+        this.newVideoChatSpaceLocationY = this.sprite.y - 20;
+        break;
+      }
+      case 'south': {
+        this.newVideoChatSpaceLocationX = this.sprite.x - 20;
+        this.newVideoChatSpaceLocationY = this.sprite.y + 50;
+        break;
+      }
+      default: {}
+    }
   }
 }
