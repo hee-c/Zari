@@ -41,21 +41,12 @@ export default function RoomCanvas() {
   };
   const initialRandomPositionX = _.random(50, 400);
   const initialRandomPositionY = _.random(350, 500);
-  let background, player, renderer, viewport, targetUser, joinedChatSpace, controller, mapWidth, mapHeight, videoChatContainer, previewVideoChatContainer;
+  let background, player, renderer, viewport, targetUser, joinedChatSpace, controller, mapWidth, mapHeight, videoChatContainer, previewVideoChatContainer, handlePreviewVideoChat;
   let state = play;
-
-  renderer = new PIXI.Renderer({
-    backgroundAlpha: 0,
-    width: window.innerWidth,
-    height: window.innerHeight,
-    resolution: window.devicePixelRatio,
-    antialias: true,
-  });
 
   useEffect(() => {
     setup();
 
-    socket.open();
     socketApi.joinRoom(user, initialRandomPositionX, initialRandomPositionY, roomId);
 
     socket.on('receiveOnlineUsers', (receivedOnlineUsers, videChatSpaces) => {
@@ -105,12 +96,28 @@ export default function RoomCanvas() {
     return () => {
       canvas.current = null;
 
+      window.removeEventListener('keydown', handlePreviewVideoChat);
+      window.removeEventListener('keydown', controller.keyDownController);
+      window.removeEventListener('keyup', controller.keyUpController);
+
+      socket.removeAllListeners('receiveOnlineUsers');
+      socket.removeAllListeners('newUserJoin');
+      socket.removeAllListeners('updateUserCoordinates');
+      socket.removeAllListeners('userLeave');
+      socket.removeAllListeners('newVideoChatSpace');
       socket.emit('userLeaveRoom');
-      socket.close();
     }
   }, []);
 
   function setup() {
+    renderer = new PIXI.Renderer({
+      backgroundAlpha: 0,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      resolution: window.devicePixelRatio,
+      antialias: true,
+    });
+
     canvas.current.appendChild(renderer.view);
 
     player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
@@ -144,12 +151,14 @@ export default function RoomCanvas() {
 
     controller = new Controller(player);
 
-    window.addEventListener("keydown", (event) => {
+    handlePreviewVideoChat = function (event) {
       handleKeyDown(event, player, videoChatContainer, previewVideoChatContainer, previewStatus);
       renderer.render(viewport);
-    });
-    window.addEventListener("keydown", controller.keyDownController);
-    window.addEventListener("keyup", controller.keyUpController);
+    }
+
+    window.addEventListener('keydown', handlePreviewVideoChat);
+    window.addEventListener('keydown', controller.keyDownController);
+    window.addEventListener('keyup', controller.keyUpController);
 
     Ticker.add(delta => gameLoop(delta));
   }
