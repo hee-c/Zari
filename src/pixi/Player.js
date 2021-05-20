@@ -82,18 +82,18 @@ export default class Player {
   updateNewVideoChatSpaceLocation = () => {
     switch (this.sprite.direction) {
       case 'west': {
-        this.newVideoChatSpaceLocationX = this.sprite.x - 90;
+        this.newVideoChatSpaceLocationX = this.sprite.x - 85;
         this.newVideoChatSpaceLocationY = this.sprite.y - 10;
         break;
       }
       case 'north': {
-        this.newVideoChatSpaceLocationX = this.sprite.x - 30;
+        this.newVideoChatSpaceLocationX = this.sprite.x - 20;
         this.newVideoChatSpaceLocationY = this.sprite.y - 90;
         break;
       }
       case 'east': {
         this.newVideoChatSpaceLocationX = this.sprite.x + 50;
-        this.newVideoChatSpaceLocationY = this.sprite.y - 20;
+        this.newVideoChatSpaceLocationY = this.sprite.y - 10;
         break;
       }
       case 'south': {

@@ -108,7 +108,7 @@ export function updateOnlineUserCoordinates(targetUser, coordinates) {
     targetUser.sprite.textures = targetUser.playerSheet.walkNorth;
     targetUser.sprite.isStanding = false;
     targetUser.sprite.direction = 'north';
-  } else if (coordinates.vy === 0 && coordinates.vx === 0){
+  } else if (coordinates.vy === 0 && coordinates.vx === 0) {
     targetUser.sprite.isStanding = true;
 
     switch (targetUser.sprite.direction) {
@@ -128,7 +128,7 @@ export function updateOnlineUserCoordinates(targetUser, coordinates) {
         targetUser.sprite.textures = targetUser.playerSheet.standSouth;
         break;
       }
-      default: {}
+      default: { }
     }
   }
 }
@@ -141,52 +141,78 @@ export function isUserLeaveVideoChatSpace(joinedChatSpace, player) {
   return joinedChatSpace && player.isVideoChatParticipant && !collisionDetection(player, joinedChatSpace, true);
 }
 
-export function handleKeyDown(event, player, container) {
-  switch(event.keyCode) {
-    case 49: {
-      const newSpace = new videoChatSpaces('beachUmbrellaPurple', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
-      container.addChild(newSpace.sprite);
-      socketApi.setVideoChatSpace({
-        type: newSpace.sprite.type,
-        x: newSpace.sprite.x,
-        y: newSpace.sprite.y,
-        spaceId: newSpace.sprite.spaceId,
-      });
+export function handleKeyDown(event, player, container, previewContainer, data) {
+  switch (event.code) {
+    case 'Digit1': {
+      if (data.isPreviewExist === false) {
+        const previewSpace = new videoChatSpaces('beachUmbrellaPurple', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
+
+        previewContainer.addChild(previewSpace.sprite);
+        data.currentPreview = previewSpace.sprite;
+        data.isPreviewExist = true;
+        data.selectedType = 'beachUmbrellaPurple';
+      }
       break;
     }
-    case 50: {
-      const newSpace = new videoChatSpaces('beachUmbrellaRed', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
-      container.addChild(newSpace.sprite);
-      socketApi.setVideoChatSpace({
-        type: newSpace.sprite.type,
-        x: newSpace.sprite.x,
-        y: newSpace.sprite.y,
-        spaceId: newSpace.sprite.spaceId,
-      });
+    case 'Digit2': {
+      if (data.isPreviewExist === false) {
+        const previewSpace = new videoChatSpaces('beachUmbrellaRed', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
+
+        previewContainer.addChild(previewSpace.sprite);
+        data.currentPreview = previewSpace.sprite;
+        data.isPreviewExist = true;
+        data.selectedType = 'beachUmbrellaRed';
+      }
       break;
     }
-    case 51: {
-      const newSpace = new videoChatSpaces('sunbedsPurple', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
-      container.addChild(newSpace.sprite);
-      socketApi.setVideoChatSpace({
-        type: newSpace.sprite.type,
-        x: newSpace.sprite.x,
-        y: newSpace.sprite.y,
-        spaceId: newSpace.sprite.spaceId,
-      });
+    case 'Digit3': {
+      if (data.isPreviewExist === false) {
+        const previewSpace = new videoChatSpaces('sunbedsPurple', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
+
+        previewContainer.addChild(previewSpace.sprite);
+        data.currentPreview = previewSpace.sprite;
+        data.isPreviewExist = true;
+        data.selectedType = 'sunbedsPurple';
+      }
       break;
     }
-    case 52: {
-      const newSpace = new videoChatSpaces('sunbedsRed', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
-      container.addChild(newSpace.sprite);
-      socketApi.setVideoChatSpace({
-        type: newSpace.sprite.type,
-        x: newSpace.sprite.x,
-        y: newSpace.sprite.y,
-        spaceId: newSpace.sprite.spaceId,
-      });
+    case 'Digit4': {
+      if (data.isPreviewExist === false) {
+        const previewSpace = new videoChatSpaces('sunbedsRed', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
+
+        previewContainer.addChild(previewSpace.sprite);
+        data.currentPreview = previewSpace.sprite;
+        data.isPreviewExist = true;
+        data.selectedType = 'sunbedsRed';
+      }
       break;
     }
-    default: {}
+    case 'Escape': {
+      if (data.isPreviewExist) {
+        previewContainer.removeChild(data.currentPreview);
+        data.currentPreview = null;
+        data.isPreviewExist = false;
+      }
+      break;
+    }
+    case 'Space': {
+      if (data.isPreviewExist) {
+        previewContainer.removeChild(data.currentPreview);
+        data.currentPreview = null;
+        data.isPreviewExist = false;
+
+        const newSpace = new videoChatSpaces(data.selectedType, player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
+        container.addChild(newSpace.sprite);
+
+        socketApi.setVideoChatSpace({
+          type: newSpace.sprite.type,
+          x: newSpace.sprite.x,
+          y: newSpace.sprite.y,
+          spaceId: newSpace.sprite.spaceId,
+        });
+      }
+      break;
+    }
+    default: { }
   }
 }

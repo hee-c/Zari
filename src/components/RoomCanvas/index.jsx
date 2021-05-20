@@ -33,9 +33,15 @@ export default function RoomCanvas() {
   const Container = PIXI.Container;
 
   const onlineUsers = new Map();
+  const previewStatus = {
+    isPreviewExist: false,
+    isCancelPreview: false,
+    currentPreview: null,
+    selectedType: '',
+  };
   const initialRandomPositionX = _.random(50, 400);
   const initialRandomPositionY = _.random(350, 500);
-  let background, player, renderer, viewport, targetUser, joinedChatSpace, controller, mapWidth, mapHeight, videoChatContainer;
+  let background, player, renderer, viewport, targetUser, joinedChatSpace, controller, mapWidth, mapHeight, videoChatContainer, previewVideoChatContainer;
   let state = play;
 
   renderer = new PIXI.Renderer({
@@ -112,6 +118,9 @@ export default function RoomCanvas() {
     mapWidth = background.width;
     mapHeight = background.height;
 
+    previewVideoChatContainer = new Container();
+    previewVideoChatContainer.width = mapWidth;
+    previewVideoChatContainer.height = mapHeight;
     videoChatContainer = new Container();
     videoChatContainer.width = mapWidth;
     videoChatContainer.height = mapHeight;
@@ -125,7 +134,7 @@ export default function RoomCanvas() {
     });
 
     viewport.addChild(background);
-    viewport.addChild(videoChatContainer);
+    viewport.addChild(previewVideoChatContainer, videoChatContainer);
     viewport.addChild(player.sprite);
 
     window.onresize = () => {
@@ -136,7 +145,7 @@ export default function RoomCanvas() {
     controller = new Controller(player);
 
     window.addEventListener("keydown", (event) => {
-      handleKeyDown(event, player, videoChatContainer);
+      handleKeyDown(event, player, videoChatContainer, previewVideoChatContainer, previewStatus);
       renderer.render(viewport);
     });
     window.addEventListener("keydown", controller.keyDownController);
@@ -190,6 +199,11 @@ export default function RoomCanvas() {
     if (viewport.dirty || player.sprite.vx !== 0 || player.sprite.vy !== 0) {
       renderer.render(viewport);
       viewport.dirty = false;
+    }
+
+    if (previewStatus.currentPreview) {
+      previewStatus.currentPreview.x = player.newVideoChatSpaceLocationX;
+      previewStatus.currentPreview.y = player.newVideoChatSpaceLocationY;
     }
   }
 
