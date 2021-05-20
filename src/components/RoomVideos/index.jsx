@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Peer from "simple-peer";
 
+import { leaveVideoChat } from '../../reducers/videoChatSlice';
 import { socket, socketApi } from '../../utils/socket';
+console.log('RoomVideos mount')
 
 const videoConstraints = {
   height: window.innerHeight / 2,
@@ -10,6 +13,7 @@ const videoConstraints = {
 };
 
 export default function RoomVideos({ roomId }) {
+  const dispatch = useDispatch();
   const [peers, setPeers] = useState([]);
   const userVideo = useRef();
   let peersRef = useRef([]);
@@ -73,6 +77,9 @@ export default function RoomVideos({ roomId }) {
 
     return () => {
       peersRef.current = [];
+
+      dispatch(leaveVideoChat());
+
       socket.removeAllListeners("all users");
       socket.removeAllListeners("user joined");
       socket.removeAllListeners("receiving returned signal");
