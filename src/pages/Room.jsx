@@ -17,7 +17,9 @@ export default function Room() {
       dispatch(getUserDataByToken());
     }
 
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => stream.getTracks().forEach(track => track.stop()));
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(stream => stream.getTracks().forEach(track => track.stop()))
+      .catch(err => console.log(err));
   }, []);
 
   return (

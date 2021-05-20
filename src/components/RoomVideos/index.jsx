@@ -69,7 +69,7 @@ export default function RoomVideos({ roomId }) {
 
         setPeers(peers => peers.filter(peer => peer.peerID !== id));
       });
-    });
+    }).catch(err => console.log(err));
 
     return () => {
       peersRef.current = [];
