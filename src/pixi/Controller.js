@@ -16,6 +16,7 @@ export default class Controller {
         }
         this.player.left.isDown = true;
         this.player.left.isUp = false;
+        this.player.sprite.direction = 'west'
         break;
       }
       case 38: {
@@ -27,6 +28,7 @@ export default class Controller {
         }
         this.player.up.isDown = true;
         this.player.up.isUp = false;
+        this.player.sprite.direction = 'north'
         break;
       }
       case 39: {
@@ -38,6 +40,7 @@ export default class Controller {
         }
         this.player.right.isDown = true;
         this.player.right.isUp = false;
+        this.player.sprite.direction = 'east'
         break;
       }
       case 40: {
@@ -49,12 +52,14 @@ export default class Controller {
         }
         this.player.down.isDown = true;
         this.player.down.isUp = false;
+        this.player.sprite.direction = 'south'
         break;
       }
       default: {
         break;
       }
     }
+    this.player.updateNewVideoChatSpaceLocation();
     event.preventDefault();
   }
 
@@ -67,6 +72,7 @@ export default class Controller {
         }
         this.player.left.isDown = false;
         this.player.left.isUp = true;
+        this.player.sprite.direction = 'west'
         break;
       }
       case 38: {
@@ -76,6 +82,7 @@ export default class Controller {
         }
         this.player.up.isDown = false;
         this.player.up.isUp = true;
+        this.player.sprite.direction = 'north'
         break;
       }
       case 39: {
@@ -85,6 +92,7 @@ export default class Controller {
         }
         this.player.right.isDown = false;
         this.player.right.isUp = true;
+        this.player.sprite.direction = 'east'
         break;
       }
       case 40: {
@@ -94,12 +102,14 @@ export default class Controller {
         }
         this.player.down.isDown = false;
         this.player.down.isUp = true;
+        this.player.sprite.direction = 'south'
         break;
       }
       default: {
         break;
       }
     }
+    this.player.updateNewVideoChatSpaceLocation();
     this.player.sprite.prevAction = 'moving';
     event.preventDefault();
   }

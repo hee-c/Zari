@@ -18,6 +18,7 @@ import {
   updateOnlineUserCoordinates,
   isUserInVideoChatSpace,
   isUserLeaveVideoChatSpace,
+  handleKeyDown,
 } from '../../pixi';
 
 export default function RoomCanvas() {
@@ -29,12 +30,13 @@ export default function RoomCanvas() {
   const TextureCache = PIXI.utils.TextureCache;
   const Sprite = PIXI.Sprite;
   const Ticker = PIXI.Ticker.shared;
+  const Container = PIXI.Container;
 
   const videoChatSpaces = [];
   const onlineUsers = new Map();
   const initialRandomPositionX = _.random(50, 400);
   const initialRandomPositionY = _.random(350, 500);
-  let background, player, renderer, viewport, targetUser, joinedChatSpace, controller, mapWidth, mapHeight;
+  let background, player, renderer, viewport, targetUser, joinedChatSpace, controller, mapWidth, mapHeight, videoChatContainer;
   let state = play;
 
   renderer = new PIXI.Renderer({
@@ -46,8 +48,6 @@ export default function RoomCanvas() {
   });
 
   useEffect(() => {
-    canvas.current.appendChild(renderer.view);
-
     setup();
 
     socket.open();
@@ -93,12 +93,16 @@ export default function RoomCanvas() {
   }, []);
 
   function setup() {
-    let beachUmbrella = new VideoChatSpace('beachUmbrella', 200, 400, 'beachUmbrella');
-    let sunbeds = new VideoChatSpace('sunbeds', 400, 400, 'sunbeds');
+    canvas.current.appendChild(renderer.view);
+
     player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
     background = new Sprite(TextureCache['miami']);
     mapWidth = background.width;
     mapHeight = background.height;
+
+    videoChatContainer = new Container();
+    videoChatContainer.width = mapWidth;
+    videoChatContainer.height = mapHeight;
 
     viewport = createViewport({
       screenWidth: window.innerWidth,
@@ -108,11 +112,9 @@ export default function RoomCanvas() {
       followingSprite: player.sprite,
     });
 
-    videoChatSpaces.push(beachUmbrella, sunbeds);
-
-    viewport.addChild(background)
-    addViewportChildren(videoChatSpaces.map(space => space.sprite));
-    viewport.addChild(player.sprite)
+    viewport.addChild(background);
+    viewport.addChild(videoChatContainer);
+    viewport.addChild(player.sprite);
 
     window.onresize = () => {
       renderer.resize(window.innerWidth, window.innerHeight);
@@ -121,6 +123,10 @@ export default function RoomCanvas() {
 
     controller = new Controller(player);
 
+    window.addEventListener("keydown", (event) => {
+      handleKeyDown(event, player, videoChatContainer);
+      renderer.render(viewport);
+    });
     window.addEventListener("keydown", controller.keyDownController);
     window.addEventListener("keyup", controller.keyUpController);
 
@@ -155,10 +161,10 @@ export default function RoomCanvas() {
       onlineUser.character.sprite.y = onlineUser.coordinates.y + onlineUser.coordinates.vy;
     });
 
-    videoChatSpaces.forEach(space => {
+    videoChatContainer.children.forEach(space => {
       if (isUserInVideoChatSpace(player, space)) {
         player.isVideoChatParticipant = true;
-        joinedChatSpace = space.sprite;
+        joinedChatSpace = space;
         dispatch(joinVideoChat({ videoChatId: space.spaceId }));
       }
     });

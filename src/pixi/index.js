@@ -1,5 +1,8 @@
 import * as PIXI from 'pixi.js';
 
+import videoChatSpaces from './VideoChatSpace';
+import { socketApi } from '../utils/socket';
+
 let loader = PIXI.Loader.shared;
 
 export function imageLoader() {
@@ -129,9 +132,37 @@ export function updateOnlineUserCoordinates(targetUser, coordinates) {
 }
 
 export function isUserInVideoChatSpace(player, space) {
-  return !player.isVideoChatParticipant && collisionDetection(player, space.sprite, true);
+  return !player.isVideoChatParticipant && collisionDetection(player, space, true);
 }
 
 export function isUserLeaveVideoChatSpace(joinedChatSpace, player) {
   return joinedChatSpace && player.isVideoChatParticipant && !collisionDetection(player, joinedChatSpace, true);
+}
+
+export function handleKeyDown(event, player, container) {
+  switch(event.keyCode) {
+    case 49: {
+      const newSpace = new videoChatSpaces('beachUmbrella', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
+      container.addChild(newSpace.sprite);
+      socketApi.setVideoChatSpace({
+        type: newSpace.sprite.type,
+        x: newSpace.sprite.x,
+        y: newSpace.sprite.y,
+        spaceId: newSpace.sprite.spaceId,
+      });
+      break;
+    }
+    case 50: {
+      const newSpace = new videoChatSpaces('sunbeds', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
+      container.addChild(newSpace.sprite);
+      socketApi.setVideoChatSpace({
+        type: newSpace.sprite.type,
+        x: newSpace.sprite.x,
+        y: newSpace.sprite.y,
+        spaceId: newSpace.sprite.spaceId,
+      });
+      break;
+    }
+    default: {}
+  }
 }
