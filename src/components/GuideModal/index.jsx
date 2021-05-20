@@ -15,19 +15,20 @@ export default function GuideModal() {
         <GuideContentWrapper>
           <Title>조작법</Title>
         </GuideContentWrapper>
+        <DivideLine/>
         <GuideContentWrapper>
           <Text>캐릭터 이동</Text>
           <KeyBoxContainer>
-            <KeyBox color="#863b0a">
+            <KeyBox color="#eccc68">
               {extendStyledComponent(ArrowUp)}
             </KeyBox>
-            <KeyBox color="#863b0a">
+            <KeyBox color="#eccc68">
               {extendStyledComponent(ArrowDown)}
             </KeyBox>
-            <KeyBox color="#863b0a">
+            <KeyBox color="#eccc68">
               {extendStyledComponent(ArrowLeft)}
             </KeyBox>
-            <KeyBox color="#863b0a">
+            <KeyBox color="#eccc68">
               {extendStyledComponent(ArrowRight)}
             </KeyBox>
           </KeyBoxContainer>
@@ -35,11 +36,17 @@ export default function GuideModal() {
         <GuideContentWrapper>
           <Text>채팅공간 개설</Text>
           <KeyBoxContainer>
-            <KeyBox color="#7e6000">
+            <KeyBox color="#78e08f">
               <KeyText>1</KeyText>
             </KeyBox>
-            <KeyBox color="#7e6000">
+            <KeyBox color="#78e08f">
               <KeyText>2</KeyText>
+            </KeyBox>
+            <KeyBox color="#78e08f">
+              <KeyText>3</KeyText>
+            </KeyBox>
+            <KeyBox color="#78e08f">
+              <KeyText>4</KeyText>
             </KeyBox>
           </KeyBoxContainer>
         </GuideContentWrapper>
@@ -59,6 +66,10 @@ const ButtonContainer = styled.div`
   bottom: 0;
   left: 0;
   margin: 30px;
+`;
+
+const DivideLine = styled.hr`
+  width: 100%;
 `;
 
 const HelpButton = styled(HelpCircle)`

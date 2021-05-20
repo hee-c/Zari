@@ -9,8 +9,10 @@ export function imageLoader() {
   loader
     .add('park', '../images/maps/park.png')
     .add('miami', '../images/maps/miami.png')
-    .add('beachUmbrella', '../images/videoChatSpaces/beachUmbrella.png')
-    .add('sunbeds', '../images/videoChatSpaces/sunbeds.png')
+    .add('beachUmbrellaPurple', '../images/videoChatSpaces/beachUmbrella-purple.png')
+    .add('beachUmbrellaRed', '../images/videoChatSpaces/beachUmbrella-red.png')
+    .add('sunbedsPurple', '../images/videoChatSpaces/sunbeds-purple.png')
+    .add('sunbedsRed', '../images/videoChatSpaces/sunbeds-red.png')
     .add('bald', '../images/characters/bald.png')
     .add('braided', '../images/characters/braided.png')
     .add('business', '../images/characters/business.png')
@@ -142,7 +144,7 @@ export function isUserLeaveVideoChatSpace(joinedChatSpace, player) {
 export function handleKeyDown(event, player, container) {
   switch(event.keyCode) {
     case 49: {
-      const newSpace = new videoChatSpaces('beachUmbrella', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
+      const newSpace = new videoChatSpaces('beachUmbrellaPurple', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
       container.addChild(newSpace.sprite);
       socketApi.setVideoChatSpace({
         type: newSpace.sprite.type,
@@ -153,7 +155,29 @@ export function handleKeyDown(event, player, container) {
       break;
     }
     case 50: {
-      const newSpace = new videoChatSpaces('sunbeds', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
+      const newSpace = new videoChatSpaces('beachUmbrellaRed', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
+      container.addChild(newSpace.sprite);
+      socketApi.setVideoChatSpace({
+        type: newSpace.sprite.type,
+        x: newSpace.sprite.x,
+        y: newSpace.sprite.y,
+        spaceId: newSpace.sprite.spaceId,
+      });
+      break;
+    }
+    case 51: {
+      const newSpace = new videoChatSpaces('sunbedsPurple', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
+      container.addChild(newSpace.sprite);
+      socketApi.setVideoChatSpace({
+        type: newSpace.sprite.type,
+        x: newSpace.sprite.x,
+        y: newSpace.sprite.y,
+        spaceId: newSpace.sprite.spaceId,
+      });
+      break;
+    }
+    case 52: {
+      const newSpace = new videoChatSpaces('sunbedsRed', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
       container.addChild(newSpace.sprite);
       socketApi.setVideoChatSpace({
         type: newSpace.sprite.type,
