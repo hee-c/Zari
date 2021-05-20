@@ -5,7 +5,6 @@ import Peer from "simple-peer";
 
 import { leaveVideoChat } from '../../reducers/videoChatSlice';
 import { socket, socketApi } from '../../utils/socket';
-console.log('RoomVideos mount')
 
 const videoConstraints = {
   height: window.innerHeight / 2,

@@ -13,6 +13,8 @@ export function imageLoader() {
     .add('beachUmbrellaRed', '../images/videoChatSpaces/beachUmbrella-red.png')
     .add('sunbedsPurple', '../images/videoChatSpaces/sunbeds-purple.png')
     .add('sunbedsRed', '../images/videoChatSpaces/sunbeds-red.png')
+    .add('blanket', '../images/videoChatSpaces/blanket.png')
+    .add('blanketLarge', '../images/videoChatSpaces/blanket-large.png')
     .add('bald', '../images/characters/bald.png')
     .add('braided', '../images/characters/braided.png')
     .add('business', '../images/characters/business.png')
@@ -184,6 +186,28 @@ export function handleKeyDown(event, player, container, previewContainer, data) 
         data.currentPreview = previewSpace.sprite;
         data.isPreviewExist = true;
         data.selectedType = 'sunbedsRed';
+      }
+      break;
+    }
+    case 'KeyV': {
+      if (data.isPreviewExist === false) {
+        const previewSpace = new videoChatSpaces('blanket', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
+
+        previewContainer.addChild(previewSpace.sprite);
+        data.currentPreview = previewSpace.sprite;
+        data.isPreviewExist = true;
+        data.selectedType = 'blanket';
+      }
+      break;
+    }
+    case 'KeyC': {
+      if (data.isPreviewExist === false) {
+        const previewSpace = new videoChatSpaces('blanketLarge', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
+
+        previewContainer.addChild(previewSpace.sprite);
+        data.currentPreview = previewSpace.sprite;
+        data.isPreviewExist = true;
+        data.selectedType = 'blanketLarge';
       }
       break;
     }

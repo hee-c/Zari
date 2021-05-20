@@ -41,7 +41,7 @@ export default function RoomCanvas() {
   };
   const initialRandomPositionX = _.random(50, 400);
   const initialRandomPositionY = _.random(350, 500);
-  let background, player, renderer, viewport, targetUser, joinedChatSpace, controller, mapWidth, mapHeight, videoChatContainer, previewVideoChatContainer, handlePreviewVideoChat;
+  let background, player, renderer, viewport, joinedChatSpace, controller, mapWidth, mapHeight, videoChatContainer, previewVideoChatContainer, handlePreviewVideoChat;
   let state = play;
 
   useEffect(() => {
@@ -73,14 +73,14 @@ export default function RoomCanvas() {
       renderer.render(viewport);
     });
     socket.on('updateUserCoordinates', (changedUser) => {
-      targetUser = onlineUsers.get(changedUser.email);
+      const targetUser = onlineUsers.get(changedUser.email);
       targetUser.coordinates = changedUser.coordinates;
       updateOnlineUserCoordinates(targetUser.character, targetUser.coordinates);
 
       renderer.render(viewport);
     });
     socket.on('userLeave', (leftUser) => {
-      targetUser = onlineUsers.get(leftUser.email);
+      const targetUser = onlineUsers.get(leftUser.email);
       viewport.removeChild(targetUser.character.sprite);
       onlineUsers.delete(leftUser.email);
 
