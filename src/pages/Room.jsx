@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import RoomCanvas from '../components/RoomCanvas';
 import RoomVideos from '../components/RoomVideos';
+import GuideModal from '../components/GuideModal';
 import { getUserDataByToken } from '../reducers/userSlice';
 
 export default function Room() {
@@ -21,10 +22,13 @@ export default function Room() {
 
   return (
     <Container>
-      <RoomCanvasContainer>
-        {isVideoConnected && <RoomVideos roomId={videoChatId} />}
-        {user && <RoomCanvas />}
-      </RoomCanvasContainer>
+      {isVideoConnected && <RoomVideos roomId={videoChatId} />}
+      {user && (
+        <>
+          <RoomCanvas />
+          <GuideModal />
+        </>
+      )}
     </Container>
   );
 }
@@ -33,11 +37,4 @@ const Container = styled.div`
   display: flex;
   width: 100vw;
   height: 100vh;
-`;
-
-const RoomCanvasContainer = styled.div`
-  position: relative;
-  display: flex;
-  width: 100%;
-  height: 100%;
 `;
