@@ -6,8 +6,8 @@ export default class Controller {
   keyDownController = (event) => {
     this.player.sprite.play();
 
-    switch (event.keyCode) {
-      case 37: {
+    switch (event.code) {
+      case 'ArrowLeft': {
         if (this.player.left.isUp) {
           this.player.sprite.textures = this.player.playerSheet.walkWest;
           this.player.sprite.vx = -this.player.movementSpeed;
@@ -19,7 +19,7 @@ export default class Controller {
         this.player.sprite.direction = 'west'
         break;
       }
-      case 38: {
+      case 'ArrowUp': {
         if (this.player.up.isUp) {
           this.player.sprite.textures = this.player.playerSheet.walkNorth;
           this.player.sprite.vy = -this.player.movementSpeed;
@@ -31,7 +31,7 @@ export default class Controller {
         this.player.sprite.direction = 'north'
         break;
       }
-      case 39: {
+      case 'ArrowRight': {
         if (this.player.right.isUp) {
           this.player.sprite.textures = this.player.playerSheet.walkEast;
           this.player.sprite.vx = this.player.movementSpeed;
@@ -43,7 +43,7 @@ export default class Controller {
         this.player.sprite.direction = 'east'
         break;
       }
-      case 40: {
+      case 'ArrowDown': {
         if (this.player.down.isUp) {
           this.player.sprite.textures = this.player.playerSheet.walkSouth;
           this.player.sprite.vy = this.player.movementSpeed;
@@ -64,8 +64,8 @@ export default class Controller {
   }
 
   keyUpController = (event) => {
-    switch (event.keyCode) {
-      case 37: {
+    switch (event.code) {
+      case 'ArrowLeft': {
         if (this.player.left.isDown) {
           this.player.sprite.textures = this.player.playerSheet.standWest;
           this.player.sprite.vx = 0;
@@ -75,7 +75,7 @@ export default class Controller {
         this.player.sprite.direction = 'west'
         break;
       }
-      case 38: {
+      case 'ArrowUp': {
         if (this.player.up.isDown) {
           this.player.sprite.textures = this.player.playerSheet.standNorth;
           this.player.sprite.vy = 0;
@@ -85,7 +85,7 @@ export default class Controller {
         this.player.sprite.direction = 'north'
         break;
       }
-      case 39: {
+      case 'ArrowRight': {
         if (this.player.right.isDown) {
           this.player.sprite.textures = this.player.playerSheet.standEast;
           this.player.sprite.vx = 0;
@@ -95,7 +95,7 @@ export default class Controller {
         this.player.sprite.direction = 'east'
         break;
       }
-      case 40: {
+      case 'ArrowDown': {
         if (this.player.down.isDown) {
           this.player.sprite.textures = this.player.playerSheet.standSouth;
           this.player.sprite.vy = 0;
