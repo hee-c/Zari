@@ -189,7 +189,7 @@ export function handleKeyDown(event, player, container, previewContainer, data) 
       }
       break;
     }
-    case 'KeyV': {
+    case 'Minus': {
       if (data.isPreviewExist === false) {
         const previewSpace = new videoChatSpaces('blanket', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
 
@@ -200,7 +200,7 @@ export function handleKeyDown(event, player, container, previewContainer, data) 
       }
       break;
     }
-    case 'KeyC': {
+    case 'Equal': {
       if (data.isPreviewExist === false) {
         const previewSpace = new videoChatSpaces('blanketLarge', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
 

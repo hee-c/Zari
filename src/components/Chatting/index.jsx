@@ -30,7 +30,6 @@ export default function Chatting({ user }) {
       chatScroll.current.scrollTop = chatScroll.current.scrollHeight;
     });
 
-
     return () => {
       socket.removeAllListeners('receiveMessage');
     }
@@ -61,9 +60,9 @@ export default function Chatting({ user }) {
             })}
           </TextContainer>
         </ChatTextContainer>
-        <form onSubmit={handleEnterPress}>
+        <ChatInputForm onSubmit={handleEnterPress}>
           <Input type="text" value={chatText} onChange={(e) => setChatText(e.target.value)}/>
-        </form>
+        </ChatInputForm>
       </ChatContainer>
     </>
   );
@@ -116,6 +115,11 @@ const TextItem = styled.div`
 
 const Text = styled.span`
   color: white;
+`;
+
+const ChatInputForm = styled.form`
+  display: flex;
+  flex-direction: column;
 `;
 
 const Input = styled.input`
