@@ -53,7 +53,7 @@ export default function Chatting({ user }) {
             {chatTextList.map((data, index) => {
               return (
                 <TextItem key={index}>
-                  <Text>{data.user}:</Text>
+                  <UserNickname>{`${data.user}: `}</UserNickname>
                   <Text>{data.message}</Text>
                 </TextItem>
               );
@@ -82,10 +82,10 @@ const ChatButton = styled(MessageCircle)`
 const ChatContainer = styled.div`
   position: fixed;
   bottom: 100px;
-  right: ${props => props.toggled === true ? '0' : '-400px'};
+  right: ${props => props.toggled === true ? '0' : '-500px'};
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 400px;
   height: 500px;
   margin-right: 30px;
   padding: 10px;
@@ -118,6 +118,10 @@ const TextContainer = styled.div`
 
 const TextItem = styled.div`
   margin-bottom: 5px;
+`;
+
+const UserNickname = styled.span`
+  color: burlywood;
 `;
 
 const Text = styled.span`
