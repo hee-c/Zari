@@ -36,5 +36,5 @@ const Title = styled.h1`
   font-weight: 900;
   color: white;
   font-size: 120px;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 `;
