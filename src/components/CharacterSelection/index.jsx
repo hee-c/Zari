@@ -27,8 +27,8 @@ export default function CharacterSelection({ isFirstSelect }) {
     }));
 
     if (isFirstSelect) {
-      history.push(`/room/${currentRoom}`);
       dispatch(hideModal());
+      history.push(`/room/${currentRoom}`);
     } else {
       dispatch(hideModal());
     }
