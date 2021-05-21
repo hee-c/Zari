@@ -118,7 +118,7 @@ export default function RoomVideos({ roomId }) {
 
   return (
     <Container>
-      <StyledVideo ref={userVideo} autoPlay playsInline />
+      <StyledVideo ref={userVideo} autoPlay playsInline muted/>
       {peers.map((peer) => {
         return (
           <Video key={peer.peerID} peer={peer.peer} />
