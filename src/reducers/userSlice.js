@@ -28,8 +28,8 @@ export const userLogin = createAsyncThunk(
 
 export const setUserCharacter = createAsyncThunk(
   'user/setUserCharacter',
-  async (selectedCharacter) => {
-    const response = await patchUserCharacter(selectedCharacter);
+  async (data) => {
+    const response = await patchUserCharacter(data);
 
     return response;
   },
@@ -78,6 +78,7 @@ export const userSlice = createSlice({
     [setUserCharacter.fulfilled]: (state, action) => {
       state.status = 'active';
       state.data.character = action.payload.character;
+      state.data.nickname = action.payload.nickname;
     },
     [setUserCharacter.rejected]: (state) => {
       state.status = null;

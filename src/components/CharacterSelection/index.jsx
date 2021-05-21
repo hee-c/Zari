@@ -12,19 +12,26 @@ export default function CharacterSelection({ isFirstSelect }) {
   const dispatch = useDispatch();
   const history = useHistory();
   const currentRoom = useSelector(state => state.rooms.currentRoom);
-
-  async function handleEnterButton() {
-    await dispatch(setUserCharacter(selectedCharacter.current));
-
-    if (isFirstSelect) {
-      history.push(`/room/${currentRoom}`);
-    } else {
-      dispatch(hideModal());
-    }
-  }
+  const user = useSelector(state => state.user.data);
 
   function handleCancelButton() {
     dispatch(hideModal());
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    await dispatch(setUserCharacter({
+      selectedCharacter: selectedCharacter.current,
+      nickname: event.target.childNodes[0].value,
+    }));
+
+    if (isFirstSelect) {
+      history.push(`/room/${currentRoom}`);
+      dispatch(hideModal());
+    } else {
+      dispatch(hideModal());
+    }
   }
 
   return (
@@ -32,21 +39,24 @@ export default function CharacterSelection({ isFirstSelect }) {
       <TitleWrapper>
         <h1>캐릭터를 선택하세요</h1>
       </TitleWrapper>
-      <CanvasWrapper>
-        <CharacterCanvas selectedCharacter={selectedCharacter}/>
-      </CanvasWrapper>
-      <ButtonWrapper>
-        <Button onClick={handleCancelButton}>
-          <span>
-            취소
-          </span>
-        </Button>
-        <Button onClick={handleEnterButton}>
-          <span>
-            {isFirstSelect === true ? '입장' : '선택'}
-          </span>
-        </Button>
-      </ButtonWrapper>
+      <Form onSubmit={handleSubmit}>
+        <Input type="text" defaultValue={user?.nickname} />
+        <CanvasWrapper>
+          <CharacterCanvas selectedCharacter={selectedCharacter}/>
+        </CanvasWrapper>
+        <ButtonWrapper>
+          <Button onClick={handleCancelButton}>
+            <span>
+              취소
+            </span>
+          </Button>
+          <Button>
+            <span>
+              {isFirstSelect === true ? '입장' : '선택'}
+            </span>
+          </Button>
+        </ButtonWrapper>
+      </Form>
     </Container>
   );
 }
@@ -64,6 +74,23 @@ const TitleWrapper = styled.div`
   width: 100%;
   height: 20%;
   justify-content: center;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Input = styled.input`
+  margin: 10px auto;
+  padding: 5px;
+  border-radius: 5px;
+  width: 60%;
+  height: 40px;
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 const CanvasWrapper = styled.div`

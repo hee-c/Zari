@@ -51,7 +51,7 @@ export default function RoomCanvas() {
 
     socket.on('receiveOnlineUsers', (receivedOnlineUsers, videChatSpaces) => {
       receivedOnlineUsers.forEach(onlineUser => {
-        onlineUser.character = new Player(onlineUser.characterType, onlineUser.coordinates.x, onlineUser.coordinates.y);
+        onlineUser.character = new Player(onlineUser.characterType, onlineUser.coordinates.x, onlineUser.coordinates.y, onlineUser.nickname);
         onlineUsers.set(onlineUser.email, onlineUser);
         viewport.addChild(onlineUser.character.sprite);
       });
@@ -66,7 +66,7 @@ export default function RoomCanvas() {
       renderer.render(viewport);
     });
     socket.on('newUserJoin', (newUser) => {
-      newUser.character = new Player(newUser.characterType, newUser.coordinates.x, newUser.coordinates.y);
+      newUser.character = new Player(newUser.characterType, newUser.coordinates.x, newUser.coordinates.y, newUser.nickname);
       onlineUsers.set(newUser.email, newUser);
       viewport.addChild(newUser.character.sprite);
 
@@ -120,7 +120,7 @@ export default function RoomCanvas() {
 
     canvas.current.appendChild(renderer.view);
 
-    player = new Player(user.character, initialRandomPositionX, initialRandomPositionY);
+    player = new Player(user.character, initialRandomPositionX, initialRandomPositionY, user.nickname);
     background = new Sprite(TextureCache['miami']);
     mapWidth = background.width;
     mapHeight = background.height;

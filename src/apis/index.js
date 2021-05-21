@@ -97,9 +97,9 @@ export async function getRoomList() {
   }
 }
 
-export async function patchUserCharacter(selectedCharacter) {
+export async function patchUserCharacter(data) {
   try {
-    const response = await patchCharacter({ selectedCharacter });
+    const response = await patchCharacter(data);
     const responseBody = await response.json();
 
     return responseBody.data;

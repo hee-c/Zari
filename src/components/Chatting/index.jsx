@@ -16,7 +16,7 @@ export default function Chatting({ user }) {
     if (chatText !== '') {
       socketApi.sendMessage({
         message: chatText,
-        user: user.name,
+        user: user.nickname ?? user.name,
       });
 
       setChatText('');

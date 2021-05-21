@@ -6,6 +6,7 @@ export const socketApi = {
   joinRoom: (user, x, y, roomId) => {
     socket.emit('joinRoom', {
       name: user.name,
+      nickname: user.nickname,
       email: user.email,
       characterType: user.character,
       roomId,

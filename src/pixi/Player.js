@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 const resources = PIXI.Loader.shared.resources;
 
 export default class Player {
-  constructor(type, x, y) {
+  constructor(type, x, y, nickname) {
     const sheet = new PIXI.BaseTexture.from(resources[type].url);
     const w = 32;
     const h = 32;
@@ -77,6 +77,19 @@ export default class Player {
     this.sprite.prevAction = null;
     this.newVideoChatSpaceLocationX = 0;
     this.newVideoChatSpaceLocationY = 0;
+
+    const test = new PIXI.Text(
+      nickname,
+      {
+        fontFamily : 'Arial',
+        fontSize: 8,
+        fill : 0x000000,
+        align : 'center'
+      }
+    );
+    test.anchor.set(0.5, 0.5);
+    test.y = -24;
+    this.sprite.addChild(test);
   }
 
   updateNewVideoChatSpaceLocation = () => {
