@@ -24,7 +24,7 @@ export default function Home() {
       <LoginContainer>
         <TitleWrapper>
           <Title>Zari</Title>
-          <span>Connect new world</span>
+          <span>Connect to the new world</span>
         </TitleWrapper>
         <LoginButton onClick={handleLoginButtonClick}>
           <GoogleIcon aria-hidden="true" viewBox="0 0 18 18">
@@ -66,6 +66,7 @@ const LoginContainer = styled.div`
   background-color: white;
   box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
+  min-width: 300px;
 `;
 
 const TitleWrapper = styled.div`
@@ -85,7 +86,7 @@ const LoginButton = styled.div`
   font-weight: 500;
   font-size: 16px;
   width: fit-content;
-  padding: 10px;
+  padding: 15px;
   margin: auto;
   line-height: 40px;
   border-radius: 20px;
@@ -102,4 +103,5 @@ const GoogleIcon = styled.svg`
   padding-bottom: 4px;
   width: 18px;
   height: 18px;
+  margin-right: 10px;
 `;

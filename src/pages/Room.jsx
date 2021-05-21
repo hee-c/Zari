@@ -6,6 +6,7 @@ import RoomCanvas from '../components/RoomCanvas';
 import RoomVideos from '../components/RoomVideos';
 import GuideModal from '../components/GuideModal';
 import ExitButton from '../components/ExitButton';
+import Chatting from '../components/Chatting';
 import { getUserDataByToken } from '../reducers/userSlice';
 
 export default function Room() {
@@ -31,6 +32,7 @@ export default function Room() {
           <RoomCanvas />
           <GuideModal />
           <ExitButton />
+          <Chatting user={user}/>
         </>
       )}
     </Container>

@@ -40,4 +40,7 @@ export const socketApi = {
   leaveVideoChat: () => {
     socket.emit('leave videoChat');
   },
+  sendMessage: (message) => {
+    socket.emit('sendMessage', message);
+  },
 };

@@ -60,7 +60,6 @@ export default class Controller {
       }
     }
     this.player.updateNewVideoChatSpaceLocation();
-    event.preventDefault();
   }
 
   keyUpController = (event) => {
@@ -111,6 +110,5 @@ export default class Controller {
     }
     this.player.updateNewVideoChatSpaceLocation();
     this.player.sprite.prevAction = 'moving';
-    event.preventDefault();
   }
 }
