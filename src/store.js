@@ -6,6 +6,12 @@ import roomsReducer from './reducers/roomsSlice';
 import videoChatReducer from './reducers/videoChatSlice';
 import modalReducer from './reducers/modalSlice';
 
+const middleware = [...getDefaultMiddleware()];
+
+if (process.env.NODE_ENV !== 'production') {
+  middleware.push(logger);
+}
+
 export default configureStore({
   reducer: {
     user: userReducer,
@@ -13,5 +19,5 @@ export default configureStore({
     videoChat: videoChatReducer,
     modal: modalReducer,
   },
-  middleware: [...getDefaultMiddleware(), logger],
+  middleware,
 });
