@@ -90,7 +90,7 @@ const ChatContainer = styled.div`
   margin-right: 30px;
   padding: 10px;
   background: rgba(0, 0, 0, 0.7);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
   border-radius: 10px;
   transition: all .5s;
 `;
@@ -100,8 +100,15 @@ const ChatTextContainer = styled.div`
   flex-direction: column;
   width: 100%;
   height: 450px;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
   padding: 10px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+  display: none;
+  }
 `;
 
 const TextContainer = styled.div`
