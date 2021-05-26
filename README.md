@@ -2,7 +2,7 @@
 
 Zari는 다양한 자리들(돗자리, 술자리 등)을 온라인에서도 경험할 수 있게 해주는 서비스입니다.
 
-<video src="./README_assets/preview.mp4"></video>
+![preview](./README_assets/preview.gif)
 
 
 
@@ -80,14 +80,14 @@ Zari는 다양한 자리들(돗자리, 술자리 등)을 온라인에서도 경�
 |                                                              |                                                              |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | ![feature_1](./README_assets/feature_1.png)최초접속후 로그인시 보이는 메인 화면입니다. 접속 가능한 방이 표시됩니다. | ![feature_2](./README_assets/feature_2.png)캐릭터 선택창입니다. 캐릭터와 닉네임을 선택하고 방에 입장할 수 있습니다. |
-| ![feature_3](./README_assets/feature_3.png)방에 접속하면 나오는 화면입니다. 왼쪽에는 조작법 가이드가 있고 오른쪽에는 채팅모달이 있습니다. | ![feature_6](/Users/hee/dev/solo-vaco/front/README_assets/feature_6.png)채팅공간 진입시 화면입니다. 좌측에 본인 화면이 나오고, 채팅공간에 들어온 유저들의 화면이 차례로 표시됩니다. 캐릭터가 채팅공간을 나가게 되면 화상연결을 자동으로 끊기게 됩니다. |
-| ![feature_4](/Users/hee/dev/solo-vaco/front/README_assets/feature_4.png)채팅공간 선택시 선택된 공간이 설치될 자리에 표시됩니다. | ![feature_5](/Users/hee/dev/solo-vaco/front/README_assets/feature_5.png)스페이스바 누르면 채팅공간이 생성되고, 다른 유저들에게도 표시되면서 진입시 화상연결이 가능해집니다. |
+| ![feature_3](./README_assets/feature_3.png)방에 접속하면 나오는 화면입니다. 왼쪽에는 조작법 가이드가 있고 오른쪽에는 채팅모달이 있습니다. | ![feature_4](./README_assets/feature_4.png)채팅공간 진입시 화면입니다. 좌측에 본인 화면이 나오고, 채팅공간에 들어온 유저들의 화면이 차례로 표시됩니다. 캐릭터가 채팅공간을 나가게 되면 화상연결을 자동으로 끊기게 됩니다. |
+| ![feature_5](./README_assets/feature_5.png)채팅공간 선택시 선택된 공간이 설치될 자리에 표시됩니다. | ![feature_6](./README_assets/feature_6.png)스페이스바 누르면 채팅공간이 생성되고, 다른 유저들에게도 표시되면서 진입시 화상연결이 가능해집니다. |
 
 
 
 ## 시연 영상
 
-<video src="./README_assets/play.mp4"></video>
+![play](./README_assets/play.gif)
 
 
 
