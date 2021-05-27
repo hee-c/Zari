@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import styled from 'styled-components';
 import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 
+import { RoomCanvas as S } from './styles';
 import { mapData } from '../../constants/mapData';
 import { socket, socketApi } from '../../utils/socket';
 import { joinVideoChat, leaveVideoChat } from '../../reducers/videoChatSlice';
@@ -217,18 +217,7 @@ export default function RoomCanvas() {
   }
 
   return (
-    <CanvasContainer ref={canvas}>
-    </CanvasContainer>
+    <S.CanvasContainer ref={canvas}>
+    </S.CanvasContainer>
   )
 }
-
-const CanvasContainer = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100%;
-
-  & > canvas {
-    width: 100%;
-    height: 100%;
-  }
-`;

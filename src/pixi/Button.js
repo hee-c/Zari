@@ -5,7 +5,7 @@ const Sprite = PIXI.Sprite;
 
 export default class Button {
   constructor(type, x, y) {
-    let texture = TextureCache[type];
+    const texture = TextureCache[type];
     texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
     this.sprite = new Sprite(texture);

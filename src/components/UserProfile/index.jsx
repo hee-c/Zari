@@ -1,50 +1,25 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Circle } from 'react-feather';
+
+import { UserProfile as S } from './styles';
 
 export default function UserProfile() {
   const user = useSelector(state => state.user.data);
 
   return (
-    <Container>
-      <TextContainer>
-        <Text>
+    <S.Container>
+      <S.TextContainer>
+        <S.Text>
           {user?.name}
-        </Text>
-      </TextContainer>
-      <TextContainer>
+        </S.Text>
+      </S.TextContainer>
+      <S.TextContainer>
         <Circle color="#18c747" fill="#18c747" size={9} height="100%"/>
-        <OnlineText>
+        <S.OnlineText>
           Online
-        </OnlineText>
-      </TextContainer>
-    </Container>
+        </S.OnlineText>
+      </S.TextContainer>
+    </S.Container>
   );
 }
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-content: center;
-  width: 100%;
-  height: 100%;
-  padding: 10px;
-`;
-
-const Text = styled.span`
-  margin: auto 10px;
-`;
-
-const OnlineText = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  margin-left: 5px;
-`;
-
-const TextContainer = styled.div`
-  display: flex;
-  width: 100%;
-  height: fit-content;
-`;

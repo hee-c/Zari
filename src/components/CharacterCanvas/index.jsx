@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
 import * as PIXI from 'pixi.js';
 
+import { CharacterCanvas as S } from './styles';
 import Button from '../../pixi/Button';
 
 export default function CharacterCanvas({ selectedCharacter }) {
@@ -9,7 +9,7 @@ export default function CharacterCanvas({ selectedCharacter }) {
   const Sprite = PIXI.Sprite;
   const Rectangle = PIXI.Rectangle;
 
-  let app = new PIXI.Application({
+  const app = new PIXI.Application({
     width: 200,
     height: 120,
     antialias: true,
@@ -43,7 +43,7 @@ export default function CharacterCanvas({ selectedCharacter }) {
 
   function setup() {
     characters.forEach(character => {
-      let texture = TextureCache[character.type];
+      const texture = TextureCache[character.type];
       texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
       texture.frame = rectangle;
 
@@ -53,8 +53,8 @@ export default function CharacterCanvas({ selectedCharacter }) {
       character.sprite.scale.set(3, 3);
     });
 
-    let leftButton = new Button('leftButton', 30, 45);
-    let rightButton = new Button('rightButton', 155, 45);
+    const leftButton = new Button('leftButton', 30, 45);
+    const rightButton = new Button('rightButton', 155, 45);
 
     app.stage.addChild(characters[characterIndex].sprite);
     app.stage.addChild(leftButton.sprite);
@@ -75,18 +75,7 @@ export default function CharacterCanvas({ selectedCharacter }) {
   }
 
   return (
-    <CanvasContainer ref={canvasRef}>
-    </CanvasContainer>
+    <S.CanvasContainer ref={canvasRef}>
+    </S.CanvasContainer>
   );
 }
-
-const CanvasContainer = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100%;
-
-  & > canvas {
-    width: 100%;
-    height: 100%;
-  }
-`;

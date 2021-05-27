@@ -1,8 +1,8 @@
 import React from 'react'
-import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { RoomList as S } from './styles';
 import { showModal } from '../../reducers/modalSlice';
 import { setCurrentRoom } from '../../reducers/roomsSlice';
 
@@ -21,62 +21,15 @@ export default function RoomList({ room }) {
   }
 
   return (
-    <Container onClick={(e) => handleEnterRoomButton(e, room._id)}>
-      <BackGroundImage src={`./images/thumbnails/${room.map}.png`} />
-      <ContentWrapper>
-        <RoomItem>
-          <RoomTitle>
+    <S.Container onClick={(e) => handleEnterRoomButton(e, room._id)}>
+      <S.BackGroundImage src={`./images/thumbnails/${room.map}.png`} />
+      <S.ContentWrapper>
+        <S.RoomItem>
+          <S.RoomTitle>
             {room.title}
-          </RoomTitle>
-        </RoomItem>
-      </ContentWrapper>
-    </Container>
+          </S.RoomTitle>
+        </S.RoomItem>
+      </S.ContentWrapper>
+    </S.Container>
   )
 }
-
-const Container = styled.div`
-  position: relative;
-  display: flex;
-  width: 100%;
-  height: 200px;
-  margin-bottom: 30px;
-  overflow: hidden;
-  cursor: pointer;
-  border-radius: 10px;
-
-  &:hover img {
-    transform: scale(1.2);
-  }
-`;
-
-const ContentWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-`;
-
-const BackGroundImage = styled.img`
-  background-size: cover;
-  filter: blur(2px);
-  width: 100%;
-  height: 100%;
-  transition: all .5s;
-`;
-
-const RoomItem = styled.div`
-  display: flex;
-  width: fit-content;
-  height: fit-content;
-  margin: auto;
-`;
-
-const RoomTitle = styled.span`
-  color: white;
-  font-size: 60px;
-  font-weight: 800;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-`;

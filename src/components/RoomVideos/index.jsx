@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import Peer from "simple-peer";
 
 import { leaveVideoChat } from '../../reducers/videoChatSlice';
 import { socket, socketApi } from '../../utils/socket';
+import { RoomVideos as S } from './styles';
 
 const videoConstraints = {
   height: window.innerHeight / 2,
@@ -15,7 +15,7 @@ export default function RoomVideos({ roomId }) {
   const dispatch = useDispatch();
   const [peers, setPeers] = useState([]);
   const userVideo = useRef();
-  let peersRef = useRef([]);
+  const peersRef = useRef([]);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true }).then(stream => {
@@ -117,33 +117,16 @@ export default function RoomVideos({ roomId }) {
   }
 
   return (
-    <Container>
-      <StyledVideo ref={userVideo} autoPlay playsInline muted/>
+    <S.Container>
+      <S.StyledVideo ref={userVideo} autoPlay playsInline muted/>
       {peers.map((peer) => {
         return (
           <Video key={peer.peerID} peer={peer.peer} />
         );
       })}
-    </Container>
+    </S.Container>
   );
 }
-
-const Container = styled.div`
-  position: fixed;
-  margin: 30px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: auto;
-  gap: 30px;
-`;
-
-const StyledVideo = styled.video`
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 0 10px black;
-`;
 
 const Video = (props) => {
   const ref = useRef();
@@ -159,6 +142,6 @@ const Video = (props) => {
   }, []);
 
   return (
-    <StyledVideo autoPlay playsInline ref={ref} />
+    <S.StyledVideo autoPlay playsInline ref={ref} />
   );
 };

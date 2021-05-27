@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
-import { LogOut } from 'react-feather';
 import { useHistory } from 'react-router-dom';
+
+import { ExitButton as S } from './styles';
 
 export default function ExitButton() {
   const history = useHistory();
@@ -11,22 +11,11 @@ export default function ExitButton() {
   }
 
   return (
-    <Container>
-      <ExitBtn
+    <S.Container>
+      <S.ExitBtn
         size={48}
         onClick={handleExitButtonClick}
       />
-    </Container>
+    </S.Container>
   );
 }
-
-const Container = styled.div`
-  position: fixed;
-  bottom: 0;
-  left: 80px;
-  margin: 30px;
-`;
-
-const ExitBtn = styled(LogOut)`
-  cursor: pointer;
-`;

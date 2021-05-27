@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 import videoChatSpaces from './VideoChatSpace';
 import { socketApi } from '../utils/socket';
 
-let loader = PIXI.Loader.shared;
+const loader = PIXI.Loader.shared;
 
 export function imageLoader() {
   loader
@@ -49,23 +49,23 @@ export function contain(sprite, container) {
 }
 
 export function collisionDetection(player, object, isNonblocking) {
-  let hit = true;
+  const hit = true;
 
-  let playerHalfWidth = player.sprite.width / 2;
-  let playerHalfHeight = player.sprite.height / 2;
-  let objectHalfWidth = object.width / 2;
-  let objectHalfHeight = object.height / 2;
+  const playerHalfWidth = player.sprite.width / 2;
+  const playerHalfHeight = player.sprite.height / 2;
+  const objectHalfWidth = object.width / 2;
+  const objectHalfHeight = object.height / 2;
 
-  let playerCenterX = player.sprite.x + playerHalfWidth;
-  let playerCenterY = player.sprite.y + playerHalfHeight;
-  let objectCenterX = object.x + objectHalfWidth;
-  let objectCenterY = object.y + objectHalfHeight;
+  const playerCenterX = player.sprite.x + playerHalfWidth;
+  const playerCenterY = player.sprite.y + playerHalfHeight;
+  const objectCenterX = object.x + objectHalfWidth;
+  const objectCenterY = object.y + objectHalfHeight;
 
-  let vx = playerCenterX - objectCenterX;
-  let vy = playerCenterY - objectCenterY;
+  const vx = playerCenterX - objectCenterX;
+  const vy = playerCenterY - objectCenterY;
 
-  let combinedHalfWidths = playerHalfWidth + objectHalfWidth;
-  let combinedHalfHeights = playerHalfHeight + objectHalfHeight;
+  const combinedHalfWidths = playerHalfWidth + objectHalfWidth;
+  const combinedHalfHeights = playerHalfHeight + objectHalfHeight;
 
   if (Math.abs(vx) < combinedHalfWidths) {
     if (Math.abs(vy) < combinedHalfHeights) {

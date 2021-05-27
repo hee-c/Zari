@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
-import { MessageCircle } from 'react-feather';
 
+import { Chatting as S } from './styles';
 import { socket, socketApi } from '../../utils/socket';
 
 export default function Chatting({ user }) {
+  // TODO useChatting hook으로 분리하기
   const [showChatting, setShowChatting] = useState(false);
   const [chatText, setChatText] = useState('');
   const [chatTextList, setChatTextList] = useState([]);
@@ -39,107 +39,35 @@ export default function Chatting({ user }) {
     setShowChatting(state => !state);
   }
 
+  function handleChatTextChange(e) {
+    setChatText(e.target.value);
+  }
+
   return (
     <>
-      <ButtonContainer>
-        <ChatButton
+      <S.ButtonContainer>
+        <S.ChatButton
           size={48}
           onClick={handleChatButtonClick}
         />
-      </ButtonContainer>
-      <ChatContainer toggled={showChatting}>
-        <ChatTextContainer ref={chatScroll}>
-          <TextContainer>
+      </S.ButtonContainer>
+      <S.ChatContainer toggled={showChatting}>
+        <S.ChatTextContainer ref={chatScroll}>
+          <S.TextContainer>
             {chatTextList.map((data, index) => {
               return (
-                <TextItem key={index}>
-                  <UserNickname>{`${data.user}: `}</UserNickname>
-                  <Text>{data.message}</Text>
-                </TextItem>
+                <S.TextItem key={index}>
+                  <S.UserNickname>{`${data.user}: `}</S.UserNickname>
+                  <S.Text>{data.message}</S.Text>
+                </S.TextItem>
               );
             })}
-          </TextContainer>
-        </ChatTextContainer>
-        <ChatInputForm onSubmit={handleEnterPress}>
-          <Input type="text" value={chatText} onChange={(e) => setChatText(e.target.value)}/>
-        </ChatInputForm>
-      </ChatContainer>
+          </S.TextContainer>
+        </S.ChatTextContainer>
+        <S.ChatInputForm onSubmit={handleEnterPress}>
+          <S.Input type="text" value={chatText} onChange={handleChatTextChange}/>
+        </S.ChatInputForm>
+      </S.ChatContainer>
     </>
   );
 }
-
-const ButtonContainer = styled.div`
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  margin: 30px;
-`;
-
-const ChatButton = styled(MessageCircle)`
-  cursor: pointer;
-`;
-
-const ChatContainer = styled.div`
-  position: fixed;
-  bottom: 100px;
-  right: ${props => props.toggled === true ? '0' : '-500px'};
-  display: flex;
-  flex-direction: column;
-  width: 400px;
-  height: 500px;
-  margin-right: 30px;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.7);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-  border-radius: 10px;
-  transition: all .5s;
-`;
-
-const ChatTextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 450px;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  padding: 10px;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-  display: none;
-  }
-`;
-
-const TextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const TextItem = styled.div`
-  margin-bottom: 5px;
-`;
-
-const UserNickname = styled.span`
-  color: burlywood;
-`;
-
-const Text = styled.span`
-  color: white;
-`;
-
-const ChatInputForm = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Input = styled.input`
-  margin: 10px;
-  padding: 5px;
-  border-radius: 5px;
-
-
-  &:focus {
-    outline: none;
-  }
-`;
