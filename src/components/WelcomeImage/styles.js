@@ -3,11 +3,19 @@ import styled from 'styled-components';
 export const WelcomeImage = {};
 
 WelcomeImage.Container = styled.div`
+position: relative;
   display: flex;
   width: 100%;
   height: 100%;
+`;
+
+WelcomeImage.Background = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  background: url('./images/background/11.gif') no-repeat center center fixed;
   filter: brightness(115%);
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -19,6 +27,7 @@ WelcomeImage.TitleContainer = styled.div`
   display: flex;
   padding-left: 100px;
   margin: auto 0;
+  z-index: 5;
 `;
 
 WelcomeImage.Title = styled.h1`

@@ -6,10 +6,15 @@ Home.Container = styled.div`
   display: flex;
   width: 100vw;
   height: 100vh;
-  justify-content: center;
-  align-content: center;
+`;
+
+Home.Background = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
-  background: url('./images/background/11.gif') no-repeat center center fixed;
   filter: brightness(115%);
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -27,6 +32,7 @@ Home.LoginContainer = styled.div`
   box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   min-width: 300px;
+  z-index: 5;
 `;
 
 Home.TitleWrapper = styled.div`

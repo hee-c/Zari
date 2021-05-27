@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RoomList as S } from './styles';
 import { showModal } from '../../reducers/modalSlice';
 import { setCurrentRoom } from '../../reducers/roomsSlice';
+import * as images from '../../images';
 
 export default function RoomList({ room }) {
   const user = useSelector(state => state.user.data);
@@ -22,7 +23,7 @@ export default function RoomList({ room }) {
 
   return (
     <S.Container onClick={(e) => handleEnterRoomButton(e, room._id)}>
-      <S.BackGroundImage src={`./images/thumbnails/${room.map}.png`} />
+      <S.BackGroundImage src={images[room.map]} />
       <S.ContentWrapper>
         <S.RoomItem>
           <S.RoomTitle>
