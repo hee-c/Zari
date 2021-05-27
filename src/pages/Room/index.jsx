@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Room as S } from './styles';
-import RoomCanvas from '../components/RoomCanvas';
-import RoomVideos from '../components/RoomVideos';
-import GuideModal from '../components/GuideModal';
-import ExitButton from '../components/ExitButton';
-import Chatting from '../components/Chatting';
-import { getUserDataByToken } from '../reducers/userSlice';
+import RoomCanvas from '../../components/RoomCanvas';
+import RoomVideos from '../../components/RoomVideos';
+import GuideModal from '../../components/GuideModal';
+import ExitButton from '../../components/ExitButton';
+import Chatting from '../../components/Chatting';
+import { getUserDataByToken } from '../../reducers/userSlice';
 
 export default function Room() {
   const dispatch = useDispatch();

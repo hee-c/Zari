@@ -42,6 +42,8 @@ Home.Title = styled.h1`
 `;
 
 Home.LoginButton = styled.div`
+  display: flex;
+  align-content: center;
   font-family: system-ui, sans-serif;
   font-weight: 500;
   font-size: 16px;
@@ -58,10 +60,15 @@ Home.LoginButton = styled.div`
   color: black;
 `;
 
-Home.GoogleIcon = styled.svg`
-  vertical-align: middle;
-  padding-bottom: 4px;
-  width: 18px;
-  height: 18px;
-  margin-right: 10px;
+Home.IconWrapper = styled.div`
+  display: inline-flex;
+  align-content: center;
+  width: auto;
+  height: 100%;
+`;
+
+Home.GoogleIcon = styled.img`
+  width: 24px;
+  height: 24px;
+  margin: auto 10px;
 `;
