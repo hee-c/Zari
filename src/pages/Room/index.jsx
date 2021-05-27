@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { Room as S } from './styles';
 import RoomCanvas from '../components/RoomCanvas';
 import RoomVideos from '../components/RoomVideos';
 import GuideModal from '../components/GuideModal';
@@ -25,7 +25,7 @@ export default function Room() {
   }, []);
 
   return (
-    <Container>
+    <S.Container>
       {isVideoConnected && <RoomVideos roomId={videoChatId} />}
       {user && (
         <>
@@ -35,12 +35,6 @@ export default function Room() {
           <Chatting user={user}/>
         </>
       )}
-    </Container>
+    </S.Container>
   );
 }
-
-const Container = styled.div`
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-`;

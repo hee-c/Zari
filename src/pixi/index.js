@@ -49,7 +49,7 @@ export function contain(sprite, container) {
 }
 
 export function collisionDetection(player, object, isNonblocking) {
-  const hit = true;
+  let hit = true;
 
   const playerHalfWidth = player.sprite.width / 2;
   const playerHalfHeight = player.sprite.height / 2;
