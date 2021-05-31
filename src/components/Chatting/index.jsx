@@ -14,7 +14,7 @@ export default function Chatting({ user }) {
     event.preventDefault();
 
     if (chatText !== '') {
-      socketApi.sendMessage({
+      socketApi.sendChattingMessage({
         message: chatText,
         user: user.nickname ?? user.name,
       });
@@ -25,7 +25,7 @@ export default function Chatting({ user }) {
   }
 
   useEffect(() => {
-    socket.on('receiveMessage', data => {
+    socket.on('receiveChattingMessage', data => {
       setChatTextList(state => [...state, data]);
       chatScroll.current.scrollTop = chatScroll.current.scrollHeight;
     });

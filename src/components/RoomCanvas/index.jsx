@@ -15,9 +15,9 @@ import { createViewport } from '../../pixi/viewport';
 import {
   contain,
   collisionDetection,
-  updateOnlineUserCoordinates,
-  isUserInVideoChatSpace,
-  isUserLeaveVideoChatSpace,
+  updateOnlinePlayerCoordinates,
+  isPlayerInVideoChatSpace,
+  isPlayerLeaveVideoChatSpace,
   handleKeyDown,
 } from '../../pixi';
 
@@ -32,13 +32,14 @@ export default function RoomCanvas() {
   const Ticker = PIXI.Ticker.shared;
   const Container = PIXI.Container;
 
-  const onlineUsers = new Map();
+  const onlinePlayers = new Map();
   const previewStatus = {
     isPreviewExist: false,
     isCancelPreview: false,
     currentPreview: null,
     selectedType: '',
   };
+  // TODO 상수로 빼기
   const initialRandomPositionX = _.random(50, 400);
   const initialRandomPositionY = _.random(350, 500);
   let background, player, renderer, viewport, joinedChatSpace, controller, mapWidth, mapHeight, videoChatContainer, previewVideoChatContainer, handlePreviewVideoChat;
@@ -49,46 +50,46 @@ export default function RoomCanvas() {
 
     socketApi.joinRoom(user, initialRandomPositionX, initialRandomPositionY, roomId);
 
-    socket.on('receiveOnlineUsers', (receivedOnlineUsers, videChatSpaces) => {
-      receivedOnlineUsers.forEach(onlineUser => {
-        onlineUser.character = new Player(onlineUser.characterType, onlineUser.coordinates.x, onlineUser.coordinates.y, onlineUser.nickname);
-        onlineUsers.set(onlineUser.email, onlineUser);
-        viewport.addChild(onlineUser.character.sprite);
+    socket.on('receiveOnlinePlayers', (receiveOnlinePlayers, videChatSpaces) => {
+      receiveOnlinePlayers.forEach(onlinePlayer => {
+        onlinePlayer.character = new Player(onlinePlayer.characterType, onlinePlayer.coordinates.x, onlinePlayer.coordinates.y, onlinePlayer.nickname);
+        onlinePlayers.set(onlinePlayer.email, onlinePlayer);
+        viewport.addChild(onlinePlayer.character.sprite);
       });
 
       if (videChatSpaces) {
         videChatSpaces.forEach(space => {
-          const newVideoChanSpace = new VideoChatSpace(space.type, space.x, space.y, space.spaceId);
-          videoChatContainer.addChild(newVideoChanSpace.sprite);
-        })
+          const newVideoChatSpace = new VideoChatSpace(space.type, space.x, space.y, space.spaceId);
+          videoChatContainer.addChild(newVideoChatSpace.sprite);
+        });
       }
 
       renderer.render(viewport);
     });
-    socket.on('newUserJoin', (newUser) => {
-      newUser.character = new Player(newUser.characterType, newUser.coordinates.x, newUser.coordinates.y, newUser.nickname);
-      onlineUsers.set(newUser.email, newUser);
-      viewport.addChild(newUser.character.sprite);
+    socket.on('newPlayerJoin', (newPlayer) => {
+      newPlayer.character = new Player(newPlayer.characterType, newPlayer.coordinates.x, newPlayer.coordinates.y, newPlayer.nickname);
+      onlinePlayers.set(newPlayer.email, newPlayer);
+      viewport.addChild(newPlayer.character.sprite);
 
       renderer.render(viewport);
     });
-    socket.on('updateUserCoordinates', (changedUser) => {
-      const targetUser = onlineUsers.get(changedUser.email);
-      targetUser.coordinates = changedUser.coordinates;
-      updateOnlineUserCoordinates(targetUser.character, targetUser.coordinates);
+    socket.on('updatePlayerCoordinates', (updatedPlayer) => {
+      const targetPlayer = onlinePlayers.get(updatedPlayer.email);
+      targetPlayer.coordinates = updatedPlayer.coordinates;
+      updateOnlinePlayerCoordinates(targetPlayer.character, targetPlayer.coordinates);
 
       renderer.render(viewport);
     });
-    socket.on('userLeave', (leftUser) => {
-      const targetUser = onlineUsers.get(leftUser.email);
-      viewport.removeChild(targetUser.character.sprite);
-      onlineUsers.delete(leftUser.email);
+    socket.on('playerLeaveRoom', (leftPlayer) => {
+      const targetPlayer = onlinePlayers.get(leftPlayer.email);
+      viewport.removeChild(targetPlayer.character.sprite);
+      onlinePlayers.delete(leftPlayer.email);
 
       renderer.render(viewport);
     });
-    socket.on('newVideoChatSpace', (space) => {
-      const newVideoChanSpace = new VideoChatSpace(space.type, space.x, space.y, space.spaceId);
-      videoChatContainer.addChild(newVideoChanSpace.sprite);
+    socket.on('videoChatSpaceCreated', (space) => {
+      const newVideoChatSpace = new VideoChatSpace(space.type, space.x, space.y, space.spaceId);
+      videoChatContainer.addChild(newVideoChatSpace.sprite);
 
       renderer.render(viewport);
     });
@@ -100,12 +101,12 @@ export default function RoomCanvas() {
       window.removeEventListener('keydown', controller.keyDownController);
       window.removeEventListener('keyup', controller.keyUpController);
 
-      socket.removeAllListeners('receiveOnlineUsers');
-      socket.removeAllListeners('newUserJoin');
-      socket.removeAllListeners('updateUserCoordinates');
-      socket.removeAllListeners('userLeave');
-      socket.removeAllListeners('newVideoChatSpace');
-      socket.emit('userLeaveRoom');
+      socket.removeAllListeners('receiveOnlinePlayers');
+      socket.removeAllListeners('newPlayerJoin');
+      socket.removeAllListeners('updatePlayerCoordinates');
+      socket.removeAllListeners('playerLeaveRoom');
+      socket.removeAllListeners('videoChatSpaceCreated');
+      socket.emit('leaveRoom');
     }
   }, []);
 
@@ -140,9 +141,7 @@ export default function RoomCanvas() {
       followingSprite: player.sprite,
     });
 
-    viewport.addChild(background);
-    viewport.addChild(previewVideoChatContainer, videoChatContainer);
-    viewport.addChild(player.sprite);
+    viewport.addChild(background, previewVideoChatContainer, videoChatContainer, player.sprite);
 
     window.onresize = () => {
       renderer.resize(window.innerWidth, window.innerHeight);
@@ -170,14 +169,14 @@ export default function RoomCanvas() {
   function play(delta) {
     contain(player.sprite, mapData.miami.contain);
 
-    onlineUsers.forEach(onlineUser => {
-      collisionDetection(player, onlineUser.character.sprite);
+    onlinePlayers.forEach(onlinePlayer => {
+      collisionDetection(player, onlinePlayer.character.sprite);
     });
 
     if (player.sprite.vx !== 0 || player.sprite.vy !== 0) {
-      socketApi.changeCoordinates(player);
+      socketApi.changePlayerCoordinates(player);
     } else if (player.left.isUp && player.up.isUp && player.right.isUp && player.down.isUp && player.sprite.prevAction === 'moving') {
-      socketApi.changeCoordinates(player);
+      socketApi.changePlayerCoordinates(player);
     }
 
     player.sprite.play();
@@ -185,21 +184,21 @@ export default function RoomCanvas() {
     player.sprite.y += player.sprite.vy;
     player.sprite.prevAction = null;
 
-    onlineUsers.forEach(onlineUser => {
-      onlineUser.character.sprite.play();
-      onlineUser.character.sprite.x = onlineUser.coordinates.x + onlineUser.coordinates.vx;
-      onlineUser.character.sprite.y = onlineUser.coordinates.y + onlineUser.coordinates.vy;
+    onlinePlayers.forEach(onlinePlayer => {
+      onlinePlayer.character.sprite.play();
+      onlinePlayer.character.sprite.x = onlinePlayer.coordinates.x + onlinePlayer.coordinates.vx;
+      onlinePlayer.character.sprite.y = onlinePlayer.coordinates.y + onlinePlayer.coordinates.vy;
     });
 
     videoChatContainer.children.forEach(space => {
-      if (isUserInVideoChatSpace(player, space)) {
+      if (isPlayerInVideoChatSpace(player, space)) {
         player.isVideoChatParticipant = true;
         joinedChatSpace = space;
         dispatch(joinVideoChat({ videoChatId: space.spaceId }));
       }
     });
 
-    if (isUserLeaveVideoChatSpace(joinedChatSpace, player)) {
+    if (isPlayerLeaveVideoChatSpace(joinedChatSpace, player)) {
       player.isVideoChatParticipant = false;
       joinedChatSpace = null;
       dispatch(leaveVideoChat());
@@ -213,7 +212,7 @@ export default function RoomCanvas() {
     if (previewStatus.currentPreview) {
       previewStatus.currentPreview.x = player.newVideoChatSpaceLocationX;
       previewStatus.currentPreview.y = player.newVideoChatSpaceLocationY;
-    }
+    }  
   }
 
   return (

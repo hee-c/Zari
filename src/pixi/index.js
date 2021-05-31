@@ -91,43 +91,43 @@ export function collisionDetection(player, object, isNonblocking) {
   return hit;
 }
 
-export function updateOnlineUserCoordinates(targetUser, coordinates) {
-  targetUser.sprite.play();
+export function updateOnlinePlayerCoordinates(targetPlayer, coordinates) {
+  targetPlayer.sprite.play();
 
-  if (coordinates.vx > 0 && targetUser.sprite.isStanding) {
-    targetUser.sprite.textures = targetUser.playerSheet.walkEast;
-    targetUser.sprite.isStanding = false;
-    targetUser.sprite.direction = 'east';
-  } else if (coordinates.vx < 0 && targetUser.sprite.isStanding) {
-    targetUser.sprite.textures = targetUser.playerSheet.walkWest;
-    targetUser.sprite.isStanding = false;
-    targetUser.sprite.direction = 'west';
-  } else if (coordinates.vy > 0 && targetUser.sprite.isStanding) {
-    targetUser.sprite.textures = targetUser.playerSheet.walkSouth;
-    targetUser.sprite.isStanding = false;
-    targetUser.sprite.direction = 'south';
-  } else if (coordinates.vy < 0 && targetUser.sprite.isStanding) {
-    targetUser.sprite.textures = targetUser.playerSheet.walkNorth;
-    targetUser.sprite.isStanding = false;
-    targetUser.sprite.direction = 'north';
+  if (coordinates.vx > 0 && targetPlayer.sprite.isStanding) {
+    targetPlayer.sprite.textures = targetPlayer.playerSheet.walkEast;
+    targetPlayer.sprite.isStanding = false;
+    targetPlayer.sprite.direction = 'east';
+  } else if (coordinates.vx < 0 && targetPlayer.sprite.isStanding) {
+    targetPlayer.sprite.textures = targetPlayer.playerSheet.walkWest;
+    targetPlayer.sprite.isStanding = false;
+    targetPlayer.sprite.direction = 'west';
+  } else if (coordinates.vy > 0 && targetPlayer.sprite.isStanding) {
+    targetPlayer.sprite.textures = targetPlayer.playerSheet.walkSouth;
+    targetPlayer.sprite.isStanding = false;
+    targetPlayer.sprite.direction = 'south';
+  } else if (coordinates.vy < 0 && targetPlayer.sprite.isStanding) {
+    targetPlayer.sprite.textures = targetPlayer.playerSheet.walkNorth;
+    targetPlayer.sprite.isStanding = false;
+    targetPlayer.sprite.direction = 'north';
   } else if (coordinates.vy === 0 && coordinates.vx === 0) {
-    targetUser.sprite.isStanding = true;
+    targetPlayer.sprite.isStanding = true;
 
-    switch (targetUser.sprite.direction) {
+    switch (targetPlayer.sprite.direction) {
       case 'west': {
-        targetUser.sprite.textures = targetUser.playerSheet.standWest;
+        targetPlayer.sprite.textures = targetPlayer.playerSheet.standWest;
         break;
       }
       case 'north': {
-        targetUser.sprite.textures = targetUser.playerSheet.standNorth;
+        targetPlayer.sprite.textures = targetPlayer.playerSheet.standNorth;
         break;
       }
       case 'east': {
-        targetUser.sprite.textures = targetUser.playerSheet.standEast;
+        targetPlayer.sprite.textures = targetPlayer.playerSheet.standEast;
         break;
       }
       case 'south': {
-        targetUser.sprite.textures = targetUser.playerSheet.standSouth;
+        targetPlayer.sprite.textures = targetPlayer.playerSheet.standSouth;
         break;
       }
       default: { }
@@ -135,11 +135,11 @@ export function updateOnlineUserCoordinates(targetUser, coordinates) {
   }
 }
 
-export function isUserInVideoChatSpace(player, space) {
+export function isPlayerInVideoChatSpace(player, space) {
   return !player.isVideoChatParticipant && collisionDetection(player, space, true);
 }
 
-export function isUserLeaveVideoChatSpace(joinedChatSpace, player) {
+export function isPlayerLeaveVideoChatSpace(joinedChatSpace, player) {
   return joinedChatSpace && player.isVideoChatParticipant && !collisionDetection(player, joinedChatSpace, true);
 }
 
@@ -228,7 +228,7 @@ export function handleKeyDown(event, player, container, previewContainer, data) 
         const newSpace = new videoChatSpaces(data.selectedType, player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
         container.addChild(newSpace.sprite);
 
-        socketApi.setVideoChatSpace({
+        socketApi.createVideoChatSpace({
           type: newSpace.sprite.type,
           x: newSpace.sprite.x,
           y: newSpace.sprite.y,

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import Peer from "simple-peer";
+import Peer from 'simple-peer';
 
 import { leaveVideoChat } from '../../reducers/videoChatSlice';
 import { socket, socketApi } from '../../utils/socket';
@@ -23,18 +23,18 @@ export default function RoomVideos({ roomId }) {
 
       socketApi.joinVideoChat(roomId);
 
-      socket.on("all users", users => {
+      socket.on('currentVideoChatParticipants', participants => {
         const onlinePeers = [];
 
-        users.forEach(userID => {
-          const newPeer = createPeer(userID, socket.id, stream);
+        participants.forEach(participantID => {
+          const newPeer = createPeer(participantID, socket.id, stream);
 
           peersRef.current.push({
-            peerID: userID,
+            peerID: participantID,
             peer: newPeer,
           });
           onlinePeers.push({
-            peerID: userID,
+            peerID: participantID,
             peer: newPeer,
           });
         });
@@ -42,7 +42,7 @@ export default function RoomVideos({ roomId }) {
         setPeers(onlinePeers);
       });
 
-      socket.on("user joined", payload => {
+      socket.on('newVideoChatParticipant', payload => {
         const newPeer = addPeer(payload.signal, payload.callerID, stream);
         const peerObj = {
           peerID: payload.callerID,
@@ -54,13 +54,13 @@ export default function RoomVideos({ roomId }) {
         setPeers(peers => [...peers, peerObj]);
       });
 
-      socket.on("receiving returned signal", payload => {
+      socket.on('receivingReturnedSignalToConnectWebRTC', payload => {
         const item = peersRef.current.find(p => p.peerID === payload.id);
 
         item.peer.signal(payload.signal);
       });
 
-      socket.on('user left', id => {
+      socket.on('participantLeft', id => {
         const peerObj = peersRef.current.find(p => p.peerID === id);
         const peers = peersRef.current.filter(p => p.peerID !== id);
 
@@ -79,14 +79,14 @@ export default function RoomVideos({ roomId }) {
 
       dispatch(leaveVideoChat());
 
-      socket.removeAllListeners("all users");
-      socket.removeAllListeners("user joined");
-      socket.removeAllListeners("receiving returned signal");
-      socket.removeAllListeners("user left");
+      socket.removeAllListeners('currentVideoChatParticipants');
+      socket.removeAllListeners('newVideoChatParticipant');
+      socket.removeAllListeners('receivingReturnedSignalToConnectWebRTC');
+      socket.removeAllListeners('participantLeft');
       socketApi.leaveVideoChat();
     }
   }, []);
-
+  // REVIEW 얘네도 뺄 수 있을듯?
   function createPeer(userToSignal, callerID, stream) {
     const peer = new Peer({
       initiator: true,
@@ -94,8 +94,8 @@ export default function RoomVideos({ roomId }) {
       stream,
     });
 
-    peer.on("signal", signal => {
-      socketApi.sendingVideoChatSignal({ userToSignal, callerID, signal });
+    peer.on('signal', signal => {
+      socketApi.sendingSignalToConnectWebRTC({ userToSignal, callerID, signal });
     });
 
     return peer;
@@ -109,8 +109,8 @@ export default function RoomVideos({ roomId }) {
     });
 
     peer.signal(incomingSignal);
-    peer.on("signal", signal => {
-      socketApi.returningSignal({ signal, callerID })
+    peer.on('signal', signal => {
+      socketApi.returningSignalToConnectWebRTC({ signal, callerID })
     });
 
     return peer;
@@ -132,7 +132,7 @@ const Video = (props) => {
   const ref = useRef();
 
   useEffect(() => {
-    props.peer.on("stream", stream => {
+    props.peer.on('stream', stream => {
       ref.current.srcObject = stream;
     });
 

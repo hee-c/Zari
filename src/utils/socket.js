@@ -18,30 +18,30 @@ export const socketApi = {
       },
     });
   },
-  changeCoordinates: (player) => {
-    socket.emit('changeCoordinates', {
+  changePlayerCoordinates: (player) => {
+    socket.emit('changePlayerCoordinates', {
       x: player.sprite.x,
       y: player.sprite.y,
       vx: player.sprite.vx,
       vy: player.sprite.vy,
     });
   },
-  setVideoChatSpace: (space) => {
-    socket.emit('setVideoChatSpace', space);
+  createVideoChatSpace: (space) => {
+    socket.emit('createVideoChatSpace', space);
   },
   joinVideoChat: (videoChatId) => {
-    socket.emit('join videoChat', videoChatId);
+    socket.emit('joinVideoChat', videoChatId);
   },
-  sendingVideoChatSignal: (payload) => {
-    socket.emit('sending signal', payload);
+  sendingSignalToConnectWebRTC: (payload) => {
+    socket.emit('sendingSignalToConnectWebRTC', payload);
   },
-  returningSignal: (payload) => {
-    socket.emit('returning signal', payload);
+  returningSignalToConnectWebRTC: (payload) => {
+    socket.emit('returningSignalToConnectWebRTC', payload);
   },
   leaveVideoChat: () => {
-    socket.emit('leave videoChat');
+    socket.emit('leaveVideoChat');
   },
-  sendMessage: (message) => {
-    socket.emit('sendMessage', message);
+  sendChattingMessage: (message) => {
+    socket.emit('sendChattingMessage', message);
   },
 };
