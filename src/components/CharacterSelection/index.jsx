@@ -8,11 +8,11 @@ import { setUserCharacter } from '../../reducers/userSlice';
 import { hideModal } from '../../reducers/modalSlice';
 
 export default function CharacterSelection({ isFirstSelect }) {
-  const selectedCharacter = useRef('bald');
-  const dispatch = useDispatch();
-  const history = useHistory();
   const currentRoom = useSelector(state => state.rooms.currentRoom);
   const user = useSelector(state => state.user.data);
+  const selectedCharacter = useRef(user?.character);
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   function handleCancelButton() {
     dispatch(hideModal());
@@ -32,6 +32,7 @@ export default function CharacterSelection({ isFirstSelect }) {
     } else {
       dispatch(hideModal());
     }
+
   }
 
   return (
@@ -40,7 +41,7 @@ export default function CharacterSelection({ isFirstSelect }) {
         <h1>캐릭터를 선택하세요</h1>
       </S.TitleWrapper>
       <S.Form onSubmit={handleSubmit}>
-        <vInput type="text" defaultValue={user?.nickname} />
+        <S.Input type="text" defaultValue={user?.nickname} />
         <S.CanvasWrapper>
           <CharacterCanvas selectedCharacter={selectedCharacter}/>
         </S.CanvasWrapper>

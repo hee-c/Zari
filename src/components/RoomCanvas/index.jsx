@@ -5,7 +5,7 @@ import * as PIXI from 'pixi.js';
 import _ from 'lodash';
 
 import { RoomCanvas as S } from './styles';
-import { mapData } from '../../constants/mapData';
+import { mapData } from '../../constants/canvas';
 import { socket, socketApi } from '../../utils/socket';
 import { joinVideoChat, leaveVideoChat } from '../../reducers/videoChatSlice';
 import Player from '../../pixi/Player';
