@@ -2,32 +2,21 @@ import * as PIXI from 'pixi.js';
 
 import videoChatSpaces from './VideoChatSpace';
 import { socketApi } from '../utils/socket';
+import {
+  videoSpaceTypes,
+  onlinePlayerStandingType,
+  onlinePlayerWalkingType,
+  imagePath,
+} from '../constants/canvas';
 
 const loader = PIXI.Loader.shared;
 
 export function imageLoader() {
-  loader
-    .add('park', '../images/maps/park.png')
-    .add('miami', '../images/maps/miami.png')
-    .add('beachUmbrellaPurple', '../images/videoChatSpaces/beachUmbrella-purple.png')
-    .add('beachUmbrellaRed', '../images/videoChatSpaces/beachUmbrella-red.png')
-    .add('sunbedsPurple', '../images/videoChatSpaces/sunbeds-purple.png')
-    .add('sunbedsRed', '../images/videoChatSpaces/sunbeds-red.png')
-    .add('blanket', '../images/videoChatSpaces/blanket.png')
-    .add('blanketLarge', '../images/videoChatSpaces/blanket-large.png')
-    .add('bald', '../images/characters/bald.png')
-    .add('braided', '../images/characters/braided.png')
-    .add('business', '../images/characters/business.png')
-    .add('casual', '../images/characters/casual.png')
-    .add('dress', '../images/characters/dress.png')
-    .add('graduation', '../images/characters/graduation.png')
-    .add('grandfather', '../images/characters/grandfather.png')
-    .add('grandmother', '../images/characters/grandmother.png')
-    .add('staff', '../images/characters/staff.png')
-    .add('yangachi', '../images/characters/yangachi.png')
-    .add('leftButton', '../images/leftButton.svg')
-    .add('rightButton', '../images/rightButton.svg')
-    .load();
+  imagePath.forEach(({ alias, path }) => {
+    loader.add(alias, path);
+  });
+
+  loader.load();
 }
 
 export function contain(sprite, container) {
@@ -67,22 +56,13 @@ export function collisionDetection(player, object, isNonblocking) {
   const combinedHalfWidths = playerHalfWidth + objectHalfWidth;
   const combinedHalfHeights = playerHalfHeight + objectHalfHeight;
 
-  if (Math.abs(vx) < combinedHalfWidths) {
-    if (Math.abs(vy) < combinedHalfHeights) {
-      if (player.down.isDown || player.up.isDown) {
-        if (!isNonblocking) {
-          player.sprite.y -= player.sprite.vy;
-          player.sprite.vy = 0
-        }
-      }
-      if (player.left.isDown || player.right.isDown) {
-        if (!isNonblocking) {
-          player.sprite.x -= player.sprite.vx;
-          player.sprite.vx = 0
-        }
-      }
-    } else {
-      hit = false;
+  if (Math.abs(vx) < combinedHalfWidths && Math.abs(vy) < combinedHalfHeights) {
+    if (!isNonblocking && (player.down.isDown || player.up.isDown)) {
+      player.sprite.y -= player.sprite.vy;
+      player.sprite.vy = 0;
+    } else if (!isNonblocking && (player.left.isDown || player.right.isDown)) {
+      player.sprite.x -= player.sprite.vx;
+      player.sprite.vx = 0;
     }
   } else {
     hit = false;
@@ -94,44 +74,33 @@ export function collisionDetection(player, object, isNonblocking) {
 export function updateOnlinePlayerCoordinates(targetPlayer, coordinates) {
   targetPlayer.sprite.play();
 
-  if (coordinates.vx > 0 && targetPlayer.sprite.isStanding) {
-    targetPlayer.sprite.textures = targetPlayer.playerSheet.walkEast;
-    targetPlayer.sprite.isStanding = false;
-    targetPlayer.sprite.direction = 'east';
-  } else if (coordinates.vx < 0 && targetPlayer.sprite.isStanding) {
-    targetPlayer.sprite.textures = targetPlayer.playerSheet.walkWest;
-    targetPlayer.sprite.isStanding = false;
-    targetPlayer.sprite.direction = 'west';
-  } else if (coordinates.vy > 0 && targetPlayer.sprite.isStanding) {
-    targetPlayer.sprite.textures = targetPlayer.playerSheet.walkSouth;
-    targetPlayer.sprite.isStanding = false;
-    targetPlayer.sprite.direction = 'south';
-  } else if (coordinates.vy < 0 && targetPlayer.sprite.isStanding) {
-    targetPlayer.sprite.textures = targetPlayer.playerSheet.walkNorth;
-    targetPlayer.sprite.isStanding = false;
-    targetPlayer.sprite.direction = 'north';
-  } else if (coordinates.vy === 0 && coordinates.vx === 0) {
+  const direction = getDirection(coordinates, targetPlayer);
+
+  if (direction === 'standing') {
+    const standingDirection = onlinePlayerStandingType[targetPlayer.sprite.direction];
+
+    targetPlayer.sprite.textures = targetPlayer.playerSheet[standingDirection];
     targetPlayer.sprite.isStanding = true;
 
-    switch (targetPlayer.sprite.direction) {
-      case 'west': {
-        targetPlayer.sprite.textures = targetPlayer.playerSheet.standWest;
-        break;
-      }
-      case 'north': {
-        targetPlayer.sprite.textures = targetPlayer.playerSheet.standNorth;
-        break;
-      }
-      case 'east': {
-        targetPlayer.sprite.textures = targetPlayer.playerSheet.standEast;
-        break;
-      }
-      case 'south': {
-        targetPlayer.sprite.textures = targetPlayer.playerSheet.standSouth;
-        break;
-      }
-      default: { }
-    }
+    return;
+  }
+
+  targetPlayer.sprite.textures = targetPlayer.playerSheet[onlinePlayerWalkingType[direction]];
+  targetPlayer.sprite.isStanding = false;
+  targetPlayer.sprite.direction = direction;
+}
+
+function getDirection(coordinates, targetPlayer) {
+  if (coordinates.vx > 0 && targetPlayer.sprite.isStanding) {
+    return 'east';
+  } else if (coordinates.vx < 0 && targetPlayer.sprite.isStanding) {
+    return 'west';
+  } else if (coordinates.vy > 0 && targetPlayer.sprite.isStanding) {
+    return 'south';
+  } else if (coordinates.vy < 0 && targetPlayer.sprite.isStanding) {
+    return 'north';
+  } else if (coordinates.vy === 0 && coordinates.vx === 0) {
+    return 'standing';
   }
 }
 
@@ -143,100 +112,33 @@ export function isPlayerLeaveVideoChatSpace(joinedChatSpace, player) {
   return joinedChatSpace && player.isVideoChatParticipant && !collisionDetection(player, joinedChatSpace, true);
 }
 
-export function handleKeyDown(event, player, container, previewContainer, data) {
-  switch (event.code) {
-    case 'Digit1': {
-      if (data.isPreviewExist === false) {
-        const previewSpace = new videoChatSpaces('beachUmbrellaPurple', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
+export function handleVideoChatSpacePreviewKeyDown(event, player, container, previewContainer, data) {
+  const type = videoSpaceTypes[event.code];
 
-        previewContainer.addChild(previewSpace.sprite);
-        data.currentPreview = previewSpace.sprite;
-        data.isPreviewExist = true;
-        data.selectedType = 'beachUmbrellaPurple';
-      }
-      break;
-    }
-    case 'Digit2': {
-      if (data.isPreviewExist === false) {
-        const previewSpace = new videoChatSpaces('beachUmbrellaRed', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
+  if (event.code === 'Escape' && data.isPreviewExist) {
+    previewContainer.removeChild(data.currentPreview);
+    data.currentPreview = null;
+    data.isPreviewExist = false;
+  } else if (event.code === 'Space' && data.isPreviewExist) {
+    previewContainer.removeChild(data.currentPreview);
+    data.currentPreview = null;
+    data.isPreviewExist = false;
 
-        previewContainer.addChild(previewSpace.sprite);
-        data.currentPreview = previewSpace.sprite;
-        data.isPreviewExist = true;
-        data.selectedType = 'beachUmbrellaRed';
-      }
-      break;
-    }
-    case 'Digit3': {
-      if (data.isPreviewExist === false) {
-        const previewSpace = new videoChatSpaces('sunbedsPurple', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
+    const newSpace = new videoChatSpaces(data.selectedType, player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
+    container.addChild(newSpace.sprite);
 
-        previewContainer.addChild(previewSpace.sprite);
-        data.currentPreview = previewSpace.sprite;
-        data.isPreviewExist = true;
-        data.selectedType = 'sunbedsPurple';
-      }
-      break;
-    }
-    case 'Digit4': {
-      if (data.isPreviewExist === false) {
-        const previewSpace = new videoChatSpaces('sunbedsRed', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
+    socketApi.createVideoChatSpace({
+      type: newSpace.sprite.type,
+      x: newSpace.sprite.x,
+      y: newSpace.sprite.y,
+      spaceId: newSpace.sprite.spaceId,
+    });
+  } else if (type && data.isPreviewExist === false) {
+    const previewSpace = new videoChatSpaces(type, player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
 
-        previewContainer.addChild(previewSpace.sprite);
-        data.currentPreview = previewSpace.sprite;
-        data.isPreviewExist = true;
-        data.selectedType = 'sunbedsRed';
-      }
-      break;
-    }
-    case 'Minus': {
-      if (data.isPreviewExist === false) {
-        const previewSpace = new videoChatSpaces('blanket', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
-
-        previewContainer.addChild(previewSpace.sprite);
-        data.currentPreview = previewSpace.sprite;
-        data.isPreviewExist = true;
-        data.selectedType = 'blanket';
-      }
-      break;
-    }
-    case 'Equal': {
-      if (data.isPreviewExist === false) {
-        const previewSpace = new videoChatSpaces('blanketLarge', player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY, null, true);
-
-        previewContainer.addChild(previewSpace.sprite);
-        data.currentPreview = previewSpace.sprite;
-        data.isPreviewExist = true;
-        data.selectedType = 'blanketLarge';
-      }
-      break;
-    }
-    case 'Escape': {
-      if (data.isPreviewExist) {
-        previewContainer.removeChild(data.currentPreview);
-        data.currentPreview = null;
-        data.isPreviewExist = false;
-      }
-      break;
-    }
-    case 'Space': {
-      if (data.isPreviewExist) {
-        previewContainer.removeChild(data.currentPreview);
-        data.currentPreview = null;
-        data.isPreviewExist = false;
-
-        const newSpace = new videoChatSpaces(data.selectedType, player.newVideoChatSpaceLocationX, player.newVideoChatSpaceLocationY);
-        container.addChild(newSpace.sprite);
-
-        socketApi.createVideoChatSpace({
-          type: newSpace.sprite.type,
-          x: newSpace.sprite.x,
-          y: newSpace.sprite.y,
-          spaceId: newSpace.sprite.spaceId,
-        });
-      }
-      break;
-    }
-    default: { }
+    previewContainer.addChild(previewSpace.sprite);
+    data.currentPreview = previewSpace.sprite;
+    data.isPreviewExist = true;
+    data.selectedType = type;
   }
 }

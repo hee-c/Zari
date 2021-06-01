@@ -18,7 +18,7 @@ import {
   updateOnlinePlayerCoordinates,
   isPlayerInVideoChatSpace,
   isPlayerLeaveVideoChatSpace,
-  handleKeyDown,
+  handleVideoChatSpacePreviewKeyDown,
 } from '../../pixi';
 
 export default function RoomCanvas() {
@@ -36,13 +36,23 @@ export default function RoomCanvas() {
   const previewStatus = {
     isPreviewExist: false,
     isCancelPreview: false,
-    currentPreview: null,
+    currentPreview: false,
     selectedType: '',
   };
   // TODO 상수로 빼기
   const initialRandomPositionX = _.random(50, 400);
   const initialRandomPositionY = _.random(350, 500);
-  let background, player, renderer, viewport, joinedChatSpace, controller, mapWidth, mapHeight, videoChatContainer, previewVideoChatContainer, handlePreviewVideoChat;
+  let background,
+      player,
+      renderer,
+      viewport,
+      joinedChatSpace,
+      controller,
+      mapWidth,
+      mapHeight,
+      videoChatContainer,
+      previewVideoChatContainer,
+      handleVideoChatSpacePreview;
   let state = play;
 
   useEffect(() => {
@@ -66,6 +76,7 @@ export default function RoomCanvas() {
 
       renderer.render(viewport);
     });
+
     socket.on('newPlayerJoin', (newPlayer) => {
       newPlayer.character = new Player(newPlayer.characterType, newPlayer.coordinates.x, newPlayer.coordinates.y, newPlayer.nickname);
       onlinePlayers.set(newPlayer.email, newPlayer);
@@ -73,6 +84,7 @@ export default function RoomCanvas() {
 
       renderer.render(viewport);
     });
+
     socket.on('updatePlayerCoordinates', (updatedPlayer) => {
       const targetPlayer = onlinePlayers.get(updatedPlayer.email);
       targetPlayer.coordinates = updatedPlayer.coordinates;
@@ -80,6 +92,7 @@ export default function RoomCanvas() {
 
       renderer.render(viewport);
     });
+
     socket.on('playerLeaveRoom', (leftPlayer) => {
       const targetPlayer = onlinePlayers.get(leftPlayer.email);
       viewport.removeChild(targetPlayer.character.sprite);
@@ -87,6 +100,7 @@ export default function RoomCanvas() {
 
       renderer.render(viewport);
     });
+
     socket.on('videoChatSpaceCreated', (space) => {
       const newVideoChatSpace = new VideoChatSpace(space.type, space.x, space.y, space.spaceId);
       videoChatContainer.addChild(newVideoChatSpace.sprite);
@@ -97,7 +111,7 @@ export default function RoomCanvas() {
     return () => {
       canvas.current = null;
 
-      window.removeEventListener('keydown', handlePreviewVideoChat);
+      window.removeEventListener('keydown', handleVideoChatSpacePreview);
       window.removeEventListener('keydown', controller.keyDownController);
       window.removeEventListener('keyup', controller.keyUpController);
 
@@ -150,12 +164,12 @@ export default function RoomCanvas() {
 
     controller = new Controller(player);
 
-    handlePreviewVideoChat = function (event) {
-      handleKeyDown(event, player, videoChatContainer, previewVideoChatContainer, previewStatus);
+    handleVideoChatSpacePreview = function (event) {
+      handleVideoChatSpacePreviewKeyDown(event, player, videoChatContainer, previewVideoChatContainer, previewStatus);
       renderer.render(viewport);
     }
 
-    window.addEventListener('keydown', handlePreviewVideoChat);
+    window.addEventListener('keydown', handleVideoChatSpacePreview);
     window.addEventListener('keydown', controller.keyDownController);
     window.addEventListener('keyup', controller.keyUpController);
 
@@ -212,7 +226,7 @@ export default function RoomCanvas() {
     if (previewStatus.currentPreview) {
       previewStatus.currentPreview.x = player.newVideoChatSpaceLocationX;
       previewStatus.currentPreview.y = player.newVideoChatSpaceLocationY;
-    }  
+    }
   }
 
   return (

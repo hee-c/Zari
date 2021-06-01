@@ -22,8 +22,8 @@ export default class Controller {
       case 'ArrowUp': {
         if (this.player.up.isUp) {
           this.player.sprite.textures = this.player.playerSheet.walkNorth;
-          this.player.sprite.vy = -this.player.movementSpeed;
           this.player.sprite.vx = 0;
+          this.player.sprite.vy = -this.player.movementSpeed;
           this.player.sprite.prevAction = 'standing';
         }
         this.player.up.isDown = true;
@@ -46,8 +46,8 @@ export default class Controller {
       case 'ArrowDown': {
         if (this.player.down.isUp) {
           this.player.sprite.textures = this.player.playerSheet.walkSouth;
-          this.player.sprite.vy = this.player.movementSpeed;
           this.player.sprite.vx = 0;
+          this.player.sprite.vy = this.player.movementSpeed;
           this.player.sprite.prevAction = 'standing';
         }
         this.player.down.isDown = true;
