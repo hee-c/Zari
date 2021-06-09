@@ -15,7 +15,7 @@ export default function Room() {
   const user = useSelector(state => state.user.data);
 
   useEffect(() => {
-    if (localStorage.getItem('accessToken')) {
+    if (localStorage.getItem('accessToken') && !user) {
       dispatch(getUserDataByToken());
     }
 

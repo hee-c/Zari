@@ -10,7 +10,7 @@ import { hideModal } from '../../reducers/modalSlice';
 export default function CharacterSelection({ isFirstSelect }) {
   const currentRoom = useSelector(state => state.rooms.currentRoom);
   const user = useSelector(state => state.user.data);
-  const selectedCharacter = useRef(user?.character);
+  const selectedCharacter = useRef(user?.character || 'bald');
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -24,6 +24,7 @@ export default function CharacterSelection({ isFirstSelect }) {
     await dispatch(setUserCharacter({
       selectedCharacter: selectedCharacter.current,
       nickname: event.target.childNodes[0].value,
+      history,
     }));
 
     if (isFirstSelect) {

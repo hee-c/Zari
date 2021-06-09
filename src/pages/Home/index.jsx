@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 import { Home as S } from './styles';
 import { userLogin, getUserDataByToken } from '../../reducers/userSlice';
@@ -9,12 +10,21 @@ import { homeBackground, googleLogo } from '../../images';
 export default function Home() {
   const history = useHistory();
   const dispatch = useDispatch();
+  const user = useSelector(state => state.user.data);
 
   useEffect(() => {
-    if (localStorage.getItem('accessToken')) {
-      dispatch(getUserDataByToken(history));
+    async function getUserData() {
+      try {
+        if (localStorage.getItem('accessToken')) {
+          dispatch(getUserDataByToken(history));
+        }
+      } catch (err) {
+        history.push('/');
+      }
     }
-  }, [history, dispatch]);
+
+    getUserData();
+  }, [history, dispatch, user]);
 
   function handleLoginButtonClick() {
     dispatch(userLogin(history));

@@ -62,6 +62,10 @@ export async function googleLogin() {
       const response = await login({ id_token: token });
       const responseBody = await response.json();
 
+      if (!response.ok) {
+        throw new Error('login fail');
+      }
+
       localStorage.setItem('accessToken', responseBody.data.accessToken);
 
       await firebase.auth().signOut();
@@ -78,6 +82,11 @@ export async function googleLogin() {
 export async function getUserData() {
   try {
     const response = await getData();
+
+    if (!response.ok) {
+      throw new Error('login fail');
+    }
+
     const responseBody = await response.json();
 
     return responseBody.data;
@@ -89,6 +98,11 @@ export async function getUserData() {
 export async function getRoomList() {
   try {
     const response = await getRooms();
+
+    if (!response.ok) {
+      throw new Error('login fail');
+    }
+
     const responseBody = await response.json();
 
     return responseBody.data;
@@ -100,6 +114,11 @@ export async function getRoomList() {
 export async function patchUserCharacter(data) {
   try {
     const response = await patchCharacter(data);
+
+    if (!response.ok) {
+      throw new Error('login fail');
+    }
+
     const responseBody = await response.json();
 
     return responseBody.data;
