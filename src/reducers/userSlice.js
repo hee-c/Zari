@@ -4,34 +4,50 @@ import { googleLogin, getUserData, patchUserCharacter } from '../apis';
 
 export const getUserDataByToken = createAsyncThunk(
   'user/getUserDataByToken',
-  async (history) => {
-    const response = await getUserData();
+  async (history, { rejectWithValue }) => {
+    try {
+      const response = await getUserData();
 
-    if (history) {
-      history.push('/waitingarea');
+      if (history) {
+        history.push('/waitingarea');
+      }
+
+      return response;
+    } catch (err) {
+      console.log('user/getUserDataByToken / ERROR')
+      history.push('/');
+      return rejectWithValue(err.message);
     }
-
-    return response;
   },
 );
 
 export const userLogin = createAsyncThunk(
   'user/login',
-  async (history) => {
-    const response = await googleLogin();
+  async (history, { rejectWithValue }) => {
+    try {
+      const response = await googleLogin();
 
-    history.push('/waitingarea');
+      history.push('/waitingarea');
 
-    return response;
+      return response;
+    } catch (err) {
+      history.push('/');
+      return rejectWithValue(err.message);
+    }
   },
 );
 
 export const setUserCharacter = createAsyncThunk(
   'user/setUserCharacter',
-  async (data) => {
-    const response = await patchUserCharacter(data);
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await patchUserCharacter(data);
 
-    return response;
+      return response;
+    } catch (err) {
+      data.history.push('/');
+      return rejectWithValue(err.message);
+    }
   },
 );
 
@@ -60,6 +76,8 @@ export const userSlice = createSlice({
     },
     [userLogin.rejected]: (state) => {
       state.status = null;
+      state.data = null;
+      localStorage.removeItem('accessToken');
     },
     [getUserDataByToken.pending]: (state) => {
       state.status = 'pending';
@@ -70,6 +88,7 @@ export const userSlice = createSlice({
     },
     [getUserDataByToken.rejected]: (state) => {
       state.status = null;
+      state.data = null;
       localStorage.removeItem('accessToken');
     },
     [setUserCharacter.pending]: (state) => {
@@ -82,6 +101,8 @@ export const userSlice = createSlice({
     },
     [setUserCharacter.rejected]: (state) => {
       state.status = null;
+      state.data = null;
+      localStorage.removeItem('accessToken');
     },
   },
 });

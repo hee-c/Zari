@@ -4,10 +4,14 @@ import { getRoomList } from '../apis';
 
 export const getRooms = createAsyncThunk(
   'rooms/getRooms',
-  async () => {
-    const response = await getRoomList();
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRoomList();
 
-    return response;
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
 );
 
