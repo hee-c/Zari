@@ -1,40 +1,16 @@
-import React, { useRef } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
 
 import { CharacterSelection as S } from './styles';
 import CharacterCanvas from '../CharacterCanvas';
-import { setUserCharacter } from '../../reducers/userSlice';
-import { hideModal } from '../../reducers/modalSlice';
+import useCharacterSelection from '../../hooks/useCharacterSelection';
 
 export default function CharacterSelection({ isFirstSelect }) {
-  const currentRoom = useSelector(state => state.rooms.currentRoom);
-  const user = useSelector(state => state.user.data);
-  const selectedCharacter = useRef(user?.character || 'bald');
-  const dispatch = useDispatch();
-  const history = useHistory();
-
-  function handleCancelButton() {
-    dispatch(hideModal());
-  }
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    await dispatch(setUserCharacter({
-      selectedCharacter: selectedCharacter.current,
-      nickname: event.target.childNodes[0].value,
-      history,
-    }));
-
-    if (isFirstSelect) {
-      dispatch(hideModal());
-      history.push(`/room/${currentRoom}`);
-    } else {
-      dispatch(hideModal());
-    }
-
-  }
+  const {
+    handleSubmit,
+    user,
+    selectedCharacter,
+    handleCancelButton,
+  } = useCharacterSelection(isFirstSelect);
 
   return (
     <S.Container>

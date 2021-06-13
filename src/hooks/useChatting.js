@@ -1,8 +1,8 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { socket, socketApi } from '../utils/socket';
 
-function useChatting(user) {
+export default function useChatting(user) {
   const [showChatting, setShowChatting] = useState(false);
   const [chatText, setChatText] = useState('');
   const [chatTextList, setChatTextList] = useState([]);
@@ -41,7 +41,13 @@ function useChatting(user) {
     setChatText(e.target.value);
   }
 
-  return [showChatting, chatText, chatTextList, chatScroll, handleEnterPress, handleChatButtonClick, handleChatTextChange];
+  return {
+    showChatting,
+    chatText,
+    chatTextList,
+    chatScroll,
+    handleEnterPress,
+    handleChatButtonClick,
+    handleChatTextChange,
+  };
 }
-
-export default useChatting;

@@ -4,7 +4,7 @@ import { Chatting as S } from './styles';
 import useChatting from '../../hooks/useChatting';
 
 export default function Chatting({ user }) {
-  const [
+  const {
     showChatting,
     chatText,
     chatTextList,
@@ -12,7 +12,7 @@ export default function Chatting({ user }) {
     handleEnterPress,
     handleChatButtonClick,
     handleChatTextChange
-  ] = useChatting(user);
+   } = useChatting(user);
 
   return (
     <>
