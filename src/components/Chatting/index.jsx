@@ -1,47 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 
 import { Chatting as S } from './styles';
-import { socket, socketApi } from '../../utils/socket';
+import useChatting from '../../hooks/useChatting';
 
 export default function Chatting({ user }) {
-  // TODO useChatting hook으로 분리하기
-  const [showChatting, setShowChatting] = useState(false);
-  const [chatText, setChatText] = useState('');
-  const [chatTextList, setChatTextList] = useState([]);
-  const chatScroll = useRef();
-
-  function handleEnterPress(event) {
-    event.preventDefault();
-
-    if (chatText !== '') {
-      socketApi.sendChattingMessage({
-        message: chatText,
-        user: user.nickname ?? user.name,
-      });
-
-      setChatText('');
-      chatScroll.current.scrollTop = chatScroll.current.scrollHeight;
-    }
-  }
-
-  useEffect(() => {
-    socket.on('receiveChattingMessage', data => {
-      setChatTextList(state => [...state, data]);
-      chatScroll.current.scrollTop = chatScroll.current.scrollHeight;
-    });
-
-    return () => {
-      socket.removeAllListeners('receiveMessage');
-    }
-  }, []);
-
-  function handleChatButtonClick() {
-    setShowChatting(state => !state);
-  }
-
-  function handleChatTextChange(e) {
-    setChatText(e.target.value);
-  }
+  const [
+    showChatting,
+    chatText,
+    chatTextList,
+    chatScroll,
+    handleEnterPress,
+    handleChatButtonClick,
+    handleChatTextChange
+  ] = useChatting(user);
 
   return (
     <>

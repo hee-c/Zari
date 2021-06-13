@@ -67,35 +67,3 @@ export const imagePath = [
   { alias: 'leftButton', path: '../images/leftButton.svg' },
   { alias: 'rightButton', path: '../images/rightButton.svg' },
 ];
-
-// REVIEW 쓸건지 다시 생각해보기. 오히려 가독성이 떨어지는듯?
-export const controllerKeyDownEvents = {
-  'ArrowLeft': {
-    alias: 'left',
-    direction: 'west',
-    textures: 'walkWest',
-    targetAxis: 'vx',
-    sign: false,
-  },
-  'ArrowUp': {
-    alias: 'up',
-    direction: 'north',
-    textures: 'walkNorth',
-    targetAxis: 'vy',
-    sign: false,
-  },
-  'ArrowRight': {
-    alias: 'right',
-    direction: 'east',
-    textures: 'walkEast',
-    targetAxis: 'vx',
-    sign: true,
-  },
-  'ArrowDown': {
-    alias: 'down',
-    direction: 'south',
-    textures: 'walkSouth',
-    targetAxis: 'vy',
-    sign: true,
-  },
-}

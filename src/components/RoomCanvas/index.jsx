@@ -33,15 +33,14 @@ export default function RoomCanvas() {
   const Container = PIXI.Container;
 
   const onlinePlayers = new Map();
+  const initialRandomPositionX = _.random(50, 400);
+  const initialRandomPositionY = _.random(350, 500);
   const previewStatus = {
     isPreviewExist: false,
     isCancelPreview: false,
     currentPreview: false,
     selectedType: '',
   };
-  // TODO 상수로 빼기
-  const initialRandomPositionX = _.random(50, 400);
-  const initialRandomPositionY = _.random(350, 500);
   let background,
       player,
       renderer,

@@ -16,9 +16,9 @@ export default function WaitingArea() {
   const history = useHistory();
   const dispatch = useDispatch();
   const rooms = useSelector(state => state.rooms.publicRooms);
+  const user = useSelector(state => state.user.data);
   const { isDisplay } = useSelector(state => state.modal);
   const [isFirstSelect, setIsFirstSelect] = useState(true);
-  const user = useSelector(state => state.user.data);
 
   useEffect(() => {
     async function getUserData() {

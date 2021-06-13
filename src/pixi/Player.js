@@ -78,7 +78,7 @@ export default class Player {
     this.newVideoChatSpaceLocationX = 0;
     this.newVideoChatSpaceLocationY = 0;
 
-    const test = new PIXI.Text(
+    const playerName = new PIXI.Text(
       nickname,
       {
         fontFamily : 'Arial',
@@ -87,9 +87,10 @@ export default class Player {
         align : 'center'
       }
     );
-    test.anchor.set(0.5, 0.5);
-    test.y = -24;
-    this.sprite.addChild(test);
+
+    playerName.anchor.set(0.5, 0.5);
+    playerName.y = -24;
+    this.sprite.addChild(playerName);
   }
 
   updateNewVideoChatSpaceLocation = () => {

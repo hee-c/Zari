@@ -33,6 +33,7 @@ export default function RoomVideos({ roomId }) {
             peerID: participantID,
             peer: newPeer,
           });
+
           onlinePeers.push({
             peerID: participantID,
             peer: newPeer,
