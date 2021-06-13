@@ -74,7 +74,7 @@ export function collisionDetection(player, object, isNonblocking) {
 export function updateOnlinePlayerCoordinates(targetPlayer, coordinates) {
   targetPlayer.sprite.play();
 
-  const direction = getDirection(coordinates, targetPlayer);
+  const direction = getDirection(coordinates);
 
   if (direction === 'standing') {
     const standingDirection = onlinePlayerStandingType[targetPlayer.sprite.direction];
@@ -90,14 +90,14 @@ export function updateOnlinePlayerCoordinates(targetPlayer, coordinates) {
   targetPlayer.sprite.direction = direction;
 }
 
-function getDirection(coordinates, targetPlayer) {
-  if (coordinates.vx > 0 && targetPlayer.sprite.isStanding) {
+function getDirection(coordinates) {
+  if (coordinates.vx > 0) {
     return 'east';
-  } else if (coordinates.vx < 0 && targetPlayer.sprite.isStanding) {
+  } else if (coordinates.vx < 0) {
     return 'west';
-  } else if (coordinates.vy > 0 && targetPlayer.sprite.isStanding) {
+  } else if (coordinates.vy > 0) {
     return 'south';
-  } else if (coordinates.vy < 0 && targetPlayer.sprite.isStanding) {
+  } else if (coordinates.vy < 0) {
     return 'north';
   } else if (coordinates.vy === 0 && coordinates.vx === 0) {
     return 'standing';
