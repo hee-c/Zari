@@ -6,9 +6,9 @@ import useCharacterSelection from '../../hooks/useCharacterSelection';
 
 export default function CharacterSelection({ isFirstSelect }) {
   const {
-    handleSubmit,
     user,
     selectedCharacter,
+    handleSubmit,
     handleCancelButton,
   } = useCharacterSelection(isFirstSelect);
 

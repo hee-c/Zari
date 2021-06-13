@@ -34,9 +34,9 @@ export default function useCharacterSelection(isFirstSelect) {
   }
 
   return {
-    handleSubmit,
     user,
     selectedCharacter,
+    handleSubmit,
     handleCancelButton,
   };
 }
