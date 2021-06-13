@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { unwrapResult } from '@reduxjs/toolkit';
 
 import { Home as S } from './styles';
 import { userLogin, getUserDataByToken } from '../../reducers/userSlice';
@@ -31,20 +30,22 @@ export default function Home() {
   }
 
   return (
-    <S.Container>
-      <S.Background src={homeBackground} alt="homeBackground" />
-      <S.LoginContainer>
-        <S.TitleWrapper>
-          <S.Title>Zari</S.Title>
-          <span>Connect to the new world</span>
-        </S.TitleWrapper>
-        <S.LoginButton onClick={handleLoginButtonClick}>
-          <S.IconWrapper>
-            <S.GoogleIcon src={googleLogo} alt="googleLogo"/>
-          </S.IconWrapper>
-          <span>Login with Google</span>
-        </S.LoginButton>
-      </S.LoginContainer>
-    </S.Container>
+    !localStorage.getItem('accessToken') && (
+      <S.Container>
+        <S.Background src={homeBackground} alt="homeBackground" />
+        <S.LoginContainer>
+          <S.TitleWrapper>
+            <S.Title>Zari</S.Title>
+            <span>Connect to the new world</span>
+          </S.TitleWrapper>
+          <S.LoginButton onClick={handleLoginButtonClick}>
+            <S.IconWrapper>
+              <S.GoogleIcon src={googleLogo} alt="googleLogo"/>
+            </S.IconWrapper>
+            <span>Login with Google</span>
+          </S.LoginButton>
+        </S.LoginContainer>
+      </S.Container>
+    )
   );
 }
