@@ -12,12 +12,6 @@ Zari는 다양한 자리들(돗자리, 술자리 등)을 온라인에서도 경�
 
 🔗 Server - https://github.com/hee-c/Zari_server
 
-🔗 배포 링크 - https://zari.today/
-
-🔗 발표 영상 - https://youtu.be/F8OHnevCS30?t=4722
-
-
-
 ## 테크스택
 
 - Frontend
